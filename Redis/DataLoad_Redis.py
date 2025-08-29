@@ -1,0 +1,52 @@
+import redis
+import random
+
+try:
+    r = redis.Redis(
+        host='redis-17272.c308.sa-east-1-1.ec2.redns.redis-cloud.com',
+        port=17272,
+        decode_responses=True,
+        username="default",
+        password="TN5UXqw8vRh38aJ1OZcQvXddTgffut31",
+    )
+    r.ping()
+    print("Conexão com o Redis estabelecida com sucesso!")
+except redis.exceptions.ConnectionError as e:
+    print(f"Erro ao conectar ao Redis: {e}")
+    exit()
+
+
+TOTAL_USUARIOS = 31  
+TOTAL_MENSAGENS = 10 
+NUM_NOTIFICACOES_POR_USUARIO = 50
+total_notificacoes = TOTAL_USUARIOS * NUM_NOTIFICACOES_POR_USUARIO
+
+pipeline = r.pipeline()
+
+print(f"Iniciando a geração e inserção de {total_notificacoes} notificações...")
+
+for i in range(1, TOTAL_USUARIOS + 1):
+    for j in range(NUM_NOTIFICACOES_POR_USUARIO):
+        notificacao_id = (i - 1) * NUM_NOTIFICACOES_POR_USUARIO + j + 1
+        
+        # Chaves para o Redis
+        notificacao_key = f"notificacao:{notificacao_id}"
+        usuario_key = f"usuario:{i}:notificacoes"
+
+        # Atributos da notificação
+        mensagem_id = random.randint(1, TOTAL_MENSAGENS)
+        
+        # Insere a notificação como um hash
+        pipeline.hset(notificacao_key, mapping={
+            "nCdUsuario": i,
+            "nCdMensagem": mensagem_id
+        })
+
+        # Adiciona a ID da notificação ao set do usuário
+        pipeline.sadd(usuario_key, notificacao_id)
+
+result = pipeline.execute()
+
+print("Inserção concluída com sucesso!")
+print(f"Total de comandos executados pelo pipeline: {len(result)}")
+
