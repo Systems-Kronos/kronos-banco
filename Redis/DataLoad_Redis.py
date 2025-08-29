@@ -1,13 +1,18 @@
 import redis
 import random
 
+#Buscando chaves do .env
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
 try:
     r = redis.Redis(
-        host='redis-17272.c308.sa-east-1-1.ec2.redns.redis-cloud.com',
-        port=17272,
+        host=os.getenv("HOSTREDIS"),
+        port=int(os.getenv("PORTREDIS")),
         decode_responses=True,
         username="default",
-        password="TN5UXqw8vRh38aJ1OZcQvXddTgffut31",
+        password=os.getenv("PASSWORDREDIS"),
     )
     r.ping()
     print("Conexão com o Redis estabelecida com sucesso!")
