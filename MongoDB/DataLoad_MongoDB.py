@@ -2,6 +2,8 @@ import random
 from datetime import datetime, timedelta
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from dotenv import load_dotenv
+import os
 
 # Dados base para gerar as entradas
 total_usuarios = 31  
@@ -86,11 +88,12 @@ for i in range(1, total_usuarios + 1):
         calendario_data.append(evento)
 
 
-MONGODB_URI = "mongodb+srv://kronos-app:DevDados2025@db-mongo-kronos.qpis8hl.mongodb.net/?retryWrites=true&w=majority&appName=db-mongo-kronos"
+# Buscando a URI do MongoDB no .env
+load_dotenv()
 try:
     # Conecta-se ao MongoDB Atlas
     
-    client = MongoClient(MONGODB_URI, server_api=ServerApi('1'))
+    client = MongoClient(os.getenv("MONGODB_URI"), server_api=ServerApi('1'))
     client.admin.command('ping')
     print("Pinged your deployment. You successfully connected to MongoDB!")
 
