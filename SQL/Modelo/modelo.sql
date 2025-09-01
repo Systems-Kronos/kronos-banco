@@ -13,16 +13,16 @@ DROP TABLE IF EXISTS TarefaUsuario       CASCADE;
 DROP TABLE IF EXISTS Usuario             CASCADE;
 DROP TABLE IF EXISTS Habilidade          CASCADE;
 
-DROP SEQUENCE  sq_planopagamento;
-DROP SEQUENCE  sq_empresa;
-DROP SEQUENCE  sq_logatribuicaotarefa;
-DROP SEQUENCE  sq_mensagem;
-DROP SEQUENCE  sq_planovantagens;
-DROP SEQUENCE  sq_report;
-DROP SEQUENCE  sq_setor;
-DROP SEQUENCE  sq_tarefa;
-DROP SEQUENCE  sq_usuario;
-DROP SEQUENCE  sq_habilidade;
+DROP SEQUENCE IF EXISTS  sq_planopagamento;
+DROP SEQUENCE IF EXISTS  sq_empresa;
+DROP SEQUENCE IF EXISTS  sq_logatribuicaotarefa;
+DROP SEQUENCE IF EXISTS  sq_mensagem;
+DROP SEQUENCE IF EXISTS  sq_planovantagens;
+DROP SEQUENCE IF EXISTS  sq_report;
+DROP SEQUENCE IF EXISTS  sq_setor;
+DROP SEQUENCE IF EXISTS  sq_tarefa;
+DROP SEQUENCE IF EXISTS  sq_usuario;
+DROP SEQUENCE IF EXISTS  sq_habilidade;
 
 -- IDs
 CREATE SEQUENCE  sq_planopagamento         START WITH 1 INCREMENT BY 1;
@@ -54,6 +54,7 @@ CREATE TABLE Mensagem ( nCdMensagem DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('sq_m
 -- Tabelas com dependência de PlanoPagamento
 CREATE TABLE Empresa ( nCdEmpresa        DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('sq_empresa')
     , cNmEmpresa        VARCHAR(255)  NOT NULL
+    , cSgEmpresa        VARCHAR(3)    NOT NULL
     , cCNPJ             VARCHAR(18)   NOT NULL UNIQUE
     , cTelefone         VARCHAR(255)  NOT NULL UNIQUE
     , cEmail            VARCHAR(255)  NOT NULL UNIQUE
@@ -85,23 +86,26 @@ CREATE TABLE Habilidade ( nCdHabilidade DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('
 CREATE TABLE Setor ( nCdSetor   DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('sq_setor')
     , nCdEmpresa DECIMAL(10,0) NOT NULL
     , cNmSetor   VARCHAR(255)  NOT NULL
+    , cSgSetor   VARCHAR(3)    NOT NULL
     , PRIMARY KEY(nCdSetor)
     , FOREIGN KEY (nCdEmpresa) REFERENCES Empresa(nCdEmpresa)
 );
 
 -- Tabela com dependência de Empresa e Setor
 CREATE TABLE Usuario ( nCdUsuario DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('sq_usuario')
-    , cNmUsuario VARCHAR(100)  NOT NULL
-    , nCdGestor  DECIMAL(10,0)     NULL
-    , bGestor    BOOLEAN       NOT NULL
-    , nCdEmpresa DECIMAL(10,0) NOT NULL
-    , nCdSetor   DECIMAL(10,0) NOT NULL
-    , nCPF       VARCHAR(15)   NOT NULL
-    , cTelefone  VARCHAR(20)       NULL
-    , cEmail     VARCHAR(255)      NULL
-    , cSenha     VARCHAR(50)   NOT NULL DEFAULT 't33'
-    , cFoto      VARCHAR           NULL
-    , bAtivo     BOOLEAN       NOT NULL DEFAULT True
+    , cNmUsuario  VARCHAR(100)  NOT NULL
+    , cSbrUsuario VARCHAR(255)  NOT NULL
+    , cSgUsuario  VARCHAR(50)       NULL
+    , nCdGestor   DECIMAL(10,0)     NULL
+    , bGestor     BOOLEAN       NOT NULL
+    , nCdEmpresa  DECIMAL(10,0) NOT NULL
+    , nCdSetor    DECIMAL(10,0) NOT NULL
+    , nCPF        VARCHAR(15)   NOT NULL
+    , cTelefone   VARCHAR(20)       NULL
+    , cEmail      VARCHAR(255)      NULL
+    , cSenha      VARCHAR(50)   NOT NULL DEFAULT 't33'
+    , cFoto       VARCHAR           NULL
+    , bAtivo      BOOLEAN       NOT NULL DEFAULT True
     , PRIMARY KEY (nCdUsuario)
     , FOREIGN KEY (nCdEmpresa) REFERENCES Empresa (nCdEmpresa)
     , FOREIGN KEY (nCdSetor)   REFERENCES Setor (nCdSetor)

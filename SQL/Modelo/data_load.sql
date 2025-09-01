@@ -14,7 +14,6 @@ ALTER SEQUENCE  sq_usuario                RESTART WITH 1;
 ALTER SEQUENCE  sq_habilidade             RESTART WITH 1;
 
 -- Inserindo dados na tabela PlanoPagamento
--- Usando nextval para a sequência de IDs
 INSERT INTO PlanoPagamento (nCdPlano, cNmPlano, nPreco) VALUES
                                                             (nextval('sq_planopagamento'), 'Básico', 50.00),
                                                             (nextval('sq_planopagamento'), 'Intermediário', 150.00),
@@ -23,7 +22,6 @@ INSERT INTO PlanoPagamento (nCdPlano, cNmPlano, nPreco) VALUES
                                                             (nextval('sq_planopagamento'), 'Corporativo', 2500.00);
 
 -- Inserindo dados na tabela Mensagem
--- Usando nextval para a sequência de IDs
 INSERT INTO Mensagem (nCdMensagem, cTitulo, cMensagem, cCategoria) VALUES
                                                                        (nextval('sq_mensagem'), 'Bem-vindo(a)!', 'Sua conta foi criada com sucesso! Explore todas as funcionalidades.', 'Boas-vindas'),
                                                                        (nextval('sq_mensagem'), 'Tarefa Concluída', 'A tarefa "Melhoria da Interface do Usuário" foi finalizada.', 'Notificação'),
@@ -38,21 +36,19 @@ INSERT INTO Mensagem (nCdMensagem, cTitulo, cMensagem, cCategoria) VALUES
 
 
 -- Inserindo dados na tabela Empresa
--- Usando nextval para a sequência de IDs
-INSERT INTO Empresa (nCdEmpresa, cNmEmpresa, cCNPJ, cTelefone, cEmail, cCEP, nCdPlanoPagamento, bAtivo) VALUES
-                                                                                                            (nextval('sq_empresa'), 'Tech Solutions Ltda.', '11.111.111/0001-11', '(11) 98765-4321', 'contato@techsolutions.com.br', '01000-001', 4, true),
-                                                                                                            (nextval('sq_empresa'), 'Marketing Digital S.A.', '22.222.222/0001-22', '(21) 98765-4322', 'contato@mktglobal.com.br', '20000-002', 3, true),
-                                                                                                            (nextval('sq_empresa'), 'Consultoria Financeira', '33.333.333/0001-33', '(31) 98765-4323', 'contato@consultfin.com.br', '30000-003', 5, true),
-                                                                                                            (nextval('sq_empresa'), 'Logística Rápida', '44.444.444/0001-44', '(41) 98765-4324', 'contato@logistica.com.br', '80000-004', 2, true),
-                                                                                                            (nextval('sq_empresa'), 'Inovação e Tecnologia', '55.555.555/0001-55', '(11) 95555-5555', 'contato@inovatech.com.br', '04000-005', 4, true),
-                                                                                                            (nextval('sq_empresa'), 'Serviços de Design', '66.666.666/0001-66', '(21) 96666-6666', 'contato@artdesign.com.br', '22000-006', 3, true),
-                                                                                                            (nextval('sq_empresa'), 'Indústria de Manufatura', '77.777.777/0001-77', '(31) 97777-7777', 'contato@manufatura.com.br', '33000-007', 5, true),
-                                                                                                            (nextval('sq_empresa'), 'E-commerce Brasil', '88.888.888/0001-88', '(41) 98888-8888', 'contato@ecomm.com.br', '81000-008', 2, true),
-                                                                                                            (nextval('sq_empresa'), 'Soluções em Saúde', '99.999.999/0001-99', '(11) 99999-9999', 'contato@saudesolucoes.com.br', '01500-009', 4, true),
-                                                                                                            (nextval('sq_empresa'), 'Fábrica de Gado JBS', '10.101.101/0001-10', '(51) 91010-1010', 'contato@jbsgado.com.br', '90000-010', 2, true);
+INSERT INTO Empresa (nCdEmpresa, cNmEmpresa, cSgEmpresa, cCNPJ, cTelefone, cEmail, cCEP, nCdPlanoPagamento, bAtivo) VALUES
+                                                                                                                        (nextval('sq_empresa'), 'Tech Solutions Ltda.', 'TSL', '11.111.111/0001-11', '(11) 98765-4321', 'contato@techsolutions.com.br', '01000-001', 4, true),
+                                                                                                                        (nextval('sq_empresa'), 'Marketing Digital S.A.', 'MDS', '22.222.222/0001-22', '(21) 98765-4322', 'contato@mktglobal.com.br', '20000-002', 3, true),
+                                                                                                                        (nextval('sq_empresa'), 'Consultoria Financeira', 'CFI', '33.333.333/0001-33', '(31) 98765-4323', 'contato@consultfin.com.br', '30000-003', 5, true),
+                                                                                                                        (nextval('sq_empresa'), 'Logística Rápida', 'LGR', '44.444.444/0001-44', '(41) 98765-4324', 'contato@logistica.com.br', '80000-004', 2, true),
+                                                                                                                        (nextval('sq_empresa'), 'Inovação e Tecnologia', 'IET', '55.555.555/0001-55', '(11) 95555-5555', 'contato@inovatech.com.br', '04000-005', 4, true),
+                                                                                                                        (nextval('sq_empresa'), 'Serviços de Design', 'SDD', '66.666.666/0001-66', '(21) 96666-6666', 'contato@artdesign.com.br', '22000-006', 3, true),
+                                                                                                                        (nextval('sq_empresa'), 'Indústria de Manufatura', 'IDM', '77.777.777/0001-77', '(31) 97777-7777', 'contato@manufatura.com.br', '33000-007', 5, true),
+                                                                                                                        (nextval('sq_empresa'), 'E-commerce Brasil', 'ECB', '88.888.888/0001-88', '(41) 98888-8888', 'contato@ecomm.com.br', '81000-008', 2, true),
+                                                                                                                        (nextval('sq_empresa'), 'Soluções em Saúde', 'SES', '99.999.999/0001-99', '(11) 99999-9999', 'contato@saudesolucoes.com.br', '01500-009', 4, true),
+                                                                                                                        (nextval('sq_empresa'), 'Fábrica de Gado JBS', 'JBS', '10.101.101/0001-10', '(51) 91010-1010', 'contato@jbsgado.com.br', '90000-010', 2, true);
 
 -- Inserindo dados na tabela PlanoVantagens
--- Usando nextval para a sequência de IDs de vantagem
 INSERT INTO PlanoVantagens (nCdPlano, nCdVantagem, cNmVantagem, cDescricao) VALUES
                                                                                 (1, nextval('sq_planovantagens'), 'Gestão de 10 Usuários', 'Permite a gestão de até 10 usuários por empresa.'),
                                                                                 (1, nextval('sq_planovantagens'), 'Criação de 20 Tarefas', 'Limite de 20 tarefas em andamento.'),
@@ -68,7 +64,6 @@ INSERT INTO PlanoVantagens (nCdPlano, nCdVantagem, cNmVantagem, cDescricao) VALU
 
 
 -- Inserindo dados na tabela Habilidade
--- Usando nextval para a sequência de IDs
 INSERT INTO Habilidade (nCdHabilidade, nCdEmpresa, cNmHabilidade, cDescricao) VALUES
                                                                                   (nextval('sq_habilidade'), 1, 'Desenvolvimento Java', 'Conhecimento em Java, Spring Boot e microserviços.'),
                                                                                   (nextval('sq_habilidade'), 1, 'Análise de Dados SQL', 'Habilidade em escrever queries complexas, otimização de consultas e modelagem de dados.'),
@@ -96,70 +91,67 @@ INSERT INTO Habilidade (nCdHabilidade, nCdEmpresa, cNmHabilidade, cDescricao) VA
 
 
 -- Inserindo dados na tabela Setor
--- Usando nextval para a sequência de IDs
-INSERT INTO Setor (nCdSetor, nCdEmpresa, cNmSetor) VALUES
-                                                       (nextval('sq_setor'), 1, 'TI - Desenvolvimento'),
-                                                       (nextval('sq_setor'), 1, 'TI - Infraestrutura'),
-                                                       (nextval('sq_setor'), 1, 'Recursos Humanos'),
-                                                       (nextval('sq_setor'), 2, 'Marketing'),
-                                                       (nextval('sq_setor'), 2, 'Comercial'),
-                                                       (nextval('sq_setor'), 3, 'Contabilidade'),
-                                                       (nextval('sq_setor'), 3, 'Auditoria'),
-                                                       (nextval('sq_setor'), 4, 'Logística'),
-                                                       (nextval('sq_setor'), 4, 'Armazenamento'),
-                                                       (nextval('sq_setor'), 5, 'Engenharia de Software'),
-                                                       (nextval('sq_setor'), 5, 'Data Science'),
-                                                       (nextval('sq_setor'), 6, 'Design de Produto'),
-                                                       (nextval('sq_setor'), 6, 'UI/UX'),
-                                                       (nextval('sq_setor'), 7, 'Produção'),
-                                                       (nextval('sq_setor'), 7, 'Manutenção'),
-                                                       (nextval('sq_setor'), 8, 'Vendas Online'),
-                                                       (nextval('sq_setor'), 8, 'Logística de E-commerce'),
-                                                       (nextval('sq_setor'), 9, 'Atendimento'),
-                                                       (nextval('sq_setor'), 9, 'TI - Saúde'),
-                                                       (nextval('sq_setor'), 10, 'Produção Agrícola'),
-                                                       (nextval('sq_setor'), 10, 'Pecuária');
+INSERT INTO Setor (nCdSetor, nCdEmpresa, cNmSetor, cSgSetor) VALUES
+                                                                 (nextval('sq_setor'), 1, 'TI - Desenvolvimento', 'TDE'),
+                                                                 (nextval('sq_setor'), 1, 'TI - Infraestrutura', 'TIN'),
+                                                                 (nextval('sq_setor'), 1, 'Recursos Humanos', 'RHU'),
+                                                                 (nextval('sq_setor'), 2, 'Marketing', 'MKT'),
+                                                                 (nextval('sq_setor'), 2, 'Comercial', 'COM'),
+                                                                 (nextval('sq_setor'), 3, 'Contabilidade', 'CTB'),
+                                                                 (nextval('sq_setor'), 3, 'Auditoria', 'AUD'),
+                                                                 (nextval('sq_setor'), 4, 'Logística', 'LOG'),
+                                                                 (nextval('sq_setor'), 4, 'Armazenamento', 'ARM'),
+                                                                 (nextval('sq_setor'), 5, 'Engenharia de Software', 'EDS'),
+                                                                 (nextval('sq_setor'), 5, 'Data Science', 'DSC'),
+                                                                 (nextval('sq_setor'), 6, 'Design de Produto', 'DDP'),
+                                                                 (nextval('sq_setor'), 6, 'UI/UX', 'UIX'),
+                                                                 (nextval('sq_setor'), 7, 'Produção', 'PRO'),
+                                                                 (nextval('sq_setor'), 7, 'Manutenção', 'MAN'),
+                                                                 (nextval('sq_setor'), 8, 'Vendas Online', 'VON'),
+                                                                 (nextval('sq_setor'), 8, 'Logística de E-commerce', 'LEC'),
+                                                                 (nextval('sq_setor'), 9, 'Atendimento', 'ATD'),
+                                                                 (nextval('sq_setor'), 9, 'TI - Saúde', 'TIS'),
+                                                                 (nextval('sq_setor'), 10, 'Produção Agrícola', 'PAG'),
+                                                                 (nextval('sq_setor'), 10, 'Pecuária', 'PEC');
 
 
 -- Inserindo dados na tabela Usuario
 -- Inserir gestores primeiro para referenciar em outros usuários
--- Usando nextval para a sequência de IDs
-INSERT INTO Usuario (nCdUsuario, cNmUsuario, nCdGestor, bGestor, nCdEmpresa, nCdSetor, nCPF, cTelefone, cEmail, cSenha, bAtivo) VALUES
-                                                                                                                                    (nextval('sq_usuario'), 'Carlos Silva', NULL, true, 1, 1, '111.111.111-11', '(11) 99111-1111', 'carlos.silva@techsolutions.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Ana Costa', NULL, true, 2, 4, '222.222.222-22', '(21) 99222-2222', 'ana.costa@mktglobal.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Pedro Santos', NULL, true, 3, 6, '333.333.333-33', '(31) 99333-3333', 'pedro.santos@consultfin.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Mariana Oliveira', NULL, true, 4, 8, '444.444.444-44', '(41) 99444-4444', 'mariana.o@logistica.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Ricardo Fernandes', NULL, true, 5, 10, '555.555.555-55', '(11) 95555-5555', 'ricardo.f@inovatech.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Juliana Castro', NULL, true, 6, 12, '666.666.666-66', '(21) 96666-6666', 'juliana.c@artdesign.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'André Guedes', NULL, true, 7, 14, '777.777.777-77', '(31) 97777-7777', 'andre.g@manufatura.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Daniel Martins', NULL, true, 8, 16, '888.888.888-88', '(41) 98888-8888', 'daniel.m@ecomm.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Bruna Lopes', NULL, true, 9, 18, '999.999.999-99', '(11) 99999-9999', 'bruna.l@saudesolucoes.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Gustavo Almeida', NULL, true, 10, 20, '100.100.100-00', '(51) 91000-1000', 'gustavo.a@agrosul.com.br', 'senha123', true);
+INSERT INTO Usuario (nCdUsuario, cNmUsuario, cSbrUsuario, cSgUsuario, nCdGestor, bGestor, nCdEmpresa, nCdSetor, nCPF, cTelefone, cEmail, cSenha, bAtivo) VALUES
+                                                                                                                                                             (nextval('sq_usuario'), 'Carlos', 'Silva', 'carlossilva-tsl', NULL, true, 1, 1, '111.111.111-11', '(11) 99111-1111', 'carlos.silva@techsolutions.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Ana', 'Costa', 'anacosta-mds', NULL, true, 2, 4, '222.222.222-22', '(21) 99222-2222', 'ana.costa@mktglobal.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Pedro', 'Santos', 'pedrosantos-cfi', NULL, true, 3, 6, '333.333.333-33', '(31) 99333-3333', 'pedro.santos@consultfin.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Mariana', 'Oliveira', 'marianaoliveira-lgr', NULL, true, 4, 8, '444.444.444-44', '(41) 99444-4444', 'mariana.o@logistica.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Ricardo', 'Fernandes', 'ricardofernandes-iet', NULL, true, 5, 10, '555.555.555-55', '(11) 95555-5555', 'ricardo.f@inovatech.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Juliana', 'Castro', 'julianacastro-sdd', NULL, true, 6, 12, '666.666.666-66', '(21) 96666-6666', 'juliana.c@artdesign.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'André', 'Guedes', 'andreguedes-idm', NULL, true, 7, 14, '777.777.777-77', '(31) 97777-7777', 'andre.g@manufatura.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Daniel', 'Martins', 'danielmartins-ecb', NULL, true, 8, 16, '888.888.888-88', '(41) 98888-8888', 'daniel.m@ecomm.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Bruna', 'Lopes', 'brunalopes-ses', NULL, true, 9, 18, '999.999.999-99', '(11) 99999-9999', 'bruna.l@saudesolucoes.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Gustavo', 'Almeida', 'gustavoalmeida-jbs', NULL, true, 10, 20, '100.100.100-00', '(51) 91000-1000', 'gustavo.a@agrosul.com.br', 'senha123', true);
 
 -- Inserir usuários regulares
--- Os IDs dos gestores agora estão dinâmicos, então vamos usar os valores absolutos do script original para simplificar
-INSERT INTO Usuario (nCdUsuario, cNmUsuario, nCdGestor, bGestor, nCdEmpresa, nCdSetor, nCPF, cTelefone, cEmail, cSenha, bAtivo) VALUES
-                                                                                                                                    (nextval('sq_usuario'), 'João Souza', 1, false, 1, 1, '111.111.111-12', '(11) 99111-1112', 'joao.souza@techsolutions.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Beatriz Lima', 1, false, 1, 2, '111.111.111-13', '(11) 99111-1113', 'beatriz.l@techsolutions.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Felipe Mendes', 1, false, 1, 3, '111.111.111-14', '(11) 99111-1114', 'felipe.m@techsolutions.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Julia Pereira', 2, false, 2, 4, '222.222.222-23', '(21) 99222-2223', 'julia.p@mktglobal.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Ricardo Neves', 2, false, 2, 5, '222.222.222-24', '(21) 99222-2224', 'ricardo.n@mktglobal.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Laura Rocha', 3, false, 3, 6, '333.333.333-34', '(31) 99333-3334', 'laura.r@consultfin.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Guilherme Castro', 3, false, 3, 7, '333.333.333-35', '(31) 99333-3335', 'gui.castro@consultfin.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Isabela Santos', 4, false, 4, 8, '444.444.444-45', '(41) 99444-4445', 'isabela.s@logistica.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Daniel Gomes', 4, false, 4, 9, '444.444.444-46', '(41) 99444-4446', 'daniel.g@logistica.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Luiza Ramos', 5, false, 5, 10, '555.555.555-56', '(11) 95555-5556', 'luiza.r@inovatech.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Marcos Souza', 5, false, 5, 11, '555.555.555-57', '(11) 95555-5557', 'marcos.s@inovatech.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Sofia Lima', 6, false, 6, 12, '666.666.666-67', '(21) 96666-6667', 'sofia.l@artdesign.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Paulo Ferreira', 6, false, 6, 13, '666.666.666-68', '(21) 96666-6668', 'paulo.f@artdesign.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Helena Alves', 7, false, 7, 14, '777.777.777-78', '(31) 97777-7778', 'helena.a@manufatura.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'José Moura', 7, false, 7, 15, '777.777.777-79', '(31) 97777-7779', 'jose.m@manufatura.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Fernanda Costa', 8, false, 8, 16, '888.888.888-89', '(41) 98888-8889', 'fernanda.c@ecomm.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Lucas Rocha', 8, false, 8, 17, '888.888.888-90', '(41) 98888-8890', 'lucas.r@ecomm.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Carolina Gomes', 9, false, 9, 18, '999.999.999-00', '(11) 99999-9900', 'carolina.g@saudesolucoes.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Pedro Henrique', 9, false, 9, 19, '999.999.999-01', '(11) 99999-9901', 'pedro.h@saudesolucoes.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Camila Viana', 10, false, 10, 20, '100.100.100-01', '(51) 91000-1001', 'camila.v@jbsgado.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Vinicius Souza', 10, false, 10, 21, '100.100.100-02', '(51) 91000-1002', 'vinicius.s@jbsgado.com.br', 'senha123', true);
+INSERT INTO Usuario (nCdUsuario, cNmUsuario, cSbrUsuario, cSgUsuario, nCdGestor, bGestor, nCdEmpresa, nCdSetor, nCPF, cTelefone, cEmail, cSenha, bAtivo) VALUES
+                                                                                                                                                             (nextval('sq_usuario'), 'João', 'Souza', 'joaosouza-tsl', 1, false, 1, 1, '111.111.111-12', '(11) 99111-1112', 'joao.souza@techsolutions.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Beatriz', 'Lima', 'beatrizlima-tsl', 1, false, 1, 2, '111.111.111-13', '(11) 99111-1113', 'beatriz.l@techsolutions.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Felipe', 'Mendes', 'felipemendes-tsl', 1, false, 1, 3, '111.111.111-14', '(11) 99111-1114', 'felipe.m@techsolutions.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Julia', 'Pereira', 'juliapereira-mds', 2, false, 2, 4, '222.222.222-23', '(21) 99222-2223', 'julia.p@mktglobal.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Ricardo', 'Neves', 'ricardoneves-mds', 2, false, 2, 5, '222.222.222-24', '(21) 99222-2224', 'ricardo.n@mktglobal.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Laura', 'Rocha', 'laurarocha-cfi', 3, false, 3, 6, '333.333.333-34', '(31) 99333-3334', 'laura.r@consultfin.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Guilherme', 'Castro', 'guilhermecastro-cfi', 3, false, 3, 7, '333.333.333-35', '(31) 99333-3335', 'gui.castro@consultfin.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Isabela', 'Santos', 'isabelasantos-lgr', 4, false, 4, 8, '444.444.444-45', '(41) 99444-4445', 'isabela.s@logistica.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Daniel', 'Gomes', 'danielgomes-lgr', 4, false, 4, 9, '444.444.444-46', '(41) 99444-4446', 'daniel.g@logistica.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Luiza', 'Ramos', 'luizaramos-iet', 5, false, 5, 10, '555.555.555-56', '(11) 95555-5556', 'luiza.r@inovatech.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Marcos', 'Souza', 'marcossouza-iet', 5, false, 5, 11, '555.555.555-57', '(11) 95555-5557', 'marcos.s@inovatech.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Sofia', 'Lima', 'sofialima-sdd', 6, false, 6, 12, '666.666.666-67', '(21) 96666-6667', 'sofia.l@artdesign.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Paulo', 'Ferreira', 'pauloferreira-sdd', 6, false, 6, 13, '666.666.666-68', '(21) 96666-6668', 'paulo.f@artdesign.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Helena', 'Alves', 'helenaalves-idm', 7, false, 7, 14, '777.777.777-78', '(31) 97777-7778', 'helena.a@manufatura.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'José', 'Moura', 'josemoura-idm', 7, false, 7, 15, '777.777.777-79', '(31) 97777-7779', 'jose.m@manufatura.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Fernanda', 'Costa', 'fernandacosta-ecb', 8, false, 8, 16, '888.888.888-89', '(41) 98888-8889', 'fernanda.c@ecomm.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Lucas', 'Rocha', 'lucasrocha-ecb', 8, false, 8, 17, '888.888.888-90', '(41) 98888-8890', 'lucas.r@ecomm.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Carolina', 'Gomes', 'carolinagomes-ses', 9, false, 9, 18, '999.999.999-00', '(11) 99999-9900', 'carolina.g@saudesolucoes.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Pedro', 'Henrique', 'pedrohenrique-ses', 9, false, 9, 19, '999.999.999-01', '(11) 99999-9901', 'pedro.h@saudesolucoes.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Camila', 'Viana', 'camilaviana-jbs', 10, false, 10, 20, '100.100.100-01', '(51) 91000-1001', 'camila.v@jbsgado.com.br', 'senha123', true),
+                                                                                                                                                             (nextval('sq_usuario'), 'Vinicius', 'Souza', 'viniciussouza-jbs', 10, false, 10, 21, '100.100.100-02', '(51) 91000-1002', 'vinicius.s@jbsgado.com.br', 'senha123', true);
 
 
 -- Inserindo dados na tabela HabilidadeUsuario
