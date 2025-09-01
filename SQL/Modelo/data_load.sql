@@ -2,6 +2,16 @@
 
 -- Adicionando TRUNCATE para garantir uma carga de dados limpa
 TRUNCATE TABLE PlanoPagamento, Mensagem, Empresa, PlanoVantagens, Habilidade, Setor, Usuario, HabilidadeUsuario, Tarefa, LogAtribuicaoTarefa, Report, TarefaHabilidade, TarefaUsuario RESTART IDENTITY CASCADE;
+ALTER SEQUENCE  sq_planopagamento         RESTART WITH 1;
+ALTER SEQUENCE  sq_empresa                RESTART WITH 1;
+ALTER SEQUENCE  sq_logatribuicaotarefa    RESTART WITH 1;
+ALTER SEQUENCE  sq_mensagem               RESTART WITH 1;
+ALTER SEQUENCE  sq_planovantagens         RESTART WITH 1;
+ALTER SEQUENCE  sq_report                 RESTART WITH 1;
+ALTER SEQUENCE  sq_setor                  RESTART WITH 1;
+ALTER SEQUENCE  sq_tarefa                 RESTART WITH 1;
+ALTER SEQUENCE  sq_usuario                RESTART WITH 1;
+ALTER SEQUENCE  sq_habilidade             RESTART WITH 1;
 
 -- Inserindo dados na tabela PlanoPagamento
 -- Usando nextval para a sequência de IDs
@@ -39,7 +49,7 @@ INSERT INTO Empresa (nCdEmpresa, cNmEmpresa, cCNPJ, cTelefone, cEmail, cCEP, nCd
                                                                                                             (nextval('sq_empresa'), 'Indústria de Manufatura', '77.777.777/0001-77', '(31) 97777-7777', 'contato@manufatura.com.br', '33000-007', 5, true),
                                                                                                             (nextval('sq_empresa'), 'E-commerce Brasil', '88.888.888/0001-88', '(41) 98888-8888', 'contato@ecomm.com.br', '81000-008', 2, true),
                                                                                                             (nextval('sq_empresa'), 'Soluções em Saúde', '99.999.999/0001-99', '(11) 99999-9999', 'contato@saudesolucoes.com.br', '01500-009', 4, true),
-                                                                                                            (nextval('sq_empresa'), 'Agropecuária Sul', '10.101.101/0001-10', '(51) 91010-1010', 'contato@agrosul.com.br', '90000-010', 2, true);
+                                                                                                            (nextval('sq_empresa'), 'Fábrica de Gado JBS', '10.101.101/0001-10', '(51) 91010-1010', 'contato@jbsgado.com.br', '90000-010', 2, true);
 
 -- Inserindo dados na tabela PlanoVantagens
 -- Usando nextval para a sequência de IDs de vantagem
@@ -148,8 +158,8 @@ INSERT INTO Usuario (nCdUsuario, cNmUsuario, nCdGestor, bGestor, nCdEmpresa, nCd
                                                                                                                                     (nextval('sq_usuario'), 'Lucas Rocha', 8, false, 8, 17, '888.888.888-90', '(41) 98888-8890', 'lucas.r@ecomm.com.br', 'senha123', true),
                                                                                                                                     (nextval('sq_usuario'), 'Carolina Gomes', 9, false, 9, 18, '999.999.999-00', '(11) 99999-9900', 'carolina.g@saudesolucoes.com.br', 'senha123', true),
                                                                                                                                     (nextval('sq_usuario'), 'Pedro Henrique', 9, false, 9, 19, '999.999.999-01', '(11) 99999-9901', 'pedro.h@saudesolucoes.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Camila Viana', 10, false, 10, 20, '100.100.100-01', '(51) 91000-1001', 'camila.v@agrosul.com.br', 'senha123', true),
-                                                                                                                                    (nextval('sq_usuario'), 'Vinicius Souza', 10, false, 10, 21, '100.100.100-02', '(51) 91000-1002', 'vinicius.s@agrosul.com.br', 'senha123', true);
+                                                                                                                                    (nextval('sq_usuario'), 'Camila Viana', 10, false, 10, 20, '100.100.100-01', '(51) 91000-1001', 'camila.v@jbsgado.com.br', 'senha123', true),
+                                                                                                                                    (nextval('sq_usuario'), 'Vinicius Souza', 10, false, 10, 21, '100.100.100-02', '(51) 91000-1002', 'vinicius.s@jbsgado.com.br', 'senha123', true);
 
 
 -- Inserindo dados na tabela HabilidadeUsuario
@@ -163,7 +173,7 @@ INSERT INTO HabilidadeUsuario (nCdHabilidade, nCdUsuario) VALUES
                                                               (14, 7), (15, 7), -- André (Manufatura)
                                                               (16, 8), (17, 8), -- Daniel M (E-commerce)
                                                               (18, 9), (19, 9), -- Bruna (Saúde)
-                                                              (20, 10), (21, 10), -- Gustavo (Agropecuária)
+                                                              (20, 10), (21, 10), -- Gustavo (Fábrica de Gado JBS)
 -- Usuários da Tech Solutions
                                                               (1, 11), (2, 11),
                                                               (2, 12), (22, 12),
@@ -192,78 +202,63 @@ INSERT INTO HabilidadeUsuario (nCdHabilidade, nCdUsuario) VALUES
 -- Usuários da Soluções em Saúde
                                                               (18, 28),
                                                               (19, 29),
--- Usuários da Agropecuária Sul
+-- Usuários da Fábrica de Gado JBS
                                                               (20, 30),
                                                               (21, 31);
 
+-- Inserindo dados na tabela Tarefa
+-- O usuário relator (gestor) e o status (Pendente ou Em Andamento) são corrigidos aqui
 -- Usando nextval para a sequência de IDs
 INSERT INTO Tarefa (nCdTarefa, cNmTarefa, nCdUsuarioRelator, nCdHabilidade, iGravidade, iUrgencia, iTendencia, nTempoEstimado, cDescricao, cStatus) VALUES
-                                                                                                                                                        (nextval('sq_tarefa'), 'Desenvolver API de Autenticação', 11, 1, 5, 4, 5, 80.0, 'Criar uma API REST para o sistema de autenticação.', 'Em Andamento'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Otimizar Query de Relatórios', 12, 2, 4, 5, 4, 25.5, 'Revisar e otimizar a consulta para o dashboard principal.', 'Pendente'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Planejar Sprint 3', 13, 3, 3, 3, 4, 15.0, 'Definir as tarefas e estimativas para a próxima sprint.', 'Concluída'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Campanha de E-mail de Natal', 14, 4, 5, 4, 5, 40.0, 'Criar e executar campanha de e-mail marketing para o final do ano.', 'Pendente'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Revisão de Código do Módulo Financeiro', 11, 1, 5, 2, 4, 10.0, 'Revisar o código do módulo financeiro em busca de bugs.', 'Pendente'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Auditoria Interna de Receitas', 17, 7, 4, 4, 4, 50.0, 'Conduzir uma auditoria completa das receitas do último trimestre.', 'Em Andamento'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Organizar Fluxo de Armazém', 19, 9, 3, 3, 5, 30.0, 'Reorganizar o layout do armazém para otimizar o fluxo de trabalho.', 'Concluída'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Proposta de Imposto Simplificado', 16, 7, 2, 3, 2, 20.0, 'Elaborar uma proposta para adesão ao Simples Nacional.', 'Cancelada'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Treinamento de Equipe em Marketing de Conteúdo', 15, 5, 3, 2, 4, 12.0, 'Criar e ministrar um treinamento sobre novas técnicas de criação de conteúdo.', 'Pendente'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Configurar Servidores AWS', 13, 23, 5, 5, 5, 20.0, 'Subir novos servidores e configurar ambientes na AWS.', 'Em Andamento'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Desenvolvimento de Módulo de Pedidos', 20, 10, 4, 3, 5, 45.0, 'Programar o módulo de pedidos para o novo sistema.', 'Pendente'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Análise de Tráfego do Site', 21, 11, 3, 4, 4, 15.0, 'Analisar o tráfego do site e identificar vulnerabilidades.', 'Em Andamento'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Criação de Logo para Campanha', 22, 12, 5, 4, 5, 10.0, 'Desenhar um novo logo para a campanha de lançamento.', 'Pendente'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Teste de Usabilidade do App', 23, 13, 4, 3, 4, 20.0, 'Realizar testes com usuários para validar a usabilidade do aplicativo.', 'Concluída'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Revisão de Processo de Produção', 24, 14, 3, 5, 4, 35.0, 'Auditar o processo de produção para garantir a qualidade.', 'Em Andamento'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Inventário da Cadeia de Suprimentos', 25, 15, 4, 4, 3, 25.0, 'Contar e registrar todos os produtos no estoque.', 'Pendente'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Otimização de SEO para Produtos', 26, 16, 5, 2, 5, 18.0, 'Melhorar as descrições dos produtos para otimização de busca.', 'Concluída'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Fluxo de Devoluções', 27, 17, 3, 3, 4, 12.0, 'Criar um processo de devolução mais eficiente.', 'Pendente'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Treinamento de Atendimento ao Cliente', 28, 18, 2, 1, 3, 8.0, 'Ministrar treinamento para a nova equipe de suporte.', 'Concluída'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Digitalizar prontuários médicos', 29, 19, 4, 4, 5, 50.0, 'Converter prontuários físicos para o formato digital.', 'Em Andamento'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Plano de plantio para o próximo semestre', 30, 20, 5, 5, 5, 60.0, 'Desenvolver o plano de plantio com base em previsões climáticas.', 'Em Andamento'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Criação de Pastagem para Gado', 31, 21, 3, 2, 4, 25.0, 'Preparar nova área para pastagem do rebanho.', 'Pendente'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Desenvolver front-end do dashboard', 11, 1, 5, 4, 5, 70.0, 'Implementar a interface do usuário para o dashboard principal.', 'Em Andamento'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Criar relatório de performance de marketing', 14, 4, 4, 5, 4, 30.0, 'Gerar relatório mensal de performance das campanhas.', 'Pendente'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Revisar balanço trimestral', 16, 6, 5, 5, 4, 45.0, 'Conferir e validar o balanço patrimonial.', 'Em Andamento'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Otimização de rotas de entrega', 18, 8, 4, 5, 5, 20.0, 'Calcular e aplicar novas rotas para a frota.', 'Pendente'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Atualização de código', 20, 10, 3, 2, 3, 15.0, 'Aplicar patches e atualizações de segurança.', 'Concluída'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Analise de mercado', 26, 16, 3, 3, 2, 16.0, 'Realizar pesquisa e análise da concorrência.', 'Pendente'),
-                                                                                                                                                        (nextval('sq_tarefa'), 'Plano de expansão de mercado', 14, 4, 5, 4, 5, 30.0, 'Definir plano de expansão de mercado para o próximo ano.', 'Em Andamento');
+                                                                                                                                                        (nextval('sq_tarefa'), 'Desenvolver API de Autenticação', 1, 1, 5, 4, 5, 80.0, 'Criar uma API REST para o sistema de autenticação.', 'Em Andamento'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Otimizar Query de Relatórios', 1, 2, 4, 5, 4, 25.5, 'Revisar e otimizar a consulta para o dashboard principal.', 'Pendente'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Planejar Sprint 3', 1, 3, 3, 3, 4, 15.0, 'Definir as tarefas e estimativas para a próxima sprint.', 'Concluída'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Campanha de E-mail de Natal', 2, 4, 5, 4, 5, 40.0, 'Criar e executar campanha de e-mail marketing para o final do ano.', 'Pendente'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Revisão de Código do Módulo Financeiro', 1, 1, 5, 2, 4, 10.0, 'Revisar o código do módulo financeiro em busca de bugs.', 'Em Andamento'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Auditoria Interna de Receitas', 3, 7, 4, 4, 4, 50.0, 'Conduzir uma auditoria completa das receitas do último trimestre.', 'Em Andamento'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Organizar Fluxo de Armazém', 4, 9, 3, 3, 5, 30.0, 'Reorganizar o layout do armazém para otimizar o fluxo de trabalho.', 'Concluída'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Proposta de Imposto Simplificado', 3, 7, 2, 3, 2, 20.0, 'Elaborar uma proposta para adesão ao Simples Nacional.', 'Cancelada'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Treinamento de Equipe em Marketing de Conteúdo', 2, 5, 3, 2, 4, 12.0, 'Criar e ministrar um treinamento sobre novas técnicas de criação de conteúdo.', 'Pendente'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Configurar Servidores AWS', 1, 23, 5, 5, 5, 20.0, 'Subir novos servidores e configurar ambientes na AWS.', 'Em Andamento'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Desenvolvimento de Módulo de Pedidos', 5, 10, 4, 3, 5, 45.0, 'Programar o módulo de pedidos para o novo sistema.', 'Pendente'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Análise de Tráfego do Site', 5, 11, 3, 4, 4, 15.0, 'Analisar o tráfego do site e identificar vulnerabilidades.', 'Em Andamento'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Criação de Logo para Campanha', 6, 12, 5, 4, 5, 10.0, 'Desenhar um novo logo para a campanha de lançamento.', 'Pendente'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Teste de Usabilidade do App', 6, 13, 4, 3, 4, 20.0, 'Realizar testes com usuários para validar a usabilidade do aplicativo.', 'Concluída'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Revisão de Processo de Produção', 7, 14, 3, 5, 4, 35.0, 'Auditar o processo de produção para garantir a qualidade.', 'Em Andamento'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Inventário da Cadeia de Suprimentos', 7, 15, 4, 4, 3, 25.0, 'Contar e registrar todos os produtos no estoque.', 'Pendente'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Otimização de SEO para Produtos', 8, 16, 5, 2, 5, 18.0, 'Melhorar as descrições dos produtos para otimização de busca.', 'Concluída'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Fluxo de Devoluções', 8, 17, 3, 3, 4, 12.0, 'Criar um processo de devolução mais eficiente.', 'Pendente'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Treinamento de Atendimento ao Cliente', 9, 18, 2, 1, 3, 8.0, 'Ministrar treinamento para a nova equipe de suporte.', 'Concluída'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Digitalizar prontuários médicos', 9, 19, 4, 4, 5, 50.0, 'Converter prontuários físicos para o formato digital.', 'Em Andamento'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Plano de plantio para o próximo semestre', 10, 20, 5, 5, 5, 60.0, 'Desenvolver o plano de plantio com base em previsões climáticas.', 'Em Andamento'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Criação de Pastagem para Gado', 10, 21, 3, 2, 4, 25.0, 'Preparar nova área para pastagem do rebanho.', 'Pendente'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Desenvolver front-end do dashboard', 1, 1, 5, 4, 5, 70.0, 'Implementar a interface do usuário para o dashboard principal.', 'Em Andamento'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Criar relatório de performance de marketing', 2, 4, 4, 5, 4, 30.0, 'Gerar relatório mensal de performance das campanhas.', 'Pendente'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Revisar balanço trimestral', 3, 6, 5, 5, 4, 45.0, 'Conferir e validar o balanço patrimonial.', 'Em Andamento'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Otimização de rotas de entrega', 4, 8, 4, 5, 5, 20.0, 'Calcular e aplicar novas rotas para a frota.', 'Pendente'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Atualização de código', 5, 10, 3, 2, 3, 15.0, 'Aplicar patches e atualizações de segurança.', 'Concluída'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Analise de mercado', 8, 16, 3, 3, 2, 16.0, 'Realizar pesquisa e análise da concorrência.', 'Pendente'),
+                                                                                                                                                        (nextval('sq_tarefa'), 'Plano de expansão de mercado', 2, 4, 5, 4, 5, 30.0, 'Definir plano de expansão de mercado para o próximo ano.', 'Em Andamento');
 
 
 -- Inserindo dados na tabela LogAtribuicaoTarefa
--- Usando nextval para a sequência de IDs
+-- Os nCdUsuarioAtuante correspondem aos colaboradores que receberam a tarefa
 INSERT INTO LogAtribuicaoTarefa (nCdTarefa, nCdUsuarioAtuante, dRealocacao) VALUES
                                                                                 (1, 11, '2025-08-20'),
-                                                                                (2, 12, '2025-08-20'),
-                                                                                (3, 13, '2025-08-18'),
-                                                                                (4, 14, '2025-08-21'),
                                                                                 (5, 11, '2025-08-22'),
                                                                                 (6, 17, '2025-08-19'),
-                                                                                (7, 19, '2025-08-17'),
-                                                                                (8, 16, '2025-08-16'),
-                                                                                (9, 15, '2025-08-22'),
                                                                                 (10, 13, '2025-08-23'),
-                                                                                (11, 20, '2025-08-23'),
                                                                                 (12, 21, '2025-08-24'),
-                                                                                (13, 22, '2025-08-25'),
-                                                                                (14, 23, '2025-08-26'),
                                                                                 (15, 24, '2025-08-20'),
-                                                                                (16, 25, '2025-08-21'),
-                                                                                (17, 26, '2025-08-22'),
-                                                                                (18, 27, '2025-08-23'),
-                                                                                (19, 28, '2025-08-24'),
                                                                                 (20, 29, '2025-08-25'),
                                                                                 (21, 30, '2025-08-20'),
-                                                                                (22, 31, '2025-08-21'),
                                                                                 (23, 11, '2025-08-26'),
-                                                                                (24, 14, '2025-08-27'),
                                                                                 (25, 16, '2025-08-28'),
-                                                                                (26, 18, '2025-08-29'),
-                                                                                (27, 20, '2025-08-30'),
-                                                                                (28, 26, '2025-08-31'),
                                                                                 (29, 14, '2025-09-01');
 
+
 -- Inserindo dados na tabela Report
--- Usando nextval para a sequência de IDs
+-- Os nCdUsuarioAtuante correspondem aos colaboradores que receberam a tarefa
 INSERT INTO Report (nCdReport, nCdTarefa, cDescricao, cProblema) VALUES
                                                                      (nextval('sq_report'), 1, 'A autenticação por token está com falhas intermitentes.', 'Falha de token'),
                                                                      (nextval('sq_report'), 2, 'A query está retornando dados inconsistentes com o dashboard.', 'Inconsistência de dados'),
@@ -273,21 +268,31 @@ INSERT INTO Report (nCdReport, nCdTarefa, cDescricao, cProblema) VALUES
                                                                      (nextval('sq_report'), 6, 'Alguns prontuários digitalizados estão ilegíveis.', 'Qualidade da imagem');
 
 -- Inserindo dados na tabela TarefaHabilidade
+-- Prioridade única por habilidade na mesma tarefa (de 1 a N)
 INSERT INTO TarefaHabilidade (nCdHabilidade, nCdTarefa, iPrioridade) VALUES
                                                                          (1, 1, 1),
+                                                                         (2, 1, 2),
+                                                                         (22, 1, 3),
                                                                          (2, 2, 1),
                                                                          (3, 3, 1),
                                                                          (4, 4, 1),
+                                                                         (5, 4, 2),
                                                                          (1, 5, 1),
                                                                          (7, 6, 1),
+                                                                         (6, 6, 2),
                                                                          (9, 7, 1),
+                                                                         (8, 7, 2),
                                                                          (7, 8, 1),
+                                                                         (6, 8, 2),
                                                                          (5, 9, 1),
+                                                                         (4, 9, 2),
                                                                          (23, 10, 1),
                                                                          (10, 11, 1),
                                                                          (11, 12, 1),
                                                                          (12, 13, 1),
+                                                                         (13, 13, 2),
                                                                          (13, 14, 1),
+                                                                         (12, 14, 2),
                                                                          (14, 15, 1),
                                                                          (15, 16, 1),
                                                                          (16, 17, 1),
@@ -297,42 +302,32 @@ INSERT INTO TarefaHabilidade (nCdHabilidade, nCdTarefa, iPrioridade) VALUES
                                                                          (20, 21, 1),
                                                                          (21, 22, 1),
                                                                          (1, 23, 1),
+                                                                         (22, 23, 2),
                                                                          (4, 24, 1),
+                                                                         (5, 24, 2),
                                                                          (6, 25, 1),
+                                                                         (7, 25, 2),
                                                                          (8, 26, 1),
+                                                                         (9, 26, 2),
                                                                          (10, 27, 1),
+                                                                         (11, 27, 2),
                                                                          (16, 28, 1),
-                                                                         (4, 29, 1);
+                                                                         (17, 28, 2),
+                                                                         (4, 29, 1),
+                                                                         (5, 29, 2);
+
 
 -- Inserindo dados na tabela TarefaUsuario
+-- Apenas tarefas com status 'Em Andamento' têm registros aqui
 INSERT INTO TarefaUsuario (nCdTarefa, nCdUsuarioOriginal, nCdUsuarioAtuante) VALUES
-                                                                                 (1, 11, 11),
-                                                                                 (2, 12, 12),
-                                                                                 (3, 13, 13),
-                                                                                 (4, 14, 14),
-                                                                                 (5, 11, 11),
-                                                                                 (6, 17, 17),
-                                                                                 (7, 19, 19),
-                                                                                 (8, 16, 16),
-                                                                                 (9, 15, 15),
-                                                                                 (10, 13, 13),
-                                                                                 (11, 20, 20),
-                                                                                 (12, 21, 21),
-                                                                                 (13, 22, 22),
-                                                                                 (14, 23, 23),
-                                                                                 (15, 24, 24),
-                                                                                 (16, 25, 25),
-                                                                                 (17, 26, 26),
-                                                                                 (18, 27, 27),
-                                                                                 (19, 28, 28),
-                                                                                 (20, 29, 29),
-                                                                                 (21, 30, 30),
-                                                                                 (22, 31, 31),
-                                                                                 (23, 11, 11),
-                                                                                 (24, 14, 14),
-                                                                                 (25, 16, 16),
-                                                                                 (26, 18, 18),
-                                                                                 (27, 20, 20),
-                                                                                 (28, 26, 26),
-                                                                                 (29, 14, 14);
-
+                                                                                 (1, 1, 11),
+                                                                                 (5, 1, 11),
+                                                                                 (6, 3, 17),
+                                                                                 (10, 1, 13),
+                                                                                 (12, 5, 21),
+                                                                                 (15, 7, 24),
+                                                                                 (20, 9, 29),
+                                                                                 (21, 10, 30),
+                                                                                 (23, 1, 11),
+                                                                                 (25, 3, 16),
+                                                                                 (29, 2, 14);
