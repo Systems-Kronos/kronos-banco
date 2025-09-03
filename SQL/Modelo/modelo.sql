@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS HabilidadeUsuario   CASCADE;
 DROP TABLE IF EXISTS LogAtribuicaoTarefa CASCADE;
 DROP TABLE IF EXISTS Mensagem            CASCADE;
 DROP TABLE IF EXISTS PlanoVantagens      CASCADE;
-DROP TABLE IF EXISTS Report              CASCADE;
+DROP TABLE IF EXISTS Report          \    CASCADE;
 DROP TABLE IF EXISTS Setor               CASCADE;
 DROP TABLE IF EXISTS Tarefa              CASCADE;
 DROP TABLE IF EXISTS TarefaHabilidade    CASCADE;
@@ -67,10 +67,9 @@ CREATE TABLE Empresa ( nCdEmpresa        DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL(
 
 CREATE TABLE PlanoVantagens ( nCdPlanoVantagem DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('sq_planovantagens')
     , nCdPlano         DECIMAL(10,0) NOT NULL
-    , nCdVantagem      DECIMAL(10,0) NOT NULL
     , cNmVantagem      VARCHAR(100)  NOT NULL UNIQUE
     , cDescricao       VARCHAR(255)  NOT NULL
-    , PRIMARY KEY (nCdPlano, nCdVantagem)
+    , PRIMARY KEY (nCdPlano, nCdPlanoVantagem)
     , FOREIGN KEY (nCdPlano) REFERENCES PlanoPagamento(nCdPlano)
 );
 
@@ -94,8 +93,6 @@ CREATE TABLE Setor ( nCdSetor   DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('sq_setor
 -- Tabela com dependência de Empresa e Setor
 CREATE TABLE Usuario ( nCdUsuario DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('sq_usuario')
     , cNmUsuario  VARCHAR(100)  NOT NULL
-    , cSbrUsuario VARCHAR(255)  NOT NULL
-    , cSgUsuario  VARCHAR(50)       NULL
     , nCdGestor   DECIMAL(10,0)     NULL
     , bGestor     BOOLEAN       NOT NULL
     , nCdEmpresa  DECIMAL(10,0) NOT NULL
