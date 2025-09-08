@@ -23,6 +23,9 @@ DROP SEQUENCE IF EXISTS public.sq_setor;
 DROP SEQUENCE IF EXISTS public.sq_tarefa;
 DROP SEQUENCE IF EXISTS public.sq_usuario;
 DROP SEQUENCE IF EXISTS public.sq_habilidade;
+DROP SEQUENCE IF EXISTS public.sq_tarefausuario;
+DROP SEQUENCE IF EXISTS public.sq_tarefahabilidade;
+DROP SEQUENCE IF EXISTS public.sq_habilidadeusuario;
 
 -- IDs
 CREATE SEQUENCE public.sq_planopagamento         START WITH 1 INCREMENT BY 1;
@@ -35,6 +38,10 @@ CREATE SEQUENCE public.sq_setor                  START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_tarefa                 START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_usuario                START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_habilidade             START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE public.sq_tarefausuario          START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE public.sq_tarefahabilidade       START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE public.sq_habilidadeusuario      START WITH 1 INCREMENT BY 1;
+
 
 
 -- Tabelas sem dependências
@@ -110,8 +117,10 @@ CREATE TABLE public.Usuario ( nCdUsuario BIGINT        NOT NULL DEFAULT NEXTVAL(
 );
 
 -- Tabelas com dependência de Habilidade, Usuario e Mensagem
-CREATE TABLE public.HabilidadeUsuario ( nCdHabilidade BIGINT        NOT NULL
+CREATE TABLE public.HabilidadeUsuario ( nCdTarefaHabilidade BIGINT NOT NULL DEFAULT NEXTVAL('public.sq_habilidadeusuario')
+    , nCdHabilidade BIGINT        NOT NULL
     , nCdUsuario    BIGINT        NOT NULL
+    , UNIQUE  (nCdHabilidade, nCdUsuario)
     , PRIMARY KEY (nCdHabilidade, nCdUsuario)
     , FOREIGN KEY (nCdHabilidade) REFERENCES public.Habilidade (nCdHabilidade)
     , FOREIGN KEY (nCdUsuario)    REFERENCES public.Usuario (nCdUsuario)
@@ -159,17 +168,21 @@ CREATE TABLE public.Report ( nCdReport  BIGINT        NOT NULL DEFAULT NEXTVAL('
     , FOREIGN KEY (nCdTarefa) REFERENCES public.Tarefa(nCdTarefa)
 );
 
-CREATE TABLE public.TarefaHabilidade ( nCdHabilidade BIGINT        NOT NULL
+CREATE TABLE public.TarefaHabilidade ( nCdTarefaHabilidade BIGINT NOT NULL DEFAULT NEXTVAL('public.sq_tarefahabilidade')
+    , nCdHabilidade BIGINT        NOT NULL
     , nCdTarefa     BIGINT        NOT NULL
     , iPrioridade   INTEGER       NOT NULL
+    , UNIQUE  (nCdTarefa, nCdHabilidade)
     , PRIMARY KEY (nCdHabilidade, nCdTarefa)
     , FOREIGN KEY (nCdHabilidade) REFERENCES public.Habilidade(nCdHabilidade)
     , FOREIGN KEY (nCdTarefa)     REFERENCES public.Tarefa (nCdTarefa)
 );
 
-CREATE TABLE public.TarefaUsuario ( nCdTarefa          BIGINT        NOT NULL
+CREATE TABLE public.TarefaUsuario ( nCdTarefaUsuario BIGINT NOT NULL DEFAULT NEXTVAL('public.sq_tarefausuario')
+    , nCdTarefa          BIGINT        NOT NULL
     , nCdUsuarioOriginal BIGINT        NOT NULL
     , nCdUsuarioAtuante  BIGINT        NOT NULL
+    , UNIQUE  (nCdTarefa, nCdUsuarioOriginal, nCdUsuarioAtuante)
     , PRIMARY KEY(nCdTarefa, nCdUsuarioOriginal, nCdUsuarioAtuante)
     , FOREIGN KEY (nCdTarefa)          REFERENCES public.Tarefa (nCdTarefa)
     , FOREIGN KEY (nCdUsuarioOriginal) REFERENCES public.Usuario(nCdUsuario)
