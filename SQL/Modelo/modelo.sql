@@ -120,24 +120,24 @@ CREATE TABLE public.HabilidadeUsuario ( nCdHabilidade BIGINT        NOT NULL
 CREATE TABLE public.Tarefa ( nCdTarefa         BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_tarefa')
     , cNmTarefa         VARCHAR(255)  NOT NULL
     , nCdUsuarioRelator BIGINT        NOT NULL
-    , nCdHabilidade     BIGINT        NOT NULL
     , iGravidade        INTEGER       NOT NULL DEFAULT 1
-                                 CHECK (iGravidade >= 1 AND iGravidade <= 5)
+         CHECK (iGravidade >= 1 AND iGravidade <= 5)
     , iUrgencia         INTEGER       NOT NULL DEFAULT 1
-                                 CHECK (iUrgencia >= 1 AND iUrgencia <= 5)
+         CHECK (iUrgencia >= 1 AND iUrgencia <= 5)
     , iTendencia        INTEGER       NOT NULL DEFAULT 1
-                                 CHECK (iTendencia >= 1 AND iTendencia <= 5)
+         CHECK (iTendencia >= 1 AND iTendencia <= 5)
     , nTempoEstimado    BIGINT        NOT NULL
     , cDescricao        VARCHAR(255)  NOT NULL
     , cStatus           VARCHAR(15)   NOT NULL DEFAULT 'Pendente'
-                                 CHECK (  cStatus = 'Pendente'
-                                     OR cStatus = 'Em Andamento'
-                                     OR cStatus = 'Concluída'
-                                     OR cStatus = 'Cancelada'
-                                     )
+         CHECK (  cStatus = 'Pendente'
+             OR cStatus = 'Em Andamento'
+             OR cStatus = 'Concluída'
+             OR cStatus = 'Cancelada'
+             )
+    , dDataAtribuicao   DATE          NOT NULL DEFAULT NOW()
+    , dDataConclusao    DATE              NULL
     , PRIMARY KEY (nCdTarefa)
     , FOREIGN KEY (nCdUsuarioRelator) REFERENCES public.Usuario (nCdUsuario)
-    , FOREIGN KEY (nCdHabilidade)     REFERENCES public.Habilidade(nCdHabilidade)
 );
 
 -- Tabelas com dependência de Tarefa e Usuario
