@@ -1,10 +1,8 @@
--- dbKronos: Script de Carga de Dados Corrigido
-
--- Adicionando TRUNCATE para garantir uma carga de dados limpa
+-- Limpa todas as tabelas e reinicia as sequências para garantir uma carga de dados limpa (CORRIGIDO)
 TRUNCATE TABLE public.PlanoPagamento, public.Mensagem, public.Empresa, public.PlanoVantagens, public.Habilidade, public.Setor, public.Usuario, public.HabilidadeUsuario, public.Tarefa, table_log.LogAtribuicaoTarefa, public.Report, public.TarefaHabilidade, public.TarefaUsuario RESTART IDENTITY CASCADE;
 ALTER SEQUENCE public.sq_planopagamento         RESTART WITH 1;
 ALTER SEQUENCE public.sq_empresa                RESTART WITH 1;
-ALTER SEQUENCE table_log.sq_logatribuicaotarefa    RESTART WITH 1;
+ALTER SEQUENCE table_log.sq_logatribuicaotarefa RESTART WITH 1;
 ALTER SEQUENCE public.sq_mensagem               RESTART WITH 1;
 ALTER SEQUENCE public.sq_planovantagens         RESTART WITH 1;
 ALTER SEQUENCE public.sq_report                 RESTART WITH 1;
@@ -12,6 +10,9 @@ ALTER SEQUENCE public.sq_setor                  RESTART WITH 1;
 ALTER SEQUENCE public.sq_tarefa                 RESTART WITH 1;
 ALTER SEQUENCE public.sq_usuario                RESTART WITH 1;
 ALTER SEQUENCE public.sq_habilidade             RESTART WITH 1;
+ALTER SEQUENCE public.sq_habilidadeusuario      RESTART WITH 1;
+ALTER SEQUENCE public.sq_tarefahabilidade       RESTART WITH 1;
+ALTER SEQUENCE public.sq_tarefausuario          RESTART WITH 1;
 
 -- Inserindo dados na tabela PlanoPagamento
 INSERT INTO public.PlanoPagamento (nCdPlano, cNmPlano, nPreco) VALUES
@@ -33,7 +34,6 @@ INSERT INTO public.Mensagem (nCdMensagem, cTitulo, cMensagem, cCategoria) VALUES
                                                                               (nextval('public.sq_mensagem'), 'Report Criado', 'Um novo report foi criado para a tarefa "Revisão de Código".', 'Notificação'),
                                                                               (nextval('public.sq_mensagem'), 'Reunião Agendada', 'Foi agendada uma reunião com a equipe de projetos.', 'Reunião'),
                                                                               (nextval('public.sq_mensagem'), 'Feedback Recebido', 'Você recebeu um feedback sobre seu trabalho.', 'Feedback');
-
 
 -- Inserindo dados na tabela Empresa
 INSERT INTO public.Empresa (nCdEmpresa, cNmEmpresa, cSgEmpresa, cCNPJ, cTelefone, cEmail, cCEP, nCdPlanoPagamento, bAtivo) VALUES
@@ -62,7 +62,6 @@ INSERT INTO public.PlanoVantagens (nCdPlano, cNmVantagem, cDescricao) VALUES
                                                                           (5, 'Personalização Completa', 'Customização da interface e funcionalidades.'),
                                                                           (5, 'Análise Preditiva', 'Ferramentas de análise de tendência e previsão.');
 
-
 -- Inserindo dados na tabela Habilidade
 INSERT INTO public.Habilidade (nCdHabilidade, nCdEmpresa, cNmHabilidade, cDescricao) VALUES
                                                                                          (nextval('public.sq_habilidade'), 1, 'Desenvolvimento Java', 'Conhecimento em Java, Spring Boot e microserviços.'),
@@ -89,7 +88,6 @@ INSERT INTO public.Habilidade (nCdHabilidade, nCdEmpresa, cNmHabilidade, cDescri
                                                                                          (nextval('public.sq_habilidade'), 1, 'DevOps', 'Práticas de integração e entrega contínua.'),
                                                                                          (nextval('public.sq_habilidade'), 1, 'Cloud Computing (AWS)', 'Conhecimento em serviços de nuvem da AWS.');
 
-
 -- Inserindo dados na tabela Setor
 INSERT INTO public.Setor (nCdSetor, nCdEmpresa, cNmSetor, cSgSetor) VALUES
                                                                         (nextval('public.sq_setor'), 1, 'TI - Desenvolvimento', 'TDE'),
@@ -114,9 +112,8 @@ INSERT INTO public.Setor (nCdSetor, nCdEmpresa, cNmSetor, cSgSetor) VALUES
                                                                         (nextval('public.sq_setor'), 10, 'Produção Agrícola', 'PAG'),
                                                                         (nextval('public.sq_setor'), 10, 'Pecuária', 'PEC');
 
-
--- Inserindo dados na tabela Usuario (AGORA CORRIGIDO)
--- Inserir gestores primeiro para referenciar em outros usuários
+-- Inserindo dados na tabela Usuario
+-- Gestores (IDs 1 a 10)
 INSERT INTO public.Usuario (nCdUsuario, cNmUsuario, nCdGestor, bGestor, nCdEmpresa, nCdSetor, nCPF, cTelefone, cEmail, cSenha, bAtivo) VALUES
                                                                                                                                            (nextval('public.sq_usuario'), 'Carlos Silva', NULL, true, 1, 1, '111.111.111-11', '(11) 99111-1111', 'carlos.silva@techsolutions.com.br', 'senha123', true),
                                                                                                                                            (nextval('public.sq_usuario'), 'Ana Costa', NULL, true, 2, 4, '222.222.222-22', '(21) 99222-2222', 'ana.costa@mktglobal.com.br', 'senha123', true),
@@ -129,7 +126,7 @@ INSERT INTO public.Usuario (nCdUsuario, cNmUsuario, nCdGestor, bGestor, nCdEmpre
                                                                                                                                            (nextval('public.sq_usuario'), 'Bruna Lopes', NULL, true, 9, 18, '999.999.999-99', '(11) 99999-9999', 'bruna.l@saudesolucoes.com.br', 'senha123', true),
                                                                                                                                            (nextval('public.sq_usuario'), 'Gustavo Almeida', NULL, true, 10, 20, '100.100.100-00', '(51) 91000-1000', 'gustavo.a@agrosul.com.br', 'senha123', true);
 
--- Inserir usuários regulares
+-- Usuários Regulares (IDs 11 a 31)
 INSERT INTO public.Usuario (nCdUsuario, cNmUsuario, nCdGestor, bGestor, nCdEmpresa, nCdSetor, nCPF, cTelefone, cEmail, cSenha, bAtivo) VALUES
                                                                                                                                            (nextval('public.sq_usuario'), 'João Souza', 1, false, 1, 1, '111.111.111-12', '(11) 99111-1112', 'joao.souza@techsolutions.com.br', 'senha123', true),
                                                                                                                                            (nextval('public.sq_usuario'), 'Beatriz Lima', 1, false, 1, 2, '111.111.111-13', '(11) 99111-1113', 'beatriz.l@techsolutions.com.br', 'senha123', true),
@@ -153,83 +150,71 @@ INSERT INTO public.Usuario (nCdUsuario, cNmUsuario, nCdGestor, bGestor, nCdEmpre
                                                                                                                                            (nextval('public.sq_usuario'), 'Camila Viana', 10, false, 10, 20, '100.100.100-01', '(51) 91000-1001', 'camila.v@jbsgado.com.br', 'senha123', true),
                                                                                                                                            (nextval('public.sq_usuario'), 'Vinicius Souza', 10, false, 10, 21, '100.100.100-02', '(51) 91000-1002', 'vinicius.s@jbsgado.com.br', 'senha123', true);
 
-
 -- Inserindo dados na tabela HabilidadeUsuario
 INSERT INTO public.HabilidadeUsuario (nCdHabilidade, nCdUsuario) VALUES
-                                                                     (1, 1), (2, 1), (3, 1), -- Carlos (Tech Solutions)
-                                                                     (4, 2), (5, 2), -- Ana (Marketing)
-                                                                     (6, 3), (7, 3), -- Pedro (Consultoria Fin)
-                                                                     (8, 4), (9, 4), -- Mariana (Logistica)
-                                                                     (10, 5), (11, 5), -- Ricardo F (InovaTech)
-                                                                     (12, 6), (13, 6), -- Juliana (Design)
-                                                                     (14, 7), (15, 7), -- André (Manufatura)
-                                                                     (16, 8), (17, 8), -- Daniel M (E-commerce)
-                                                                     (18, 9), (19, 9), -- Bruna (Saúde)
-                                                                     (20, 10), (21, 10), -- Gustavo (Fábrica de Gado JBS)
--- Usuários da Tech Solutions
-                                                                     (1, 11), (2, 11),
-                                                                     (2, 12), (22, 12),
-                                                                     (3, 13), (23, 13),
--- Usuários da Marketing Digital
-                                                                     (4, 14), (5, 14),
-                                                                     (5, 15),
--- Usuários da Consultoria Financeira
-                                                                     (6, 16),
-                                                                     (7, 17),
--- Usuários da Logística Rápida
-                                                                     (8, 18),
-                                                                     (9, 19),
--- Usuários da Inovação e Tecnologia
-                                                                     (10, 20), (11, 20),
-                                                                     (11, 21),
--- Usuários da Serviços de Design
-                                                                     (12, 22), (13, 22),
-                                                                     (13, 23),
--- Usuários da Indústria de Manufatura
-                                                                     (14, 24),
-                                                                     (15, 25),
--- Usuários da E-commerce Brasil
-                                                                     (16, 26),
-                                                                     (17, 27),
--- Usuários da Soluções em Saúde
-                                                                     (18, 28),
-                                                                     (19, 29),
--- Usuários da Fábrica de Gado JBS
-                                                                     (20, 30),
-                                                                     (21, 31);
+                                                                     (1, 1), (2, 1), (3, 1), -- Carlos (Gestor)
+                                                                     (4, 2), (5, 2), -- Ana (Gestor)
+                                                                     (6, 3), (7, 3), -- Pedro (Gestor)
+                                                                     (8, 4), (9, 4), -- Mariana (Gestor)
+                                                                     (10, 5), (11, 5), -- Ricardo F (Gestor)
+                                                                     (12, 6), (13, 6), -- Juliana (Gestor)
+                                                                     (14, 7), (15, 7), -- André (Gestor)
+                                                                     (16, 8), (17, 8), -- Daniel M (Gestor)
+                                                                     (18, 9), (19, 9), -- Bruna (Gestor)
+                                                                     (20, 10), (21, 10), -- Gustavo (Gestor)
+                                                                     (1, 11), (2, 11), -- João
+                                                                     (2, 12), (22, 12), -- Beatriz
+                                                                     (3, 13), (23, 13), -- Felipe
+                                                                     (4, 14), (5, 14), -- Julia
+                                                                     (5, 15), -- Ricardo N
+                                                                     (6, 16), -- Laura
+                                                                     (7, 17), -- Guilherme
+                                                                     (8, 18), -- Isabela
+                                                                     (9, 19), -- Daniel G
+                                                                     (10, 20), (11, 20), -- Luiza
+                                                                     (11, 21), -- Marcos
+                                                                     (12, 22), (13, 22), -- Sofia
+                                                                     (13, 23), -- Paulo
+                                                                     (14, 24), -- Helena
+                                                                     (15, 25), -- José
+                                                                     (16, 26), -- Fernanda
+                                                                     (17, 27), -- Lucas
+                                                                     (18, 28), -- Carolina
+                                                                     (19, 29), -- Pedro H
+                                                                     (20, 30), -- Camila
+                                                                     (21, 31); -- Vinicius
 
 -- Inserindo dados na tabela Tarefa
 INSERT INTO public.Tarefa (nCdTarefa, cNmTarefa, nCdUsuarioRelator, iGravidade, iUrgencia, iTendencia, nTempoEstimado, cDescricao, cStatus, dDataAtribuicao, dDataConclusao) VALUES
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Desenvolver API de Autenticação', 1, 5, 4, 5, 80.0, 'Criar uma API REST para o sistema de autenticação.', 'Em Andamento', '2025-08-20', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Otimizar Query de Relatórios', 1, 4, 5, 4, 25.5, 'Revisar e otimizar a consulta para o dashboard principal.', 'Pendente', '2025-08-21', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Planejar Sprint 3', 1, 3, 3, 4, 15.0, 'Definir as tarefas e estimativas para a próxima sprint.', 'Concluída', '2025-08-15', '2025-08-19'),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Campanha de E-mail de Natal', 2, 5, 4, 5, 40.0, 'Criar e executar campanha de e-mail marketing para o final do ano.', 'Pendente', '2025-08-22', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Revisão de Código do Módulo Financeiro', 1, 5, 2, 4, 10.0, 'Revisar o código do módulo financeiro em busca de bugs.', 'Em Andamento', '2025-08-23', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Auditoria Interna de Receitas', 3, 4, 4, 4, 50.0, 'Conduzir uma auditoria completa das receitas do último trimestre.', 'Em Andamento', '2025-08-24', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Organizar Fluxo de Armazém', 4, 3, 3, 5, 30.0, 'Reorganizar o layout do armazém para otimizar o fluxo de trabalho.', 'Concluída', '2025-08-18', '2025-08-24'),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Proposta de Imposto Simplificado', 3, 2, 3, 2, 20.0, 'Elaborar uma proposta para adesão ao Simples Nacional.', 'Cancelada', '2025-08-25', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Treinamento de Equipe em Marketing de Conteúdo', 2, 3, 2, 4, 12.0, 'Criar e ministrar um treinamento sobre novas técnicas de criação de conteúdo.', 'Pendente', '2025-08-26', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Configurar Servidores AWS', 1, 5, 5, 5, 20.0, 'Subir novos servidores e configurar ambientes na AWS.', 'Em Andamento', '2025-08-27', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Desenvolvimento de Módulo de Pedidos', 5, 4, 3, 5, 45.0, 'Programar o módulo de pedidos para o novo sistema.', 'Pendente', '2025-08-28', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Análise de Tráfego do Site', 5, 3, 4, 4, 15.0, 'Analisar o tráfego do site e identificar vulnerabilidades.', 'Em Andamento', '2025-08-29', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Criação de Logo para Campanha', 6, 5, 4, 5, 10.0, 'Desenhar um novo logo para a campanha de lançamento.', 'Pendente', '2025-08-30', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Teste de Usabilidade do App', 6, 4, 3, 4, 20.0, 'Realizar testes com usuários para validar a usabilidade do aplicativo.', 'Concluída', '2025-08-20', '2025-08-28'),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Revisão de Processo de Produção', 7, 3, 5, 4, 35.0, 'Auditar o processo de produção para garantir a qualidade.', 'Em Andamento', '2025-08-31', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Inventário da Cadeia de Suprimentos', 7, 4, 4, 3, 25.0, 'Contar e registrar todos os produtos no estoque.', 'Pendente', '2025-09-01', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Otimização de SEO para Produtos', 8, 5, 2, 5, 18.0, 'Melhorar as descrições dos produtos para otimização de busca.', 'Concluída', '2025-08-15', '2025-08-20'),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Fluxo de Devoluções', 8, 3, 3, 4, 12.0, 'Criar um processo de devolução mais eficiente.', 'Pendente', '2025-09-02', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Treinamento de Atendimento ao Cliente', 9, 2, 1, 3, 8.0, 'Ministrar treinamento para a nova equipe de suporte.', 'Concluída', '2025-08-25', '2025-08-27'),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Digitalizar prontuários médicos', 9, 4, 4, 5, 50.0, 'Converter prontuários físicos para o formato digital.', 'Em Andamento', '2025-09-03', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Plano de plantio para o próximo semestre', 10, 5, 5, 5, 60.0, 'Desenvolver o plano de plantio com base em previsões climáticas.', 'Em Andamento', '2025-09-04', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Criação de Pastagem para Gado', 10, 3, 2, 4, 25.0, 'Preparar nova área para pastagem do rebanho.', 'Pendente', '2025-09-05', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Desenvolver front-end do dashboard', 1, 5, 4, 5, 70.0, 'Implementar a interface do usuário para o dashboard principal.', 'Em Andamento', '2025-09-06', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Criar relatório de performance de marketing', 2, 4, 5, 4, 30.0, 'Gerar relatório mensal de performance das campanhas.', 'Pendente', '2025-09-07', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Revisar balanço trimestral', 3, 5, 5, 4, 45.0, 'Conferir e validar o balanço patrimonial.', 'Em Andamento', '2025-09-08', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Otimização de rotas de entrega', 4, 4, 5, 5, 20.0, 'Calcular e aplicar novas rotas para a frota.', 'Pendente', '2025-09-09', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Atualização de código', 5, 3, 2, 3, 15.0, 'Aplicar patches e atualizações de segurança.', 'Concluída', '2025-08-29', '2025-09-01'),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Analise de mercado', 8, 3, 3, 2, 16.0, 'Realizar pesquisa e análise da concorrência.', 'Pendente', '2025-09-10', NULL),
-                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Plano de expansão de mercado', 2, 5, 4, 5, 30.0, 'Definir plano de expansão de mercado para o próximo ano.', 'Em Andamento', '2025-09-11', NULL);
-
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Desenvolver API de Autenticação', 1, 5, 4, 5, 80, 'Criar uma API REST para o sistema de autenticação.', 'Em Andamento', '2025-08-20', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Otimizar Query de Relatórios', 1, 4, 5, 4, 25, 'Revisar e otimizar a consulta para o dashboard principal.', 'Pendente', '2025-08-21', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Planejar Sprint 3', 1, 3, 3, 4, 15, 'Definir as tarefas e estimativas para a próxima sprint.', 'Concluída', '2025-08-15', '2025-08-19'),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Campanha de E-mail de Natal', 2, 5, 4, 5, 40, 'Criar e executar campanha de e-mail marketing para o final do ano.', 'Pendente', '2025-08-22', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Revisão de Código do Módulo Financeiro', 1, 5, 2, 4, 10, 'Revisar o código do módulo financeiro em busca de bugs.', 'Em Andamento', '2025-08-23', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Auditoria Interna de Receitas', 3, 4, 4, 4, 50, 'Conduzir uma auditoria completa das receitas do último trimestre.', 'Em Andamento', '2025-08-24', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Organizar Fluxo de Armazém', 4, 3, 3, 5, 30, 'Reorganizar o layout do armazém para otimizar o fluxo de trabalho.', 'Concluída', '2025-08-18', '2025-08-24'),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Proposta de Imposto Simplificado', 3, 2, 3, 2, 20, 'Elaborar uma proposta para adesão ao Simples Nacional.', 'Cancelada', '2025-08-25', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Treinamento de Equipe em Marketing de Conteúdo', 2, 3, 2, 4, 12, 'Criar e ministrar um treinamento sobre novas técnicas de criação de conteúdo.', 'Pendente', '2025-08-26', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Configurar Servidores AWS', 1, 5, 5, 5, 20, 'Subir novos servidores e configurar ambientes na AWS.', 'Em Andamento', '2025-08-27', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Desenvolvimento de Módulo de Pedidos', 5, 4, 3, 5, 45, 'Programar o módulo de pedidos para o novo sistema.', 'Pendente', '2025-08-28', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Análise de Tráfego do Site', 5, 3, 4, 4, 15, 'Analisar o tráfego do site e identificar vulnerabilidades.', 'Em Andamento', '2025-08-29', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Criação de Logo para Campanha', 6, 5, 4, 5, 10, 'Desenhar um novo logo para a campanha de lançamento.', 'Pendente', '2025-08-30', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Teste de Usabilidade do App', 6, 4, 3, 4, 20, 'Realizar testes com usuários para validar a usabilidade do aplicativo.', 'Concluída', '2025-08-20', '2025-08-28'),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Revisão de Processo de Produção', 7, 3, 5, 4, 35, 'Auditar o processo de produção para garantir a qualidade.', 'Em Andamento', '2025-08-31', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Inventário da Cadeia de Suprimentos', 7, 4, 4, 3, 25, 'Contar e registrar todos os produtos no estoque.', 'Pendente', '2025-09-01', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Otimização de SEO para Produtos', 8, 5, 2, 5, 18, 'Melhorar as descrições dos produtos para otimização de busca.', 'Concluída', '2025-08-15', '2025-08-20'),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Fluxo de Devoluções', 8, 3, 3, 4, 12, 'Criar um processo de devolução mais eficiente.', 'Pendente', '2025-09-02', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Treinamento de Atendimento ao Cliente', 9, 2, 1, 3, 8, 'Ministrar treinamento para a nova equipe de suporte.', 'Concluída', '2025-08-25', '2025-08-27'),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Digitalizar prontuários médicos', 9, 4, 4, 5, 50, 'Converter prontuários físicos para o formato digital.', 'Em Andamento', '2025-09-03', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Plano de plantio para o próximo semestre', 10, 5, 5, 5, 60, 'Desenvolver o plano de plantio com base em previsões climáticas.', 'Em Andamento', '2025-09-04', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Criação de Pastagem para Gado', 10, 3, 2, 4, 25, 'Preparar nova área para pastagem do rebanho.', 'Pendente', '2025-09-05', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Desenvolver front-end do dashboard', 1, 5, 4, 5, 70, 'Implementar a interface do usuário para o dashboard principal.', 'Em Andamento', '2025-09-06', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Criar relatório de performance de marketing', 2, 4, 5, 4, 30, 'Gerar relatório mensal de performance das campanhas.', 'Pendente', '2025-09-07', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Revisar balanço trimestral', 3, 5, 5, 4, 45, 'Conferir e validar o balanço patrimonial.', 'Em Andamento', '2025-09-08', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Otimização de rotas de entrega', 4, 4, 5, 5, 20, 'Calcular e aplicar novas rotas para a frota.', 'Pendente', '2025-09-09', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Atualização de código', 5, 3, 2, 3, 15, 'Aplicar patches e atualizações de segurança.', 'Concluída', '2025-08-29', '2025-09-01'),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Analise de mercado', 8, 3, 3, 2, 16, 'Realizar pesquisa e análise da concorrência.', 'Pendente', '2025-09-10', NULL),
+                                                                                                                                                                                 (nextval('public.sq_tarefa'), 'Plano de expansão de mercado', 2, 5, 4, 5, 30, 'Definir plano de expansão de mercado para o próximo ano.', 'Em Andamento', '2025-09-11', NULL);
 
 -- Inserindo dados na tabela LogAtribuicaoTarefa
 INSERT INTO table_log.LogAtribuicaoTarefa (nCdTarefa, nCdUsuarioAtuante, dRealocacao) VALUES
@@ -245,15 +230,14 @@ INSERT INTO table_log.LogAtribuicaoTarefa (nCdTarefa, nCdUsuarioAtuante, dRealoc
                                                                                           (25, 16, '2025-08-28'),
                                                                                           (29, 14, '2025-09-01');
 
-
 -- Inserindo dados na tabela Report
 INSERT INTO public.Report (nCdReport, nCdTarefa, cDescricao, cProblema) VALUES
                                                                             (nextval('public.sq_report'), 1, 'A autenticação por token está com falhas intermitentes.', 'Falha de token'),
                                                                             (nextval('public.sq_report'), 2, 'A query está retornando dados inconsistentes com o dashboard.', 'Inconsistência de dados'),
-                                                                            (nextval('public.sq_report'), 3, 'Foram encontradas discrepâncias na apuração de impostos.', 'Discrepância fiscal'),
-                                                                            (nextval('public.sq_report'), 4, 'O módulo de pedidos está com erro ao conectar com o banco de dados.', 'Erro de conexão'),
-                                                                            (nextval('public.sq_report'), 5, 'O novo processo de produção está resultando em mais produtos com defeito.', 'Aumento de defeitos'),
-                                                                            (nextval('public.sq_report'), 6, 'Alguns prontuários digitalizados estão ilegíveis.', 'Qualidade da imagem');
+                                                                            (nextval('public.sq_report'), 6, 'Foram encontradas discrepâncias na apuração de impostos.', 'Discrepância fiscal'),
+                                                                            (nextval('public.sq_report'), 11, 'O módulo de pedidos está com erro ao conectar com o banco de dados.', 'Erro de conexão'),
+                                                                            (nextval('public.sq_report'), 15, 'O novo processo de produção está resultando em mais produtos com defeito.', 'Aumento de defeitos'),
+                                                                            (nextval('public.sq_report'), 20, 'Alguns prontuários digitalizados estão ilegíveis.', 'Qualidade da imagem');
 
 -- Inserindo dados na tabela TarefaHabilidade
 INSERT INTO public.TarefaHabilidade (nCdHabilidade, nCdTarefa, iPrioridade) VALUES
@@ -287,7 +271,6 @@ INSERT INTO public.TarefaHabilidade (nCdHabilidade, nCdTarefa, iPrioridade) VALU
                                                                                 (16, 28, 1), (17, 28, 2),
                                                                                 (4, 29, 1), (5, 29, 2);
 
-
 -- Inserindo dados na tabela TarefaUsuario
 INSERT INTO public.TarefaUsuario (nCdTarefa, nCdUsuarioOriginal, nCdUsuarioAtuante) VALUES
                                                                                         (1, 1, 11),
@@ -301,3 +284,4 @@ INSERT INTO public.TarefaUsuario (nCdTarefa, nCdUsuarioOriginal, nCdUsuarioAtuan
                                                                                         (23, 1, 11),
                                                                                         (25, 3, 16),
                                                                                         (29, 2, 14);
+    
