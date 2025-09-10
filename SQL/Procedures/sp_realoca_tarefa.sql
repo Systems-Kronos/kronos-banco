@@ -9,9 +9,9 @@ BEGIN
     UPDATE TarefaUsuario
        SET nCdUsuarioAtuante = p_nCdUsuarioSubstituto
      WHERE TarefaUsuario.nCdTarefa = p_nCdTarefa
-       AND TarefaUsuario.nCdUsuarioOriginal = p_nCdUsuarioAusente;
-
-    COMMIT;
+       AND (  TarefaUsuario.nCdUsuarioOriginal = p_nCdUsuarioAusente
+           OR TarefaUsuario.nCdUsuarioAtuante  = p_nCdUsuarioAusente
+           );
 END;
 $$
     LANGUAGE plpgsql;

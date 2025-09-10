@@ -12,8 +12,6 @@ BEGIN
     UPDATE Usuario
        SET bAtivo = FALSE
      WHERE nCdEmpresa = p_nCdEmpresa;
-
-    COMMIT;
 END;
 $$
     LANGUAGE plpgsql;

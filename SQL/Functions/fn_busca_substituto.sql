@@ -3,28 +3,24 @@ CREATE OR REPLACE FUNCTION fn_busca_substituto
     p_nCdUsuarioAusente DECIMAL(10,0)
 )
     RETURNS TABLE ( nCdTarefa            DECIMAL(10,0)
-                  , cNmTarefa            VARCHAR(250)
                   , nCdUsuarioSubstituto DECIMAL(10,0)
                   )
 AS $$
 BEGIN
     RETURN QUERY
         WITH TarefasPendentes AS (
-            SELECT Tarefa.nCdTarefa
-                 , Tarefa.cNmTarefa
+            SELECT TarefaUsuario.nCdTarefa
                  , (SELECT fn_calcular_prioridade_tarefa(TarefaUsuario.nCdTarefa)) AS iPrioridadeTarefa
                  , TarefaHabilidade.nCdHabilidade
                  , TarefaHabilidade.iPrioridade AS iProridadeHabilidade
                  , Usuario.nCdEmpresa           AS nCdEmpresaUsuarioAtuante
               FROM TarefaUsuario
-                   INNER JOIN Tarefa           ON TarefaUsuario.nCdTarefa         = Tarefa.nCdTarefa
-                   INNER JOIN TarefaHabilidade ON Tarefa.nCdTarefa                = TarefaHabilidade.nCdTarefa
+                   INNER JOIN TarefaHabilidade ON TarefaUsuario.nCdTarefa                = TarefaHabilidade.nCdTarefa
                    INNER JOIN Usuario          ON TarefaUsuario.nCdUsuarioAtuante = Usuario.nCdUsuario
              WHERE TarefaUsuario.nCdUsuarioAtuante = p_nCdUsuarioAusente
         ),
              SubstitutosQualificados AS (
                  SELECT TarefasPendentes.nCdTarefa
-                      , TarefasPendentes.cNmTarefa
                       , TarefasPendentes.nCdHabilidade
                       , HabilidadeUsuario.nCdUsuario AS nCdUsuarioSubstituto
                       , COALESCE(COUNT(TarefaUsuario.nCdTarefa), 0) AS tarefas_atribuidas
@@ -43,7 +39,6 @@ BEGIN
                    AND Usuario.nCdEmpresa            = TarefasPendentes.nCdEmpresaUsuarioAtuante
                    AND Usuario.bGestor               = FALSE
                  GROUP BY TarefasPendentes.nCdTarefa
-                        , TarefasPendentes.cNmTarefa
                         , TarefasPendentes.nCdHabilidade
                         , HabilidadeUsuario.nCdUsuario
                         , TarefasPendentes.iPrioridadeTarefa
@@ -51,7 +46,6 @@ BEGIN
              )
         SELECT DISTINCT
                TarefasPendentes.nCdTarefa
-             , TarefasPendentes.cNmTarefa
              , SubstitutosQualificados.nCdUsuarioSubstituto
           FROM TarefasPendentes
                LEFT JOIN SubstitutosQualificados ON TarefasPendentes.nCdTarefa = SubstitutosQualificados.nCdTarefa
