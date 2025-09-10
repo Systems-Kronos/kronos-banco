@@ -15,11 +15,18 @@
       <jdbc-url>jdbc:redis://redis-17272.c308.sa-east-1-1.ec2.redns.redis-cloud.com:17272/</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="Kronos_SQL" uuid="fa026dcd-3be3-4a4b-be5a-26806b832ab8">
+    <data-source source="LOCAL" name="Kronos_SQL_DEV" uuid="fa026dcd-3be3-4a4b-be5a-26806b832ab8">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://pg-37c5c0f5-kronosoficial-ce6c.d.aivencloud.com:21674/defaultdb</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="Kronos_SQL_QA" uuid="ec17565c-7921-4657-9e1e-185135df8219">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://pg-kronosdesenvolvimento-kronosoficial-des.i.aivencloud.com:12539/dsSegundoAno?sslmode=require</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

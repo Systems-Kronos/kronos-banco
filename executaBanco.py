@@ -1,108 +1,172 @@
 import os
 import psycopg2
-import sys
-import subprocess
 from dotenv import load_dotenv
 
-# Carrega as variáveis de ambiente do arquivo .env para desenvolvimento local
-# No GitHub Actions, as variáveis serão injetadas diretamente no ambiente
-load_dotenv()
+def get_sql_files(sql_dir="SQL"):
+    """Busca todos os arquivos .sql recursivamente."""
+    sql_files = []
+    for root, _, files in os.walk(sql_dir):
+        for file in files:
+            if file.endswith(".sql"):
+                sql_files.append(os.path.join(root, file))
+    return sql_files
 
-# --- Conexão com PostgreSQL ---
-DATABASE_URL_DEV = os.getenv("DATABASE_URL_DEV")  
-DATABASE_URL_QA = os.getenv("DATABASE_URL_QA")  
-
-def get_conn_dev():
-    return psycopg2.connect(DATABASE_URL_DEV)
-
-def get_conn_qa():
-    return psycopg2.connect(DATABASE_URL_QA)
-
-sql_dir = 'kronos-banco/SQL'
-
-execution_order_map = {
-    'Modelo': 1,
-    'Functions': 2,
-    'Procedures': 3,
-    'Triggers': 4
-}
-
-sql_files_to_run = []
-for root, _, files in os.walk(sql_dir):
-    for file in files:
-        if file.endswith('.sql'):
-            sql_files_to_run.append(os.path.join(root, file))
-
-def get_execution_order(filename):
-    for dir_name, order in execution_order_map.items():
-        if dir_name in filename:
-            # Prioriza o data_load.sql por último dentro do diretório Modelo
-            if 'data_load.sql' in filename:
-                return order + 0.5
-            return order
-    return 99 
-
-sorted_sql_files = sorted(sql_files_to_run, key=get_execution_order)
-
-def run_script(command):
-    print(f"--- Executando comando: {' '.join(command)} ---")
+def analyze_dependencies(file_path, all_functions):
+    """
+    Analisa as dependências de uma função lendo o conteúdo do arquivo SQL.
+    Retorna uma lista de nomes de funções das quais ela depende.
+    """
+    dependencies = set()
     try:
-        result = subprocess.run(command, check=True, capture_output=True, text=True, encoding='utf-8')
-        print(result.stdout)
-        print(f"--- Script {' '.join(command)} executado com sucesso! ---")
-    except subprocess.CalledProcessError as e:
-        print(f"Erro ao executar o script {' '.join(command)}:")
-        print(e.stderr)
-        sys.exit(1) 
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read().lower() # Converte para minúsculas para evitar problemas com case
+            # Procura por chamadas de função no formato 'fn_nome_da_funcao('
+            for func_path in all_functions:
+                if file_path == func_path: # Uma função não pode depender de si mesma
+                    continue
+                func_name = os.path.splitext(os.path.basename(func_path))[0].lower()
+                # A expressão regular \b garante que estamos pegando o nome completo da função
+                if re.search(r'\b' + re.escape(func_name) + r'\b', content):
+                    dependencies.add(func_path)
+    except Exception as e:
+        print(f"  - Aviso: Não foi possível analisar o arquivo {file_path}: {e}")
+    return list(dependencies)
 
-connDEV = None
-connQA = None
-try:
-    print("Conectando ao banco de dados PostgreSQL...")
-    connDEV = get_conn_dev
-    cursorDEV = connDEV.cursor()
+def topological_sort(graph):
+    """
+    Realiza uma ordenação topológica para resolver a ordem de execução.
+    Retorna a lista ordenada ou lança um erro com os arquivos do ciclo de dependência.
+    """
+    in_degree = {u: 0 for u in graph}
+    for u in graph:
+        for v in graph[u]:
+            in_degree[v] += 1
+    
+    queue = [u for u in graph if in_degree[u] == 0]
+    sorted_order = []
+    
+    while queue:
+        u = queue.pop(0)
+        sorted_order.append(u)
+        for v in graph[u]:
+            in_degree[v] -= 1
+            if in_degree[v] == 0:
+                queue.append(v)
+    
+    if len(sorted_order) == len(graph):
+        return sorted_order
+    else:
+        # Identifica e reporta os arquivos envolvidos no ciclo
+        cycle_nodes = {node for node, degree in in_degree.items() if degree > 0}
+        cycle_files = "\n - " + "\n - ".join([os.path.basename(f) for f in cycle_nodes])
+        raise Exception(f"Erro: Ciclo de dependência detectado. Verifique os seguintes arquivos:{cycle_files}")
 
-    connQA = get_conn_dev
-    cursorQA = connQA.cursor()
-    print("Conexão com PostgreSQL bem-sucedida.")
+def order_sql_files(sql_files):
+    """
+    Ordena os arquivos SQL com base na prioridade (Modelo, Procedures, Functions, Triggers, DataLoad)
+    e resolve a ordem das funções por meio da análise de dependência.
+    """
+    order_priority = {"Modelo": 1, "Procedures": 2, "Functions": 3, "Triggers": 4, "DataLoad": 5}
+    
+    def get_category(file_path):
+        path_parts = file_path.split(os.sep)
+        if "Modelo" in path_parts:
+            return "DataLoad" if "data_load" in os.path.basename(file_path) else "Modelo"
+        if "Procedures" in path_parts: return "Procedures"
+        if "Functions" in path_parts: return "Functions"
+        if "Triggers" in path_parts: return "Triggers"
+        return "Outros"
 
-    for sql_file in sorted_sql_files:
-        print(f"Executando script SQL: {sql_file}")
-        with open(sql_file, 'r', encoding='utf-8') as f:
-            sql_script = f.read()
-            if not sql_script.strip():
-                print(f"Script {sql_file} está vazio, pulando.")
-                continue
-            try:
-                cursorDEV.execute(sql_script)
-                connDEV.commit()
+    all_files_by_cat = {cat: [] for cat in order_priority}
+    
+    for f in sql_files:
+        cat = get_category(f)
+        if cat in all_files_by_cat:
+            all_files_by_cat[cat].append(f)
 
-                cursorQA.execute(sql_script)
-                connQA.commit()
-                print("Script SQL executado com sucesso.")
-            except psycopg2.Error as e:
-                connDEV.rollback()
-                connQA.rollback()
-                print(f"Erro ao executar o script SQL {sql_file}: {e}")
-                sys.exit(1)
+    # Constrói o grafo de dependências apenas para as funções
+    function_files = all_files_by_cat["Functions"]
+    dependency_graph = {func: analyze_dependencies(func, function_files) for func in function_files}
+    
+    sorted_functions = topological_sort(dependency_graph)
 
-except psycopg2.Error as e:
-    print(f"Erro de conexão com o PostgreSQL: {e}")
-    sys.exit(1)
-
-finally:
-    if connDEV:
-        cursorDEV.close()
-        connDEV.close()
-        print("Conexão com o PostgreSQL encerrada.")
+    # Monta a ordem final
+    final_order = (
+        all_files_by_cat["Modelo"] +
+        all_files_by_cat["Procedures"] +
+        sorted_functions + # Funções já ordenadas
+        all_files_by_cat["Triggers"] +
+        all_files_by_cat["DataLoad"]
+    )
         
-    if connQA:
-        cursorQA.close()
-        connQA.close()
-        print("Conexão com o PostgreSQL encerrada.")
+    return final_order
 
-# --- Execução dos Scripts Adicionais ---
-run_script(['python', 'kronos-banco/MongoDB/DataLoad_MongoDB.py'])
-run_script(['python', 'kronos-banco/Redis/DataLoad_Redis.py'])
+def execute_sql_scripts(connection_url, sql_files):
+    """
+    Conecta ao banco de dados e executa uma lista de scripts SQL.
+    Retorna True se bem-sucedido, caso contrário, False.
+    """
+    conn = None
+    try:
+        conn = psycopg2.connect(connection_url)
+        cur = conn.cursor()
+        
+        for file_path in sql_files:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                sql_script = f.read()
+                if sql_script.strip():
+                    cur.execute(sql_script)
+                    print(f"  - Script '{file_path}' executado com sucesso.")
+        
+        conn.commit()
+        return True
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(f"  - Erro ao executar os scripts SQL: {error}")
+        if conn:
+            conn.rollback()
+        return False
+    finally:
+        if conn:
+            cur.close()
+            conn.close()
 
-print("\nWorkflow concluído com sucesso!")
+def main():
+    """Função principal que orquestra a execução."""
+    load_dotenv()
+    
+    DATABASE_URL_QA = os.getenv("DATABASE_URL_QA")
+    DATABASE_URL_DEV = os.getenv("DATABASE_URL_DEV")
+
+    if not DATABASE_URL_QA or not DATABASE_URL_DEV:
+        print("Erro: As variáveis de ambiente DATABASE_URL_QA e DATABASE_URL_DEV devem ser definidas.")
+        return
+
+    try:
+        all_sql_files = get_sql_files()
+        ordered_files = order_sql_files(all_sql_files)
+        
+        print("Arquivos a serem executados na seguinte ordem:")
+        for i, file in enumerate(ordered_files, 1):
+            print(f"{i}. {file}")
+        
+        print("\n--- INICIANDO EXECUÇÃO EM QA ---")
+        success_qa = execute_sql_scripts(DATABASE_URL_QA, ordered_files)
+        
+        if success_qa:
+            print("--- EXECUÇÃO EM QA CONCLUÍDA COM SUCESSO ---\n")
+            print("--- INICIANDO EXECUÇÃO EM DEV ---")
+            success_dev = execute_sql_scripts(DATABASE_URL_DEV, ordered_files)
+            
+            if success_dev:
+                print("--- EXECUÇÃO EM DEV CONCLUÍDA COM SUCESSO ---")
+            else:
+                print("--- FALHA NA EXECUÇÃO EM DEV ---")
+        else:
+            print("--- FALHA NA EXECUÇÃO EM QA. O AMBIENTE DE DEV NÃO SERÁ ATUALIZADO. ---")
+            
+    except Exception as e:
+        print(f"\nERRO CRÍTICO NA PREPARAÇÃO DOS SCRIPTS: {e}")
+        print("A execução foi interrompida.")
+
+if __name__ == "__main__":
+    main()
