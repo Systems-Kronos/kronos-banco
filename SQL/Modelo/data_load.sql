@@ -231,13 +231,13 @@ INSERT INTO table_log.LogAtribuicaoTarefa (nCdTarefa, nCdUsuarioAtuante, dRealoc
                                                                                           (29, 14, '2025-09-01');
 
 -- Inserindo dados na tabela Report
-INSERT INTO public.Report (nCdReport, nCdTarefa, cDescricao, cProblema) VALUES
-                                                                            (nextval('public.sq_report'), 1, 'A autenticação por token está com falhas intermitentes.', 'Falha de token'),
-                                                                            (nextval('public.sq_report'), 2, 'A query está retornando dados inconsistentes com o dashboard.', 'Inconsistência de dados'),
-                                                                            (nextval('public.sq_report'), 6, 'Foram encontradas discrepâncias na apuração de impostos.', 'Discrepância fiscal'),
-                                                                            (nextval('public.sq_report'), 11, 'O módulo de pedidos está com erro ao conectar com o banco de dados.', 'Erro de conexão'),
-                                                                            (nextval('public.sq_report'), 15, 'O novo processo de produção está resultando em mais produtos com defeito.', 'Aumento de defeitos'),
-                                                                            (nextval('public.sq_report'), 20, 'Alguns prontuários digitalizados estão ilegíveis.', 'Qualidade da imagem');
+INSERT INTO public.Report (nCdReport, nCdTarefa, cDescricao, cProblema, cStatus) VALUES
+                                                                                     (nextval('public.sq_report'), 1, 'A autenticação por token está com falhas intermitentes.', 'Falha de token', 'Concluído'),
+                                                                                     (nextval('public.sq_report'), 2, 'A query está retornando dados inconsistentes com o dashboard.', 'Inconsistência de dados', 'Pendente'),
+                                                                                     (nextval('public.sq_report'), 6, 'Foram encontradas discrepâncias na apuração de impostos.', 'Discrepância fiscal', 'Concluído'),
+                                                                                     (nextval('public.sq_report'), 11, 'O módulo de pedidos está com erro ao conectar com o banco de dados.', 'Pendente'),
+                                                                                     (nextval('public.sq_report'), 15, 'O novo processo de produção está resultando em mais produtos com defeito.', 'Concluído'),
+                                                                                     (nextval('public.sq_report'), 20, 'Alguns prontuários digitalizados estão ilegíveis.', 'Qualidade da imagem', 'Pendente');
 
 -- Inserindo dados na tabela TarefaHabilidade
 INSERT INTO public.TarefaHabilidade (nCdHabilidade, nCdTarefa, iPrioridade) VALUES
