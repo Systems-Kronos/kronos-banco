@@ -23,6 +23,9 @@ DROP SEQUENCE IF EXISTS public.sq_setor;
 DROP SEQUENCE IF EXISTS public.sq_tarefa;
 DROP SEQUENCE IF EXISTS public.sq_usuario;
 DROP SEQUENCE IF EXISTS public.sq_habilidade;
+DROP SEQUENCE IF EXISTS public.sq_tarefausuario;
+DROP SEQUENCE IF EXISTS public.sq_tarefahabilidade;
+DROP SEQUENCE IF EXISTS public.sq_habilidadeusuario;
 
 -- IDs
 CREATE SEQUENCE public.sq_planopagamento         START WITH 1 INCREMENT BY 1;
@@ -35,16 +38,20 @@ CREATE SEQUENCE public.sq_setor                  START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_tarefa                 START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_usuario                START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_habilidade             START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE public.sq_tarefausuario          START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE public.sq_tarefahabilidade       START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE public.sq_habilidadeusuario      START WITH 1 INCREMENT BY 1;
+
 
 
 -- Tabelas sem dependências
-CREATE TABLE public.PlanoPagamento ( nCdPlano DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('public.sq_planopagamento')
+CREATE TABLE public.PlanoPagamento ( nCdPlano BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_planopagamento')
     , cNmPlano VARCHAR(50)   NOT NULL UNIQUE
     , nPreco DECIMAL(10,2)   NOT NULL
     , PRIMARY KEY(nCdPlano)
 );
 
-CREATE TABLE public.Mensagem ( nCdMensagem DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('public.sq_mensagem')
+CREATE TABLE public.Mensagem ( nCdMensagem BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_mensagem')
     , cTitulo VARCHAR(50)       NOT NULL
     , cMensagem VARCHAR(255)    NOT NULL
     , cCategoria VARCHAR(70)    NOT NULL
@@ -52,21 +59,21 @@ CREATE TABLE public.Mensagem ( nCdMensagem DECIMAL(10,0) NOT NULL DEFAULT NEXTVA
 );
 
 -- Tabelas com dependência de PlanoPagamento
-CREATE TABLE public.Empresa ( nCdEmpresa        DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('public.sq_empresa')
+CREATE TABLE public.Empresa ( nCdEmpresa        BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_empresa')
     , cNmEmpresa        VARCHAR(255)  NOT NULL
     , cSgEmpresa        VARCHAR(3)    NOT NULL
     , cCNPJ             VARCHAR(18)   NOT NULL UNIQUE
     , cTelefone         VARCHAR(255)  NOT NULL UNIQUE
     , cEmail            VARCHAR(255)  NOT NULL UNIQUE
     , cCEP              VARCHAR(255)  NOT NULL
-    , nCdPlanoPagamento DECIMAL(10,0) NOT NULL
+    , nCdPlanoPagamento BIGINT        NOT NULL
     , bAtivo            BOOLEAN       NOT NULL DEFAULT True
     , PRIMARY KEY (nCdEmpresa)
     , FOREIGN KEY (nCdPlanoPagamento) REFERENCES public.PlanoPagamento(nCdPlano)
 );
 
-CREATE TABLE public.PlanoVantagens ( nCdPlanoVantagem DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('public.sq_planovantagens')
-    , nCdPlano         DECIMAL(10,0) NOT NULL
+CREATE TABLE public.PlanoVantagens ( nCdPlanoVantagem BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_planovantagens')
+    , nCdPlano         BIGINT        NOT NULL
     , cNmVantagem      VARCHAR(100)  NOT NULL UNIQUE
     , cDescricao       VARCHAR(255)  NOT NULL
     , PRIMARY KEY (nCdPlano, nCdPlanoVantagem)
@@ -74,16 +81,16 @@ CREATE TABLE public.PlanoVantagens ( nCdPlanoVantagem DECIMAL(10,0) NOT NULL DEF
 );
 
 -- Tabelas com dependência de Empresa
-CREATE TABLE public.Habilidade ( nCdHabilidade DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('public.sq_habilidade')
-    , nCdEmpresa    DECIMAL(10,0) NOT NULL
+CREATE TABLE public.Habilidade ( nCdHabilidade BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_habilidade')
+    , nCdEmpresa    BIGINT        NOT NULL
     , cNmHabilidade VARCHAR(255)  NOT NULL
     , cDescricao    VARCHAR(255)  NOT NULL
     , PRIMARY KEY (nCdHabilidade)
     , FOREIGN KEY (nCdEmpresa) REFERENCES public.Empresa(nCdEmpresa)
 );
 
-CREATE TABLE public.Setor ( nCdSetor   DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('public.sq_setor')
-    , nCdEmpresa DECIMAL(10,0) NOT NULL
+CREATE TABLE public.Setor ( nCdSetor   BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_setor')
+    , nCdEmpresa BIGINT        NOT NULL
     , cNmSetor   VARCHAR(255)  NOT NULL
     , cSgSetor   VARCHAR(3)    NOT NULL
     , PRIMARY KEY(nCdSetor)
@@ -91,12 +98,12 @@ CREATE TABLE public.Setor ( nCdSetor   DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('p
 );
 
 -- Tabela com dependência de Empresa e Setor
-CREATE TABLE public.Usuario ( nCdUsuario DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('public.sq_usuario')
+CREATE TABLE public.Usuario ( nCdUsuario BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_usuario')
     , cNmUsuario  VARCHAR(100)  NOT NULL
-    , nCdGestor   DECIMAL(10,0)     NULL
+    , nCdGestor   BIGINT            NULL
     , bGestor     BOOLEAN       NOT NULL
-    , nCdEmpresa  DECIMAL(10,0) NOT NULL
-    , nCdSetor    DECIMAL(10,0) NOT NULL
+    , nCdEmpresa  BIGINT        NOT NULL
+    , nCdSetor    BIGINT        NOT NULL
     , nCPF        VARCHAR(15)   NOT NULL
     , cTelefone   VARCHAR(20)       NULL
     , cEmail      VARCHAR(255)      NULL
@@ -110,40 +117,42 @@ CREATE TABLE public.Usuario ( nCdUsuario DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL(
 );
 
 -- Tabelas com dependência de Habilidade, Usuario e Mensagem
-CREATE TABLE public.HabilidadeUsuario ( nCdHabilidade DECIMAL(10,0) NOT NULL
-    , nCdUsuario    DECIMAL(10,0) NOT NULL
+CREATE TABLE public.HabilidadeUsuario ( nCdTarefaHabilidade BIGINT NOT NULL DEFAULT NEXTVAL('public.sq_habilidadeusuario')
+    , nCdHabilidade BIGINT        NOT NULL
+    , nCdUsuario    BIGINT        NOT NULL
+    , UNIQUE  (nCdHabilidade, nCdUsuario)
     , PRIMARY KEY (nCdHabilidade, nCdUsuario)
     , FOREIGN KEY (nCdHabilidade) REFERENCES public.Habilidade (nCdHabilidade)
     , FOREIGN KEY (nCdUsuario)    REFERENCES public.Usuario (nCdUsuario)
 );
 
-CREATE TABLE public.Tarefa ( nCdTarefa         DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('public.sq_tarefa')
+CREATE TABLE public.Tarefa ( nCdTarefa         BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_tarefa')
     , cNmTarefa         VARCHAR(255)  NOT NULL
-    , nCdUsuarioRelator DECIMAL(10,0) NOT NULL
-    , nCdHabilidade     DECIMAL(10,0) NOT NULL
+    , nCdUsuarioRelator BIGINT        NOT NULL
     , iGravidade        INTEGER       NOT NULL DEFAULT 1
-                                 CHECK (iGravidade >= 1 AND iGravidade <= 5)
+         CHECK (iGravidade >= 1 AND iGravidade <= 5)
     , iUrgencia         INTEGER       NOT NULL DEFAULT 1
-                                 CHECK (iUrgencia >= 1 AND iUrgencia <= 5)
+         CHECK (iUrgencia >= 1 AND iUrgencia <= 5)
     , iTendencia        INTEGER       NOT NULL DEFAULT 1
-                                 CHECK (iTendencia >= 1 AND iTendencia <= 5)
-    , nTempoEstimado    DECIMAL(10,0) NOT NULL
+         CHECK (iTendencia >= 1 AND iTendencia <= 5)
+    , nTempoEstimado    BIGINT        NOT NULL
     , cDescricao        VARCHAR(255)  NOT NULL
     , cStatus           VARCHAR(15)   NOT NULL DEFAULT 'Pendente'
-                                 CHECK (  cStatus = 'Pendente'
-                                     OR cStatus = 'Em Andamento'
-                                     OR cStatus = 'Concluída'
-                                     OR cStatus = 'Cancelada'
-                                     )
+         CHECK (  cStatus = 'Pendente'
+             OR cStatus = 'Em Andamento'
+             OR cStatus = 'Concluída'
+             OR cStatus = 'Cancelada'
+             )
+    , dDataAtribuicao   DATE          NOT NULL DEFAULT NOW()
+    , dDataConclusao    DATE              NULL
     , PRIMARY KEY (nCdTarefa)
     , FOREIGN KEY (nCdUsuarioRelator) REFERENCES public.Usuario (nCdUsuario)
-    , FOREIGN KEY (nCdHabilidade)     REFERENCES public.Habilidade(nCdHabilidade)
 );
 
 -- Tabelas com dependência de Tarefa e Usuario
-CREATE TABLE table_log.LogAtribuicaoTarefa ( nCdLogAtribuicao  DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('table_log.sq_logatribuicaotarefa')
-    , nCdTarefa         DECIMAL(10,0) NOT NULL
-    , nCdUsuarioAtuante DECIMAL(10,0) NOT NULL
+CREATE TABLE table_log.LogAtribuicaoTarefa ( nCdLogAtribuicao  BIGINT        NOT NULL DEFAULT NEXTVAL('table_log.sq_logatribuicaotarefa')
+    , nCdTarefa         BIGINT        NOT NULL
+    , nCdUsuarioAtuante BIGINT        NOT NULL
     , dRealocacao       DATE          NOT NULL DEFAULT NOW()
     , cObservacao       VARCHAR(300)  NOT NULL DEFAULT 'Nenhum comentário para a tarefa'
     , PRIMARY KEY (nCdLogAtribuicao)
@@ -151,25 +160,29 @@ CREATE TABLE table_log.LogAtribuicaoTarefa ( nCdLogAtribuicao  DECIMAL(10,0) NOT
     , FOREIGN KEY (nCdUsuarioAtuante) REFERENCES public.Usuario (nCdUsuario)
 );
 
-CREATE TABLE public.Report ( nCdReport  DECIMAL(10,0) NOT NULL DEFAULT NEXTVAL('public.sq_report')
-    , nCdTarefa  DECIMAL(10,0) NOT NULL
+CREATE TABLE public.Report ( nCdReport  BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_report')
+    , nCdTarefa  BIGINT        NOT NULL
     , cDescricao VARCHAR(255)  NOT NULL
     , cProblema  VARCHAR(255)  NOT NULL
     , PRIMARY KEY (nCdReport)
     , FOREIGN KEY (nCdTarefa) REFERENCES public.Tarefa(nCdTarefa)
 );
 
-CREATE TABLE public.TarefaHabilidade ( nCdHabilidade DECIMAL(10,0) NOT NULL
-    , nCdTarefa     DECIMAL(10,0) NOT NULL
+CREATE TABLE public.TarefaHabilidade ( nCdTarefaHabilidade BIGINT NOT NULL DEFAULT NEXTVAL('public.sq_tarefahabilidade')
+    , nCdHabilidade BIGINT        NOT NULL
+    , nCdTarefa     BIGINT        NOT NULL
     , iPrioridade   INTEGER       NOT NULL
+    , UNIQUE  (nCdTarefa, nCdHabilidade)
     , PRIMARY KEY (nCdHabilidade, nCdTarefa)
     , FOREIGN KEY (nCdHabilidade) REFERENCES public.Habilidade(nCdHabilidade)
     , FOREIGN KEY (nCdTarefa)     REFERENCES public.Tarefa (nCdTarefa)
 );
 
-CREATE TABLE public.TarefaUsuario ( nCdTarefa          DECIMAL(10,0) NOT NULL
-    , nCdUsuarioOriginal DECIMAL(10,0) NOT NULL
-    , nCdUsuarioAtuante  DECIMAL(10,0) NOT NULL
+CREATE TABLE public.TarefaUsuario ( nCdTarefaUsuario BIGINT NOT NULL DEFAULT NEXTVAL('public.sq_tarefausuario')
+    , nCdTarefa          BIGINT        NOT NULL
+    , nCdUsuarioOriginal BIGINT        NOT NULL
+    , nCdUsuarioAtuante  BIGINT        NOT NULL
+    , UNIQUE  (nCdTarefa, nCdUsuarioOriginal, nCdUsuarioAtuante)
     , PRIMARY KEY(nCdTarefa, nCdUsuarioOriginal, nCdUsuarioAtuante)
     , FOREIGN KEY (nCdTarefa)          REFERENCES public.Tarefa (nCdTarefa)
     , FOREIGN KEY (nCdUsuarioOriginal) REFERENCES public.Usuario(nCdUsuario)
