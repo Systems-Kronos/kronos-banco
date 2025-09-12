@@ -235,8 +235,8 @@ INSERT INTO public.Report (nCdReport, nCdTarefa, cDescricao, cProblema, cStatus)
                                                                                      (nextval('public.sq_report'), 1, 'A autenticação por token está com falhas intermitentes.', 'Falha de token', 'Concluído'),
                                                                                      (nextval('public.sq_report'), 2, 'A query está retornando dados inconsistentes com o dashboard.', 'Inconsistência de dados', 'Pendente'),
                                                                                      (nextval('public.sq_report'), 6, 'Foram encontradas discrepâncias na apuração de impostos.', 'Discrepância fiscal', 'Concluído'),
-                                                                                     (nextval('public.sq_report'), 11, 'O módulo de pedidos está com erro ao conectar com o banco de dados.', 'Pendente'),
-                                                                                     (nextval('public.sq_report'), 15, 'O novo processo de produção está resultando em mais produtos com defeito.', 'Concluído'),
+                                                                                     (nextval('public.sq_report'), 11, 'O módulo de pedidos está com erro ao conectar com o banco de dados.', 'Falha de conexão','Pendente'),
+                                                                                     (nextval('public.sq_report'), 15, 'O novo processo de produção está resultando em mais produtos com defeito.', 'Atualização defeituosa','Concluído'),
                                                                                      (nextval('public.sq_report'), 20, 'Alguns prontuários digitalizados estão ilegíveis.', 'Qualidade da imagem', 'Pendente');
 
 -- Inserindo dados na tabela TarefaHabilidade
