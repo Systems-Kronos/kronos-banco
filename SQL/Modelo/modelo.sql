@@ -164,10 +164,10 @@ CREATE TABLE public.Report ( nCdReport  BIGINT        NOT NULL DEFAULT NEXTVAL('
     , nCdTarefa  BIGINT        NOT NULL
     , cDescricao VARCHAR(255)  NOT NULL
     , cProblema  VARCHAR(255)  NOT NULL
-    , cStatus           VARCHAR(15)   NOT NULL DEFAULT 'Pendente'
-                                 CHECK (  cStatus = 'Pendente'
-                                     OR cStatus = 'Concluída'
-                                     )
+    , cStatus    VARCHAR(15)   NOT NULL DEFAULT 'Pendente'
+         CHECK (  cStatus = 'Pendente'
+             OR cStatus = 'Concluído'
+             )
     , PRIMARY KEY (nCdReport)
     , FOREIGN KEY (nCdTarefa) REFERENCES public.Tarefa(nCdTarefa)
 );
