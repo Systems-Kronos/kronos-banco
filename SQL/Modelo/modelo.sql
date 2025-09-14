@@ -27,7 +27,10 @@ DROP SEQUENCE IF EXISTS public.sq_Habilidade;
 DROP SEQUENCE IF EXISTS public.sq_TarefaUsuario;
 DROP SEQUENCE IF EXISTS public.sq_TarefaHabilidade;
 DROP SEQUENCE IF EXISTS public.sq_HabilidadeUsuario;
-DROP SEQUENCE IF EXISTS public.RegistroDAU;
+DROP SEQUENCE IF EXISTS public.sq_RegistroDAU;
+
+DROP TYPE IF EXISTS public.TIPO_LOCAL_USO;
+DROP TYPE IF EXISTS public.OPCAO_STATUS;
 
 -- IDs
 CREATE SEQUENCE public.sq_PlanoPagamento         START WITH 1 INCREMENT BY 1;
@@ -45,7 +48,17 @@ CREATE SEQUENCE public.sq_TarefaHabilidade       START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_HabilidadeUsuario      START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_RegistroDAU            START WITH 1 INCREMENT BY 1;
 
-
+-- Types (Para substituit check)
+CREATE TYPE public.TIPO_LOCAL_USO AS ENUM ( 'APP_MOBILE'
+                                          , 'APP_WEB'
+                                          );
+CREATE TYPE public.OPCAO_STATUS   AS ENUM ( 'Pendente'
+                                          , 'Em Andamento'
+                                          , 'Concluída'
+                                          , 'Concluído'
+                                          , 'Cancelada'
+                                          , 'Cancelado'
+                                          );
 
 -- Tabelas sem dependências
 CREATE TABLE public.PlanoPagamento ( nCdPlano BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_PlanoPagamento')
@@ -59,20 +72,6 @@ CREATE TABLE public.Mensagem ( nCdMensagem BIGINT        NOT NULL DEFAULT NEXTVA
     , cMensagem  VARCHAR(255)    NOT NULL
     , cCategoria VARCHAR(70)    NOT NULL
     , PRIMARY KEY(nCdMensagem)
-);
-
-CREATE TABLE public.RegistroDAU ( nCdSessao BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_RegistroDAU')
-    , nCdUsuario          BIGINT          NOT NULL
-    , dDataEntrada        TIMESTAMPTZ     NOT NULL
-    , dDataSaida          TIMESTAMPTZ         NULL
-    , dUltimoHeartbeat    TIMESTAMPTZ     NOT NULL
-    , cLocalUso           VARCHAR(11)    NOT NULL
-        CHECK (  cLocalUso = 'APP_MOBILE'
-              OR cLocalUso = 'APP_WEB'
-              )
-    , iDuracaoMinutos     INTEGER             NULL
-    , PRIMARY KEY (nCdSessao)
-    , FOREIGN KEY (nCdUsuario) REFERENCES public.Usuario(nCdUsuario)
 );
 
 -- Tabelas com dependência de PlanoPagamento
@@ -154,16 +153,22 @@ CREATE TABLE public.Tarefa ( nCdTarefa         BIGINT        NOT NULL DEFAULT NE
          CHECK (iTendencia >= 1 AND iTendencia <= 5)
     , iTempoEstimado    INTEGER       NOT NULL
     , cDescricao        TEXT          NOT NULL
-    , cStatus           VARCHAR(15)   NOT NULL DEFAULT 'Pendente'
-        CHECK (  cStatus = 'Pendente'
-              OR cStatus = 'Em Andamento'
-              OR cStatus = 'Concluída'
-              OR cStatus = 'Cancelada'
-              )
+    , cStatus           OPCAO_STATUS   NOT NULL DEFAULT 'Pendente'
     , dDataAtribuicao   TIMESTAMP     NOT NULL DEFAULT NOW()
     , dDataConclusao    TIMESTAMP         NULL
     , PRIMARY KEY (nCdTarefa)
     , FOREIGN KEY (nCdUsuarioRelator) REFERENCES public.Usuario (nCdUsuario)
+);
+
+CREATE TABLE public.RegistroDAU ( nCdSessao BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_RegistroDAU')
+    , nCdUsuario          BIGINT          NOT NULL
+    , dDataEntrada        TIMESTAMPTZ     NOT NULL
+    , dDataSaida          TIMESTAMPTZ         NULL
+    , dUltimoHeartbeat    TIMESTAMPTZ     NOT NULL
+    , cLocalUso           TIPO_LOCAL_USO  NOT NULL
+    , iDuracaoMinutos     INTEGER             NULL
+    , PRIMARY KEY (nCdSessao)
+    , FOREIGN KEY (nCdUsuario) REFERENCES public.Usuario(nCdUsuario)
 );
 
 -- Tabelas com dependência de Tarefa e Usuario
@@ -181,10 +186,7 @@ CREATE TABLE public.Report ( nCdReport  BIGINT        NOT NULL DEFAULT NEXTVAL('
     , nCdTarefa  BIGINT        NOT NULL
     , cDescricao VARCHAR(255)  NOT NULL
     , cProblema  VARCHAR(255)  NOT NULL
-    , cStatus    VARCHAR(15)   NOT NULL DEFAULT 'Pendente'
-        CHECK (  cStatus = 'Pendente'
-              OR cStatus = 'Concluído'
-              )
+    , cStatus    OPCAO_STATUS   NOT NULL DEFAULT 'Pendente'
     , PRIMARY KEY (nCdReport)
     , FOREIGN KEY (nCdTarefa) REFERENCES public.Tarefa(nCdTarefa)
 );
