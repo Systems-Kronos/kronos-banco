@@ -1,10 +1,10 @@
 -- Limpa todas as tabelas e reinicia as sequências para garantir uma carga de dados limpa (CORRIGIDO)
-TRUNCATE TABLE public.PlanoPagamento, public.Mensagem, public.Empresa, public.PlanoVantagens, public.Habilidade, public.Setor, public.Usuario, public.HabilidadeUsuario, public.Tarefa, table_log.LogAtribuicaoTarefa, public.Report, public.TarefaHabilidade, public.TarefaUsuario RESTART IDENTITY CASCADE;
+TRUNCATE TABLE public.PlanoPagamento, public.Mensagem, public.Empresa, public.planovantagem, public.Habilidade, public.Setor, public.Usuario, public.HabilidadeUsuario, public.Tarefa, table_log.LogAtribuicaoTarefa, public.Report, public.TarefaHabilidade, public.TarefaUsuario RESTART IDENTITY CASCADE;
 ALTER SEQUENCE public.sq_planopagamento         RESTART WITH 1;
 ALTER SEQUENCE public.sq_empresa                RESTART WITH 1;
 ALTER SEQUENCE table_log.sq_logatribuicaotarefa RESTART WITH 1;
 ALTER SEQUENCE public.sq_mensagem               RESTART WITH 1;
-ALTER SEQUENCE public.sq_planovantagens         RESTART WITH 1;
+ALTER SEQUENCE public.sq_planovantagem         RESTART WITH 1;
 ALTER SEQUENCE public.sq_report                 RESTART WITH 1;
 ALTER SEQUENCE public.sq_setor                  RESTART WITH 1;
 ALTER SEQUENCE public.sq_tarefa                 RESTART WITH 1;
@@ -48,8 +48,8 @@ INSERT INTO public.Empresa (nCdEmpresa, cNmEmpresa, cSgEmpresa, cCNPJ, cTelefone
                                                                                                                                (nextval('public.sq_empresa'), 'Soluções em Saúde', 'SES', '99.999.999/0001-99', '(11) 99999-9999', 'contato@saudesolucoes.com.br', '01500-009', 4, true),
                                                                                                                                (nextval('public.sq_empresa'), 'Fábrica de Gado JBS', 'JBS', '10.101.101/0001-10', '(51) 91010-1010', 'contato@jbsgado.com.br', '90000-010', 2, true);
 
--- Inserindo dados na tabela PlanoVantagens
-INSERT INTO public.PlanoVantagens (nCdPlano, cNmVantagem, cDescricao) VALUES
+-- Inserindo dados na tabela planovantagem
+INSERT INTO public.planovantagem (nCdPlano, cNmVantagem, cDescricao) VALUES
                                                                           (1, 'Gestão de 10 Usuários', 'Permite a gestão de até 10 usuários por empresa.'),
                                                                           (1, 'Criação de 20 Tarefas', 'Limite de 20 tarefas em andamento.'),
                                                                           (2, 'Análise de Desempenho', 'Acesso a relatórios básicos de produtividade.'),
