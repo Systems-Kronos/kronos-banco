@@ -135,16 +135,16 @@ CREATE TABLE public.Tarefa ( nCdTarefa         BIGINT        NOT NULL DEFAULT NE
          CHECK (iUrgencia >= 1 AND iUrgencia <= 5)
     , iTendencia        INTEGER       NOT NULL DEFAULT 1
          CHECK (iTendencia >= 1 AND iTendencia <= 5)
-    , nTempoEstimado    BIGINT        NOT NULL
-    , cDescricao        VARCHAR(255)  NOT NULL
+    , iTempoEstimado    INTEGER       NOT NULL
+    , cDescricao        TEXT          NOT NULL
     , cStatus           VARCHAR(15)   NOT NULL DEFAULT 'Pendente'
          CHECK (  cStatus = 'Pendente'
              OR cStatus = 'Em Andamento'
              OR cStatus = 'Concluída'
              OR cStatus = 'Cancelada'
              )
-    , dDataAtribuicao   DATE          NOT NULL DEFAULT NOW()
-    , dDataConclusao    DATE              NULL
+    , dDataAtribuicao   TIMESTAMP     NOT NULL DEFAULT NOW()
+    , dDataConclusao    TIMESTAMP         NULL
     , PRIMARY KEY (nCdTarefa)
     , FOREIGN KEY (nCdUsuarioRelator) REFERENCES public.Usuario (nCdUsuario)
 );
