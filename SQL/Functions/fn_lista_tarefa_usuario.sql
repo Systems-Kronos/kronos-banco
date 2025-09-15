@@ -1,8 +1,8 @@
 CREATE OR REPLACE FUNCTION fn_lista_tarefa_usuario
 (
     p_cd_usuario  BIGINT
-,   p_ctptarefa   CHAR(1) = '1' -- 1-Todas / 2-Realocadas
-,   p_cstatus     CHAR(1) = '1' -- 1-Não concluídas / 2-Concluídas / 3-Canceladas / 4-Todas
+,   p_ctptarefa   CHAR(1) DEFAULT '1' -- 1-Todas / 2-Realocadas
+,   p_cstatus     CHAR(1) DEFAULT '1' -- 1-Não concluídas / 2-Concluídas / 3-Canceladas / 4-Todas
 )
     RETURNS TABLE ( ncdtarefa           BIGINT
                   , cnmtarefa           VARCHAR(255)
