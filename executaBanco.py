@@ -3,31 +3,31 @@ import re
 import psycopg2
 from dotenv import load_dotenv
 
-def get_sql_files(sql_dir="SQL"):
-    """Busca todos os arquivos .sql recursivamente."""
+def get_sql_files(sql_dir="."):
     sql_files = []
+    # Percorre todos os diretórios, incluindo SQL e JOBS
     for root, _, files in os.walk(sql_dir):
+        # Ignora diretórios que não sejam SQL ou JOBS para otimização
+        if "SQL" not in root and "JOBS" not in root:
+            continue
         for file in files:
             if file.endswith(".sql"):
                 sql_files.append(os.path.join(root, file))
     return sql_files
 
-def separate_files_by_action(sql_files):
-    """
-    Separa os arquivos em listas de criação/alteração e exclusão.
-    A exclusão é identificada pelo caractere de riscado (U+0336) no nome do arquivo.
-    """
-    creation_files = []
-    deletion_files = []
+def separate_files_by_phase(sql_files):
+    creation_files, deletion_files, job_files = [], [], []
     strikethrough_char = '\u0336'
     
     for file_path in sql_files:
-        if strikethrough_char in os.path.basename(file_path):
+        if "JOBS" in file_path.split(os.sep):
+            job_files.append(file_path)
+        elif strikethrough_char in os.path.basename(file_path):
             deletion_files.append(file_path)
         else:
             creation_files.append(file_path)
             
-    return creation_files, deletion_files
+    return creation_files, deletion_files, job_files
 
 def get_category(file_path):
     path_parts = file_path.split(os.sep)
@@ -39,9 +39,7 @@ def get_category(file_path):
     return "Outros"
 
 def order_deletion_files(deletion_files):
-    # Prioridade inversa da criação
     order_priority = {"Triggers": 1, "Functions": 2, "Procedures": 3}
-    
     deletion_files.sort(key=lambda f: (order_priority.get(get_category(f), 99), f))
     return deletion_files
 
@@ -62,8 +60,7 @@ def analyze_dependencies(file_path, all_functions):
 def topological_sort(graph):
     in_degree = {u: 0 for u in graph}
     for u in graph:
-        for v in graph[u]:
-            in_degree[v] += 1
+        for v in graph[u]: in_degree[v] += 1
     queue = [u for u in graph if in_degree[u] == 0]
     sorted_order = []
     while queue:
@@ -71,8 +68,7 @@ def topological_sort(graph):
         sorted_order.append(u)
         for v in graph[u]:
             in_degree[v] -= 1
-            if in_degree[v] == 0:
-                queue.append(v)
+            if in_degree[v] == 0: queue.append(v)
     if len(sorted_order) == len(graph):
         return sorted_order
     else:
@@ -81,40 +77,41 @@ def topological_sort(graph):
         raise Exception(f"Erro: Ciclo de dependência detectado. Verifique os seguintes arquivos:{cycle_files}")
 
 def order_creation_files(creation_files):
-    """Ordena os arquivos de criação/alteração."""
-    all_files_by_cat = {
-        "Modelo": [], "Procedures": [], "Functions": [], "Triggers": [], "DataLoad": []
-    }
+    all_files_by_cat = {"Modelo": [], "Procedures": [], "Functions": [], "Triggers": [], "DataLoad": []}
     for f in creation_files:
         cat = get_category(f)
-        if cat in all_files_by_cat:
-            all_files_by_cat[cat].append(f)
+        if cat in all_files_by_cat: all_files_by_cat[cat].append(f)
 
     function_files = all_files_by_cat["Functions"]
     dependency_graph = {func: analyze_dependencies(func, function_files) for func in function_files}
     sorted_functions = topological_sort(dependency_graph)
 
-    final_order = (
+    return (
         all_files_by_cat["Modelo"] + all_files_by_cat["Procedures"] +
         sorted_functions + all_files_by_cat["Triggers"] +
         all_files_by_cat["DataLoad"]
     )
-    return final_order
+
+def order_job_files(job_files):
+    extensoes_file = next((f for f in job_files if os.path.basename(f) == 'extensoes.sql'), None)
+    if extensoes_file:
+        job_files.remove(extensoes_file)
+        return [extensoes_file] + sorted(job_files)
+    return sorted(job_files)
 
 def execute_sql_scripts(connection_url, sql_files, action_verb):
+    """Executa scripts SQL genéricos."""
     conn = None
     success_count = 0
     total_count = len(sql_files)
-    if total_count == 0:
-        return (True, 0)
+    if total_count == 0: return (True, 0)
 
     try:
         conn = psycopg2.connect(connection_url)
         cur = conn.cursor()
         
-        for i, file_path in enumerate(sql_files, 1):
+        for file_path in sql_files:
             with open(file_path, 'r', encoding='utf-8') as f:
-                # Executa apenas a primeira linha para arquivos de exclusão (DROP IF EXISTS)
                 sql_script = f.readline() if action_verb == "removido" else f.read()
                 if sql_script.strip():
                     cur.execute(sql_script)
@@ -140,58 +137,65 @@ def main():
     DATABASE_URL_DEV = os.getenv("DATABASE_URL_DEV")
 
     if not DATABASE_URL_QA or not DATABASE_URL_DEV:
-        print("Erro: As variáveis de ambiente DATABASE_URL_QA e DATABASE_URL_DEV devem ser definidas.")
+        print("Erro: As variáveis de ambiente devem ser definidas.")
         return
 
     try:
         all_sql_files = get_sql_files()
-        creation_files, deletion_files = separate_files_by_action(all_sql_files)
+        creation_files, deletion_files, job_files = separate_files_by_phase(all_sql_files)
         
-        # --- FASE DE EXCLUSÃO ---
+        # --- FASE 1: EXCLUSÃO ---
         ordered_deletions = order_deletion_files(deletion_files)
-        total_deletions = len(ordered_deletions)
-        
-        if total_deletions > 0:
-            print(f"--- FASE 1: EXCLUSÃO ({total_deletions} arquivos) ---")
-            for i, file in enumerate(ordered_deletions, 1): print(f"{i}. {os.path.basename(file)}")
-
+        if ordered_deletions:
+            print(f"--- FASE 1: EXCLUSÃO ({len(ordered_deletions)} arquivos) ---")
+            for i, f in enumerate(ordered_deletions, 1): print(f"{i}. {os.path.basename(f)}")
+            
             print("\n[QA] INICIANDO EXCLUSÃO...")
-            qa_del_success, qa_del_count = execute_sql_scripts(DATABASE_URL_QA, ordered_deletions, "removido")
-            if not qa_del_success:
-                print(f"--- FALHA NA EXCLUSÃO EM QA: {qa_del_count}/{total_deletions} scripts processados. Abortando. ---")
-                return
-            print(f"--- EXCLUSÃO EM QA CONCLUÍDA: {qa_del_count}/{total_deletions} scripts processados. ---\n")
+            qa_del_success, _ = execute_sql_scripts(DATABASE_URL_QA, ordered_deletions, "removido")
+            if not qa_del_success: raise Exception("Falha na fase de exclusão em QA.")
+            
+            print("\n[DEV] INICIANDO EXCLUSÃO...")
+            dev_del_success, _ = execute_sql_scripts(DATABASE_URL_DEV, ordered_deletions, "removido")
+            if not dev_del_success: raise Exception("Falha na fase de exclusão em DEV.")
+            print("--- FASE DE EXCLUSÃO CONCLUÍDA ---\n")
 
-            print("[DEV] INICIANDO EXCLUSÃO...")
-            dev_del_success, dev_del_count = execute_sql_scripts(DATABASE_URL_DEV, ordered_deletions, "removido")
-            if not dev_del_success:
-                print(f"--- FALHA NA EXCLUSÃO EM DEV: {dev_del_count}/{total_deletions} scripts processados. Abortando. ---")
-                return
-            print(f"--- EXCLUSÃO EM DEV CONCLUÍDA: {dev_del_count}/{total_deletions} scripts processados. ---\n")
-        
+        # --- FASE 2: CRIAÇÃO/ALTERAÇÃO ---
         ordered_creations = order_creation_files(creation_files)
-        total_creations = len(ordered_creations)
-
-        if total_creations > 0:
-            print(f"--- FASE 2: CRIAÇÃO/ALTERAÇÃO ({total_creations} arquivos) ---")
-            for i, file in enumerate(ordered_creations, 1): print(f"{i}. {file}")
-
+        if ordered_creations:
+            print(f"--- FASE 2: CRIAÇÃO/ALTERAÇÃO ({len(ordered_creations)} arquivos) ---")
+            for i, f in enumerate(ordered_creations, 1): print(f"{i}. {f}")
+            
             print("\n[QA] INICIANDO CRIAÇÃO/ALTERAÇÃO...")
-            qa_creation_success, qa_creation_count = execute_sql_scripts(DATABASE_URL_QA, ordered_creations, "executado")
-            if not qa_creation_success:
-                print(f"--- FALHA NA CRIAÇÃO/ALTERAÇÃO EM QA: {qa_creation_count}/{total_creations} scripts executados. DEV não será atualizado. ---")
-                return
-            print(f"--- CRIAÇÃO/ALTERAÇÃO EM QA CONCLUÍDA: {qa_creation_count}/{total_creations} scripts executados. ---\n")
+            qa_creation_success, _ = execute_sql_scripts(DATABASE_URL_QA, ordered_creations, "executado")
+            if not qa_creation_success: raise Exception("Falha na fase de criação/alteração em QA.")
+            
+            print("\n[DEV] INICIANDO CRIAÇÃO/ALTERAÇÃO...")
+            dev_creation_success, _ = execute_sql_scripts(DATABASE_URL_DEV, ordered_creations, "executado")
+            if not dev_creation_success: raise Exception("Falha na fase de criação/alteração em DEV.")
+            print("--- FASE DE CRIAÇÃO/ALTERAÇÃO CONCLUÍDA ---\n")
 
-            print("[DEV] INICIANDO CRIAÇÃO/ALTERAÇÃO...")
-            dev_creation_success, dev_creation_count = execute_sql_scripts(DATABASE_URL_DEV, ordered_creations, "executado")
-            if not dev_creation_success:
-                print(f"--- FALHA NA CRIAÇÃO/ALTERAÇÃO EM DEV: {dev_creation_count}/{total_creations} scripts executados. ---")
-                return
-            print(f"--- CRIAÇÃO/ALTERAÇÃO EM DEV CONCLUÍDA: {dev_creation_count}/{total_creations} scripts executados. ---")
+        # --- FASE 3: JOBS ---
+        ordered_jobs = order_job_files(job_files)
+        if ordered_jobs:
+            print(f"--- FASE 3: JOBS ({len(ordered_jobs)} arquivos) ---")
+            for i, f in enumerate(ordered_jobs, 1): print(f"{i}. {os.path.basename(f)}")
+            
+            # Modifica as URLs de conexão para os JOBS
+            JOB_DB_NAME = "defaultdb"
+            JOB_URL_QA = re.sub(r'/dsSegundoAno', f'/{JOB_DB_NAME}', DATABASE_URL_QA)
+            JOB_URL_DEV = re.sub(r'/dbSegundoAno', f'/{JOB_DB_NAME}', DATABASE_URL_DEV)
+
+            print("\n[QA] INICIANDO EXECUÇÃO DE JOBS...")
+            qa_job_success, _ = execute_sql_scripts(JOB_URL_QA, ordered_jobs, "executado")
+            if not qa_job_success: raise Exception("Falha na fase de JOBS em QA.")
+
+            print("\n[DEV] INICIANDO EXECUÇÃO DE JOBS...")
+            dev_job_success, _ = execute_sql_scripts(JOB_URL_DEV, ordered_jobs, "executado")
+            if not dev_job_success: raise Exception("Falha na fase de JOBS em DEV.")
+            print("--- FASE DE JOBS CONCLUÍDA ---")
 
     except Exception as e:
-        print(f"\nERRO CRÍTICO NA PREPARAÇÃO DOS SCRIPTS: {e}")
+        print(f"\nERRO CRÍTICO: {e}")
         print("A execução foi interrompida.")
 
 if __name__ == "__main__":
