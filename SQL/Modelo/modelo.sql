@@ -1,4 +1,5 @@
 --CREATE DATABASE dbKronos;
+-- Limpa DB
 DROP TABLE IF EXISTS public.PlanoPagamento         CASCADE;
 DROP TABLE IF EXISTS public.Empresa                CASCADE;
 DROP TABLE IF EXISTS public.HabilidadeUsuario      CASCADE;
@@ -32,6 +33,7 @@ DROP SEQUENCE IF EXISTS public.sq_RegistroDAU;
 DROP TYPE IF EXISTS public.TIPO_LOCAL_USO;
 DROP TYPE IF EXISTS public.OPCAO_STATUS;
 
+-- Criações
 -- IDs
 CREATE SEQUENCE public.sq_PlanoPagamento         START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_Empresa                START WITH 1 INCREMENT BY 1;
