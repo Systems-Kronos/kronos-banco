@@ -17,8 +17,8 @@ BEGIN
          WHERE nCdUsuario  = p_nCdUsuario
            AND dDataSaida IS NULL;
     ELSE
-        INSERT INTO RegistroDAU (nCdUsuario, dDataEntrada, cLocalUso)
-                         VALUES (p_nCdUsuario, p_dHeartbeat, p_LocalUso);
+        INSERT INTO RegistroDAU (nCdUsuario, dDataEntrada, cLocalUso, dUltimoHeartbeat)
+                         VALUES (p_nCdUsuario, p_dHeartbeat, p_LocalUso, p_dHeartbeat);
     END IF;
 END;
 $$

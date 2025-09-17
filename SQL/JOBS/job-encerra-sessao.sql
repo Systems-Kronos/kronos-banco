@@ -3,8 +3,8 @@ DO $$
         BEGIN
             PERFORM cron.schedule_in_database(
                     'job-encerra-sessao-ds',
-                    '*/30 * * * *',
-                    'CALL public.sp_encerrar_sessoes_inativas(30);',
+                    '*/10 * * * *',
+                    'CALL public.sp_encerrar_sessao_inativa(15);',
                     'dsSegundoAno'
                     );
             RAISE NOTICE 'Job agendado com sucesso no banco de dados "dsSegundoAno".';
@@ -16,8 +16,8 @@ DO $$
         BEGIN
             PERFORM cron.schedule_in_database(
                     'job-encerra-sessao-db',
-                    '*/30 * * * *',
-                    'CALL public.sp_encerrar_sessoes_inativas(30);',
+                    '*/10 * * * *',
+                    'CALL public.sp_encerrar_sessao_inativa(15);',
                     'dbSegundoAno'
                     );
             RAISE NOTICE 'Job agendado com sucesso no banco de dados "dbSegundoAno".';
