@@ -5,10 +5,8 @@ from dotenv import load_dotenv
 
 def get_sql_files(sql_dir="."):
     sql_files = []
-    # Percorre todos os diretórios, incluindo SQL e JOBS
     for root, _, files in os.walk(sql_dir):
-        # Ignora diretórios que não sejam SQL ou JOBS para otimização
-        if "SQL" not in root and "JOBS" not in root:
+        if "SQL" not in root:
             continue
         for file in files:
             if file.endswith(".sql"):
@@ -17,7 +15,7 @@ def get_sql_files(sql_dir="."):
 
 def separate_files_by_phase(sql_files):
     creation_files, deletion_files, job_files = [], [], []
-    strikethrough_char = '\u0336'
+    strikethrough_char = '\u0336' #Código identificador de texto riscado
     
     for file_path in sql_files:
         if "JOBS" in file_path.split(os.sep):
@@ -39,7 +37,7 @@ def get_category(file_path):
     return "Outros"
 
 def order_deletion_files(deletion_files):
-    order_priority = {"Triggers": 1, "Functions": 2, "Procedures": 3}
+    order_priority = {"Triggers": 1, "Functions": 2, "Procedures": 3} #Ordenação padrão de delete, paranão dar erro de dependência
     deletion_files.sort(key=lambda f: (order_priority.get(get_category(f), 99), f))
     return deletion_files
 
@@ -73,7 +71,7 @@ def topological_sort(graph):
         return sorted_order
     else:
         cycle_nodes = {node for node, degree in in_degree.items() if degree > 0}
-        cycle_files = "\n - " + "\n - ".join([os.path.basename(f) for f in cycle_nodes])
+        cycle_files = "\n - " + "\n - ".join([os.path.basename(f) for f in cycle_nodes]) #Arquvios que chama um ao outro, gerando um looping infinito de dependência
         raise Exception(f"Erro: Ciclo de dependência detectado. Verifique os seguintes arquivos:{cycle_files}")
 
 def order_creation_files(creation_files):
@@ -93,14 +91,13 @@ def order_creation_files(creation_files):
     )
 
 def order_job_files(job_files):
-    extensoes_file = next((f for f in job_files if os.path.basename(f) == 'extensoes.sql'), None)
+    extensoes_file = next((f for f in job_files if os.path.basename(f) == 'extensoes.sql'), None) #Garantir que o arquivo extensoes.sql seja o primeiro a ser executado, já que ele cria tipos personalizados usados pelos outros jobs
     if extensoes_file:
         job_files.remove(extensoes_file)
         return [extensoes_file] + sorted(job_files)
     return sorted(job_files)
 
 def execute_sql_scripts(connection_url, sql_files, action_verb):
-    """Executa scripts SQL genéricos."""
     conn = None
     success_count = 0
     total_count = len(sql_files)
@@ -144,7 +141,7 @@ def main():
         all_sql_files = get_sql_files()
         creation_files, deletion_files, job_files = separate_files_by_phase(all_sql_files)
         
-        # --- FASE 1: EXCLUSÃO ---
+        # --- FASE 1: EXCLUSÃO --- #
         ordered_deletions = order_deletion_files(deletion_files)
         if ordered_deletions:
             print(f"--- FASE 1: EXCLUSÃO ({len(ordered_deletions)} arquivos) ---")
@@ -159,7 +156,7 @@ def main():
             if not dev_del_success: raise Exception("Falha na fase de exclusão em DEV.")
             print("--- FASE DE EXCLUSÃO CONCLUÍDA ---\n")
 
-        # --- FASE 2: CRIAÇÃO/ALTERAÇÃO ---
+        # --- FASE 2: CRIAÇÃO/ALTERAÇÃO --- #
         ordered_creations = order_creation_files(creation_files)
         if ordered_creations:
             print(f"--- FASE 2: CRIAÇÃO/ALTERAÇÃO ({len(ordered_creations)} arquivos) ---")
@@ -174,13 +171,13 @@ def main():
             if not dev_creation_success: raise Exception("Falha na fase de criação/alteração em DEV.")
             print("--- FASE DE CRIAÇÃO/ALTERAÇÃO CONCLUÍDA ---\n")
 
-        # --- FASE 3: JOBS ---
+        # --- FASE 3: JOBS --- #
         ordered_jobs = order_job_files(job_files)
         if ordered_jobs:
             print(f"--- FASE 3: JOBS ({len(ordered_jobs)} arquivos) ---")
             for i, f in enumerate(ordered_jobs, 1): print(f"{i}. {os.path.basename(f)}")
             
-            # Modifica as URLs de conexão para os JOBS
+            # Modifica as URLs de conexão para os JOBS, visto que eles precisam ser executados no banco padrão "defaultdb"
             JOB_DB_NAME = "defaultdb"
             JOB_URL_QA = re.sub(r'/dsSegundoAno', f'/{JOB_DB_NAME}', DATABASE_URL_QA)
             JOB_URL_DEV = re.sub(r'/dbSegundoAno', f'/{JOB_DB_NAME}', DATABASE_URL_DEV)
