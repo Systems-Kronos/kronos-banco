@@ -1,4 +1,4 @@
-DROP TRIGGER IF EXISTS tg_altera_status_tarefa
+DROP TRIGGER IF EXISTS tg_altera_status_tarefa;
 
 -- CREATE OR REPLACE TRIGGER tg_altera_status_tarefa
 --     AFTER INSERT
