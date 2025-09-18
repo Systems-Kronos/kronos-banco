@@ -1,20 +1,33 @@
 -- Reset das tabelas e do esquema
-DROP TABLE IF EXISTS table_log.PlanoPagamento    CASCADE;
-DROP TABLE IF EXISTS table_log.Mensagem          CASCADE;
-DROP TABLE IF EXISTS table_log.Setor             CASCADE;
-DROP TABLE IF EXISTS table_log.Usuario           CASCADE;
-DROP TABLE IF EXISTS table_log.HabilidadeUsuario CASCADE;
-DROP TABLE IF EXISTS table_log.Tarefa            CASCADE;
-DROP TABLE IF EXISTS table_log.AtribuicaoTarefa  CASCADE;
-DROP TABLE IF EXISTS table_log.Report            CASCADE;
-DROP TABLE IF EXISTS table_log.TarefaHabilidade  CASCADE;
-DROP TABLE IF EXISTS table_log.TarefaUsuario     CASCADE;
-DROP SCHEMA IF EXISTS table_log                  CASCADE;
+DROP SCHEMA table_log CASCADE ;
 
--- Criação do Esquema
+-- Criação do SCHEMA table_log
 CREATE SCHEMA table_log;
 
 -- Criação das Tabelas
+CREATE TABLE table_log.RegistroDAU ( nCdSessao           BIGSERIAL       NOT NULL
+                                   , nCdUsuario          BIGINT          NOT NULL
+                                   , dDataEntrada        TIMESTAMPTZ     NOT NULL
+                                   , dDataSaida          TIMESTAMPTZ         NULL
+                                   , dUltimoHeartbeat    TIMESTAMPTZ     NOT NULL
+                                   , cLocalUso           TIPO_LOCAL_USO  NOT NULL
+                                   , iDuracaoMinutos     INTEGER             NULL
+                                   , PRIMARY KEY (nCdSessao)
+                                   , FOREIGN KEY (nCdUsuario) REFERENCES public.Usuario(nCdUsuario)
+                                   );
+
+-- Tabelas com dependência de Tarefa e Usuario
+CREATE TABLE table_log.LogAtribuicaoTarefa ( nCdLogAtribuicao  BIGSERIAL     NOT NULL
+                                           , nCdTarefa         BIGINT        NOT NULL
+                                           , nCdUsuarioAtuante BIGINT        NOT NULL
+                                           , dRealocacao       DATE          NOT NULL DEFAULT NOW()
+                                           , cObservacao       VARCHAR(300)  NOT NULL DEFAULT 'Nenhum comentário para a Tarefa'
+                                           , PRIMARY KEY (nCdLogAtribuicao)
+                                           , FOREIGN KEY (nCdTarefa)         REFERENCES public.Tarefa (nCdTarefa)
+                                           , FOREIGN KEY (nCdUsuarioAtuante) REFERENCES public.Usuario (nCdUsuario)
+                                           );
+
+
 CREATE TABLE table_log.PlanoPagamento ( nCdLog        BIGSERIAL
 	                                  , nCdPlano      BIGINT        NOT NULL 
                                       , cNmPlano      VARCHAR(50)   NOT NULL 
@@ -119,21 +132,11 @@ CREATE TABLE table_log.Tarefa ( nCdLog            BIGSERIAL
                               , iTendencia        INTEGER      NOT NULL
                               , nTempoEstimado    BIGINT       NOT NULL
                               , cDescricao        VARCHAR(255) NOT NULL
-                              , cStatus           VARCHAR(15)  NOT NULL 
+                              , cStatus           OPCAO_STATUS NOT NULL
                               , cOperacao         VARCHAR(50)
                               , dOperacao         TIMESTAMP              														 
                               , PRIMARY KEY (nCdLog)
                               );
-
-CREATE TABLE table_log.AtribuicaoTarefa ( nCdLog
-	                                    , nCdLogAtribuicao  BIGINT NOT NULL 
-                                        , nCdTarefa         BIGINT NOT NULL
-                                        , nCdUsuarioAtuante BIGINT NOT NULL
-                                        , dRealocacao       DATE   NOT NULL 
-                                        , cOperacao         VARCHAR(50)
-                                        , dOperacao         TIMESTAMP              		  
-                                        , PRIMARY KEY (nCdLogAtribuicao)
-                                        );
 
 CREATE TABLE table_log.Report ( nCdLog        BIGSERIAL
 							  , nCdReport     BIGINT       NOT NULL 
