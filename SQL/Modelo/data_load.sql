@@ -2,7 +2,6 @@
 TRUNCATE TABLE public.PlanoPagamento, public.Mensagem, public.Empresa, public.PlanoVantagem, public.Habilidade, public.Setor, public.Usuario, public.HabilidadeUsuario, public.Tarefa, table_log.LogAtribuicaoTarefa, public.Report, public.TarefaHabilidade, public.TarefaUsuario RESTART IDENTITY CASCADE;
 ALTER SEQUENCE public.sq_PlanoPagamento         RESTART WITH 1;
 ALTER SEQUENCE public.sq_Empresa                RESTART WITH 1;
-ALTER SEQUENCE table_log.sq_LogAtribuicaoTarefa RESTART WITH 1;
 ALTER SEQUENCE public.sq_Mensagem               RESTART WITH 1;
 ALTER SEQUENCE public.sq_PlanoVantagem          RESTART WITH 1;
 ALTER SEQUENCE public.sq_Report                 RESTART WITH 1;

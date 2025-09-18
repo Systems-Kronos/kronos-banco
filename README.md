@@ -5,7 +5,7 @@ Este repositório contém a configuração completa de bancos de dados para o pr
 
 * **SQL/**: Scripts para o banco de dados relacional (PostgreSQL).
     * **Modelo/**: Contém o modelo de dados e o script de carga inicial.
-        * `modelo.sql`: Define o esquema do banco de dados com tabelas, chaves primárias, chaves estrangeiras e sequências.
+        * `schema_public.sql`: Define o esquema do banco de dados com tabelas, chaves primárias, chaves estrangeiras e sequências.
         * `data_load.sql`: Script de carga de dados de exemplo para popular as tabelas.
     * **Procedures/**: Procedimentos armazenados para automatizar tarefas.
         * `sp_desativar_empresa_completo.sql`: Um procedimento para desativar uma empresa e todos os seus usuários associados.
