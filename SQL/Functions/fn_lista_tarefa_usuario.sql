@@ -25,7 +25,7 @@ BEGIN
              , tarefa.igravidade
              , tarefa.iurgencia
              , tarefa.itendencia
-             , tarefa.ntempoestimado
+             , tarefa.itempoestimado
              , tarefa.cdescricao
              , tarefa.cstatus
              , tarefa.ddataatribuicao
