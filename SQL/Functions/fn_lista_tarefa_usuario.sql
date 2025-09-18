@@ -12,10 +12,10 @@ CREATE OR REPLACE FUNCTION fn_lista_tarefa_usuario
                   , itendencia          INTEGER
                   , itempoestimado      INTEGER
                   , cdescricao          TEXT
-                  , cstatus             VARCHAR(15)
+                  , cstatus             OPCAO_STATUS
                   , ddataatribuicao     TIMESTAMP
                   , ddataconclusao      TIMESTAMP
-                  , OrigemTarefa        VARCHAR
+                  , cOrigemTarefa        TEXT
                   ) AS $$
 BEGIN
     RETURN QUERY
