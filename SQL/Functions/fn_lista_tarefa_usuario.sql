@@ -10,7 +10,7 @@ CREATE OR REPLACE FUNCTION fn_lista_tarefa_usuario
                   , igravidade          INTEGER
                   , iurgencia           INTEGER
                   , itendencia          INTEGER
-                  , ntempoestimado      NUMERIC
+                  , itempoestimado      INTEGER
                   , cdescricao          TEXT
                   , cstatus             VARCHAR(15)
                   , ddataatribuicao     TIMESTAMP
