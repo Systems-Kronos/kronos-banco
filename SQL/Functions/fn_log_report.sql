@@ -1,0 +1,42 @@
+CREATE OR REPLACE FUNCTION fn_log_report()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN
+    INSERT INTO table_log.Report ( nCdLog 
+								 , nCdReport
+                                 , nCdTarefa
+                                 , cDescricao
+                                 , cProblema
+                                 , cOperacao
+                                 , dOperacao
+                                 )
+                          VALUES ( DEFAULT
+								 , NEW.nCdReport
+                                 , NEW.nCdTarefa
+                                 , NEW.cDescricao
+                                 , NEW.cProblema
+                                 , TG_OP
+                                 , CURRENT_TIMESTAMP
+                                 );
+    RETURN NEW;
+  ELSIF TG_OP = 'DELETE' THEN
+    INSERT INTO table_log.Report ( nCdLog
+								 , nCdReport
+                                 , nCdTarefa
+                                 , cDescricao
+                                 , cProblema
+                                 , cOperacao
+                                 , dOperacao
+                                 )
+                          VALUES ( DEFAULT
+								 , OLD.nCdReport
+                                 , OLD.nCdTarefa
+                                 , OLD.cDescricao
+                                 , OLD.cProblema
+                                 , TG_OP
+                                 , CURRENT_TIMESTAMP
+                                 );
+    RETURN OLD;
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
