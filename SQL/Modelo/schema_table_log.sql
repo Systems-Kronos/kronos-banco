@@ -130,7 +130,7 @@ CREATE TABLE table_log.Tarefa ( nCdLog            BIGSERIAL
                               , iUrgencia         INTEGER      NOT NULL
                               , iTendencia        INTEGER      NOT NULL
                               , iTempoEstimado    INTEGER      NOT NULL
-                              , cDescricao        VARCHAR(255) NOT NULL
+                              , cDescricao        TEXT         NOT NULL
                               , cStatus           OPCAO_STATUS NOT NULL
                               , dDataAtribuicao   TIMESTAMP    NOT NULL
                               , dDataConclusao    TIMESTAMP        NULL
