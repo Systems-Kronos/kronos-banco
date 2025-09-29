@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION fn_lista_tarefas_usuario_gestor
 (
     p_cd_gerente  BIGINT
-,   p_ctptarefa   CHAR(1) DEFAULT '1' -- 1-Todas / 2-Realocadas
+,   p_ctptarefa   CHAR(1) DEFAULT '1' -- 1-Todas / 2-Realocadas / 3-Original
 ,   p_cstatus     CHAR(1) DEFAULT '1' -- 1-Não concluídas / 2-Concluídas / 3-Canceladas / 4-Todas
 )
     RETURNS TABLE ( ncdtarefa           BIGINT
@@ -47,7 +47,8 @@ BEGIN
                OR (p_cstatus = '3' AND tarefa.cstatus = 'Cancelada')
                OR (p_cstatus = '4')
                )
-           AND (  (p_ctptarefa = '2' AND tarefausuario.ncdusuariooriginal != usuario.nCdUsuario)
+           AND (  (p_ctptarefa = '3' AND tarefausuario.ncdusuariooriginal == usuario.nCdUsuario)
+               OR (p_ctptarefa = '2' AND tarefausuario.ncdusuariooriginal != usuario.nCdUsuario)
                OR (p_ctptarefa = '1')
                );
 END;
