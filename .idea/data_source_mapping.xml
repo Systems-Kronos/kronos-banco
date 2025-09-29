@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/SQL/Modelo/schema_table_log.sql" value="ec17565c-7921-4657-9e1e-185135df8219" />
+    <file url="file://$PROJECT_DIR$/SQL/Procedures/sp_envia_sinal_vida.sql" value="ec17565c-7921-4657-9e1e-185135df8219" />
+  </component>
+</project>

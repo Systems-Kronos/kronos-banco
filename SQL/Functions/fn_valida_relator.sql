@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION fn_validar_relator()
+CREATE OR REPLACE FUNCTION fn_valida_relator()
 RETURNS TRIGGER AS $$
 BEGIN
   IF NOT EXISTS ( SELECT bGestor 

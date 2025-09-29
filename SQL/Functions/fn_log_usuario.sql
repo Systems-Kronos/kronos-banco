@@ -9,7 +9,8 @@ BEGIN
                                   , bGestor
                                   , nCdEmpresa
                                   , nCdSetor
-                                  , nCPF
+                                  , nCdCargo
+                                  , cCPF
                                   , cTelefone
                                   , cEmail
                                   , cSenha
@@ -25,7 +26,8 @@ BEGIN
                                   , NEW.bGestor
                                   , NEW.nCdEmpresa
                                   , NEW.nCdSetor
-                                  , NEW.nCPF
+                                  , NEW.nCdCargo
+                                  , NEW.cCPF
                                   , NEW.cTelefone
                                   , NEW.cEmail
                                   , NEW.cSenha
@@ -43,7 +45,8 @@ BEGIN
                                   , bGestor
                                   , nCdEmpresa
                                   , nCdSetor
-                                  , nCPF
+                                  , nCdCargo
+                                  , cCPF
                                   , cTelefone
                                   , cEmail
                                   , cSenha
@@ -59,7 +62,8 @@ BEGIN
                                   , OLD.bGestor
                                   , OLD.nCdEmpresa
                                   , OLD.nCdSetor
-                                  , OLD.nCPF
+                                  , OLD.nCdCargo
+                                  , OLD.cCPF
                                   , OLD.cTelefone
                                   , OLD.cEmail
                                   , OLD.cSenha

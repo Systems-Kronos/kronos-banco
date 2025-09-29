@@ -11,6 +11,7 @@ BEGIN
           FROM RegistroDAU
          WHERE nCdUsuario  = p_nCdUsuario
            AND dDataSaida IS NULL
+           AND cLocalUso   = p_LocalUso
     ) THEN
         UPDATE RegistroDAU
            SET dUltimoHeartbeat = p_dHeartbeat
