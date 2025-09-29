@@ -142,6 +142,7 @@ CREATE TABLE table_log.Tarefa ( nCdLog            BIGSERIAL
 CREATE TABLE table_log.Report ( nCdLog        BIGSERIAL
 							  , nCdReport     BIGINT       NOT NULL 
                               , nCdTarefa     BIGINT       NOT NULL
+                              , nCdUsuario    BIGINT       NOT NULL
                               , cDescricao    VARCHAR(255) NOT NULL
                               , cProblema     VARCHAR(255) NOT NULL
                               , cStatus       VARCHAR(50)  NOT NULL

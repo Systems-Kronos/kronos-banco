@@ -144,11 +144,13 @@ CREATE TABLE public.Tarefa ( nCdTarefa         BIGINT        NOT NULL DEFAULT NE
 
 CREATE TABLE public.Report ( nCdReport  BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_Report')
     , nCdTarefa  BIGINT        NOT NULL
+    , nCdUsuario BIGINT        NOT NULL
     , cDescricao VARCHAR(255)  NOT NULL
     , cProblema  VARCHAR(255)  NOT NULL
     , cStatus    OPCAO_STATUS  NOT NULL DEFAULT 'Pendente'
     , PRIMARY KEY (nCdReport)
-    , FOREIGN KEY (nCdTarefa) REFERENCES public.Tarefa(nCdTarefa)
+    , FOREIGN KEY (nCdTarefa)  REFERENCES public.Tarefa(nCdTarefa)
+    , FOREIGN KEY (nCdUsuario) REFERENCES public.Usuario(nCdUsuario)
 );
 
 CREATE TABLE public.TarefaHabilidade ( nCdTarefaHabilidade BIGINT NOT NULL DEFAULT NEXTVAL('public.sq_TarefaHabilidade')

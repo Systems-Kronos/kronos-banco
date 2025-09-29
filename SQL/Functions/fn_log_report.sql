@@ -5,6 +5,7 @@ BEGIN
     INSERT INTO table_log.Report ( nCdLog 
 								 , nCdReport
                                  , nCdTarefa
+                                 , nCdUsuario
                                  , cDescricao
                                  , cProblema
                                  , cStatus
@@ -14,6 +15,7 @@ BEGIN
                           VALUES ( DEFAULT
 								 , NEW.nCdReport
                                  , NEW.nCdTarefa
+                                 , NEW.nCdUsuario
                                  , NEW.cDescricao
                                  , NEW.cProblema
                                  , NEW.cStatus
@@ -25,6 +27,7 @@ BEGIN
     INSERT INTO table_log.Report ( nCdLog
 								 , nCdReport
                                  , nCdTarefa
+                                 , nCdUsuario
                                  , cDescricao
                                  , cProblema
                                  , cStatus
@@ -34,6 +37,7 @@ BEGIN
                           VALUES ( DEFAULT
 								 , OLD.nCdReport
                                  , OLD.nCdTarefa
+                                 , OLD.nCdUsuario
                                  , OLD.cDescricao
                                  , OLD.cProblema
                                  , OLD.cStatus
