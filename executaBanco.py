@@ -70,7 +70,7 @@ def importar_cargos_cbo(cursor):
 
         execute_values(cursor, sql_insert_query, data_to_insert)
 
-        print(f"   - SUCESSO! {cursor.rowcount} cargos foram inseridos na tabela '{nome_tabela_alvo}'.")
+        print(f"   - SUCESSO! {len(df_final)} cargos foram inseridos na tabela '{nome_tabela_alvo}'.")
         return True
     except (Exception, psycopg2.DatabaseError) as error:
         print(f"   - ERRO durante a inserção dos cargos: {error}")

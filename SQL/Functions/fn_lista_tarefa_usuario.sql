@@ -42,7 +42,7 @@ BEGIN
                OR (p_cstatus = '3' AND tarefa.cstatus = 'Cancelada')
                OR (p_cstatus = '4')
                )
-           AND (  (p_ctptarefa = '3' AND tarefausuario.ncdusuariooriginal == p_cd_usuario)
+           AND (  (p_ctptarefa = '3' AND tarefausuario.ncdusuariooriginal  = p_cd_usuario)
                OR (p_ctptarefa = '2' AND tarefausuario.ncdusuariooriginal != p_cd_usuario)
                OR (p_ctptarefa = '1')
                );
