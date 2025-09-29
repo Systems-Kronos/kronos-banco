@@ -154,12 +154,14 @@ def order_creation_files(creation_files):
         cat = get_category(f)
         if cat in all_files_by_cat: all_files_by_cat[cat].append(f)
 
+    modelo_files = sorted(all_files_by_cat["Modelo"], key=lambda f: ('schema_table_log' in f, f))
+
     function_files = all_files_by_cat["Functions"]
     dependency_graph = {func: analyze_dependencies(func, function_files) for func in function_files}
     sorted_functions = topological_sort(dependency_graph)
 
     return (
-        all_files_by_cat["Modelo"] + all_files_by_cat["Views"] + all_files_by_cat["Procedures"] +
+        modelo_files + all_files_by_cat["Views"] + all_files_by_cat["Procedures"] +
         sorted_functions + all_files_by_cat["Triggers"] +
         all_files_by_cat["DataLoad"]
     )
