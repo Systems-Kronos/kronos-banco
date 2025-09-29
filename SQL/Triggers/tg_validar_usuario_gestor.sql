@@ -3,4 +3,4 @@ CREATE OR REPLACE TRIGGER tg_validar_usuario_gestor
         OR UPDATE
         ON usuario
     FOR EACH ROW
-        EXECUTE FUNCTION fn_validar_usuario_gestor();
+        EXECUTE FUNCTION fn_valida_usuario_gestor();

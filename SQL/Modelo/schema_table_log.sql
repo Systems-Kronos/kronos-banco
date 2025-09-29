@@ -95,14 +95,14 @@ CREATE TABLE table_log.Setor ( nCdLog        BIGSERIAL
 
 CREATE TABLE table_log.Usuario ( nCdLog        BIGSERIAL
 							   , nCdUsuario    BIGINT       NOT NULL 
-                               , cNmUsuario    VARCHAR(100) NOT NULL
-                               , cSbrUsuario   VARCHAR(255) NOT NULL
+                               , cNmUsuario    VARCHAR(200) NOT NULL
                                , cSgUsuario    VARCHAR(50)      NULL
                                , nCdGestor     BIGINT           NULL
                                , bGestor       BOOLEAN      NOT NULL
                                , nCdEmpresa    BIGINT       NOT NULL
                                , nCdSetor      BIGINT       NOT NULL
-                               , nCPF          VARCHAR(15)  NOT NULL
+                               , nCdCargo      BIGINT       NOT NULL
+                               , cCPF          VARCHAR(15)  NOT NULL
                                , cTelefone     VARCHAR(20)      NULL
                                , cEmail        VARCHAR(255)     NULL
                                , cSenha        VARCHAR(50)  NOT NULL 
@@ -126,13 +126,14 @@ CREATE TABLE table_log.Tarefa ( nCdLog            BIGSERIAL
 							  , nCdTarefa         BIGINT       NOT NULL
                               , cNmTarefa         VARCHAR(255) NOT NULL
                               , nCdUsuarioRelator BIGINT       NOT NULL
-                              , nCdHabilidade     BIGINT       NOT NULL
                               , iGravidade        INTEGER      NOT NULL
                               , iUrgencia         INTEGER      NOT NULL
                               , iTendencia        INTEGER      NOT NULL
-                              , nTempoEstimado    BIGINT       NOT NULL
+                              , iTempoEstimado    INTEGER      NOT NULL
                               , cDescricao        VARCHAR(255) NOT NULL
                               , cStatus           OPCAO_STATUS NOT NULL
+                              , dDataAtribuicao   TIMESTAMP    NOT NULL
+                              , dDataConclusao    TIMESTAMP        NULL
                               , cOperacao         VARCHAR(50)
                               , dOperacao         TIMESTAMP              														 
                               , PRIMARY KEY (nCdLog)
@@ -143,6 +144,7 @@ CREATE TABLE table_log.Report ( nCdLog        BIGSERIAL
                               , nCdTarefa     BIGINT       NOT NULL
                               , cDescricao    VARCHAR(255) NOT NULL
                               , cProblema     VARCHAR(255) NOT NULL
+                              , cStatus       VARCHAR(50)  NOT NULL
                               , cOperacao     VARCHAR(50)
                               , dOperacao     TIMESTAMP              													 
                               , PRIMARY KEY (nCdLog)

@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION fn_obter_gestor_usuario
+CREATE OR REPLACE FUNCTION fn_obtem_gestor_usuario
 (
     p_nCdUsuario DECIMAL(10,0)
 )

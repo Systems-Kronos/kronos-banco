@@ -7,6 +7,7 @@ BEGIN
                                  , nCdTarefa
                                  , cDescricao
                                  , cProblema
+                                 , cStatus
                                  , cOperacao
                                  , dOperacao
                                  )
@@ -15,6 +16,7 @@ BEGIN
                                  , NEW.nCdTarefa
                                  , NEW.cDescricao
                                  , NEW.cProblema
+                                 , NEW.cStatus
                                  , TG_OP
                                  , CURRENT_TIMESTAMP
                                  );
@@ -25,6 +27,7 @@ BEGIN
                                  , nCdTarefa
                                  , cDescricao
                                  , cProblema
+                                 , cStatus
                                  , cOperacao
                                  , dOperacao
                                  )
@@ -33,6 +36,7 @@ BEGIN
                                  , OLD.nCdTarefa
                                  , OLD.cDescricao
                                  , OLD.cProblema
+                                 , OLD.cStatus
                                  , TG_OP
                                  , CURRENT_TIMESTAMP
                                  );

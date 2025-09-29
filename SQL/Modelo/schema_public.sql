@@ -18,6 +18,7 @@ CREATE SEQUENCE public.sq_Habilidade             START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_TarefaUsuario          START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_TarefaHabilidade       START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_HabilidadeUsuario      START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE public.sq_Cargo                  START WITH 1 INCREMENT BY 1;
 
 -- Types (Para substituit check)
 CREATE TYPE public.TIPO_LOCAL_USO AS ENUM ( 'APP_MOBILE'
@@ -34,16 +35,23 @@ CREATE TYPE public.OPCAO_STATUS   AS ENUM ( 'Pendente'
 
 -- Tabelas sem dependências
 CREATE TABLE public.PlanoPagamento ( nCdPlano BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_PlanoPagamento')
-    , cNmPlano VARCHAR(50)   NOT NULL UNIQUE
+    , cNmPlano VARCHAR(50)     NOT NULL UNIQUE
     , nPreco   DECIMAL(10,2)   NOT NULL
     , PRIMARY KEY(nCdPlano)
 );
 
 CREATE TABLE public.Mensagem ( nCdMensagem BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_Mensagem')
     , cTitulo    VARCHAR(50)       NOT NULL
-    , cMensagem  VARCHAR(255)    NOT NULL
-    , cCategoria VARCHAR(70)    NOT NULL
+    , cMensagem  VARCHAR(255)      NOT NULL
+    , cCategoria VARCHAR(70)       NOT NULL
     , PRIMARY KEY(nCdMensagem)
+);
+
+CREATE TABLE public.Cargo ( nCdCargo BIGINT NOT NULL  DEFAULT NEXTVAL('public.sq_Cargo')
+    , cNmCargo              VARCHAR(255) NOT NULL
+    , cCdCBO                VARCHAR(10)      NULL
+    , cNmFamiliaOcupacional VARCHAR(255)     NULL
+    , PRIMARY KEY (nCdCargo)
 );
 
 -- Tabelas com dependência de PlanoPagamento
@@ -87,12 +95,13 @@ CREATE TABLE public.Setor ( nCdSetor   BIGINT        NOT NULL DEFAULT NEXTVAL('p
 
 -- Tabela com dependência de Empresa e Setor
 CREATE TABLE public.Usuario ( nCdUsuario BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_Usuario')
-    , cNmUsuario  VARCHAR(100)  NOT NULL
+    , cNmUsuario  VARCHAR(200)  NOT NULL
     , nCdGestor   BIGINT            NULL
     , bGestor     BOOLEAN       NOT NULL
     , nCdEmpresa  BIGINT        NOT NULL
     , nCdSetor    BIGINT        NOT NULL
-    , nCPF        VARCHAR(15)   NOT NULL
+    , nCdCargo    BIGINT        NOT NULL
+    , cCPF        VARCHAR(15)   NOT NULL
     , cTelefone   VARCHAR(20)       NULL
     , cEmail      VARCHAR(255)      NULL
     , cSenha      VARCHAR(50)   NOT NULL DEFAULT 't33'
@@ -102,6 +111,7 @@ CREATE TABLE public.Usuario ( nCdUsuario BIGINT        NOT NULL DEFAULT NEXTVAL(
     , FOREIGN KEY (nCdEmpresa) REFERENCES public.Empresa (nCdEmpresa)
     , FOREIGN KEY (nCdSetor)   REFERENCES public.Setor (nCdSetor)
     , FOREIGN KEY (nCdGestor)  REFERENCES public.Usuario (nCdUsuario)
+    , FOREIGN KEY (nCdCargo)   REFERENCES public.Cargo (nCdCargo)
 );
 
 -- Tabelas com dependência de Habilidade, Usuario e Mensagem
@@ -136,7 +146,7 @@ CREATE TABLE public.Report ( nCdReport  BIGINT        NOT NULL DEFAULT NEXTVAL('
     , nCdTarefa  BIGINT        NOT NULL
     , cDescricao VARCHAR(255)  NOT NULL
     , cProblema  VARCHAR(255)  NOT NULL
-    , cStatus    OPCAO_STATUS   NOT NULL DEFAULT 'Pendente'
+    , cStatus    OPCAO_STATUS  NOT NULL DEFAULT 'Pendente'
     , PRIMARY KEY (nCdReport)
     , FOREIGN KEY (nCdTarefa) REFERENCES public.Tarefa(nCdTarefa)
 );
