@@ -46,6 +46,16 @@ CREATE TABLE table_log.Mensagem ( nCdLog        BIGSERIAL
                                 , dOperacao     TIMESTAMP                 
                                 , PRIMARY KEY (nCdLog)
                                 );
+								
+CREATE TABLE table_log.Cargo ( nCdLog                BIGSERIAL
+                             , nCdCargo              BIGINT       NOT NULL 
+                             , cNmCargo              VARCHAR(255) NOT NULL
+                             , cCdCBO                VARCHAR(10)      NULL
+                             , cNmFamiliaOcupacional VARCHAR(255)     NULL
+                             , cOperacao             VARCHAR(50)
+                             , dOperacao             TIMESTAMP     							  
+                             , PRIMARY KEY (nCdLog)
+                             );
 
 CREATE TABLE table_log.Empresa ( nCdLog            BIGSERIAL
 							   , nCdEmpresa        BIGINT       NOT NULL 
