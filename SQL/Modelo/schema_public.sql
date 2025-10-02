@@ -178,3 +178,36 @@ CREATE TABLE public.TarefaUsuario ( nCdTarefaUsuario   BIGINT        NOT NULL DE
                                   , FOREIGN KEY (nCdUsuarioOriginal) REFERENCES public.Usuario(nCdUsuario)
                                   , FOREIGN KEY (nCdUsuarioAtuante)  REFERENCES public.Usuario(nCdUsuario)
                                   );
+
+-- Índices
+
+-- Mensagem
+CREATE INDEX idx_mensagem_categoria           ON Mensagem(cCategoria);
+                                                                                        
+-- Empresa                                    
+CREATE INDEX idx_empresa_plano_pagamento      ON Empresa(nCdPlanoPagamento); 
+CREATE INDEX idx_empresa_ativo                ON Empresa(bAtivo);
+                                              
+-- Índice Setor                               
+CREATE INDEX idx_setor_empresa                ON Setor(nCdEmpresa); 
+                                              
+-- Índice Habilidade                          
+CREATE INDEX idx_habilidade_empresa           ON Habilidade(nCdEmpresa);   
+                                              
+-- Índices Usuários                           
+CREATE INDEX idx_usuario_empresa              ON Usuario(nCdEmpresa); 
+CREATE INDEX idx_usuario_setor                ON Usuario(nCdSetor);  
+CREATE INDEX idx_usuario_gestor               ON Usuario(nCdGestor); 
+CREATE INDEX idx_usuario_ativo                ON Usuario(bAtivo);
+                                              
+-- Tarefa                                     
+CREATE INDEX idx_tarefa_status                ON Tarefa(cStatus);
+CREATE INDEX idx_tarefa_usuario_relator       ON Tarefa(nCdUsuarioRelator); 
+
+-- Report
+CREATE INDEX idx_report_usuario               ON Report(nCdUsuario); 
+CREATE INDEX idx_report_tarefa                ON Report(nCdTarefa); 
+CREATE INDEX idx_report_status                ON Report(cStatus);
+
+-- TarefaHabilidade
+CREATE INDEX idx_tarefa_habilidade_prioridade ON TarefaHabilidade(iPrioridade);                                  
