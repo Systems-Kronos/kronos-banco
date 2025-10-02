@@ -111,7 +111,6 @@ CREATE TABLE table_log.Usuario ( nCdLog        BIGSERIAL
                                , cOperacao     VARCHAR(50)
                                , dOperacao     TIMESTAMP              											  
                                , PRIMARY KEY (nCdLog)
-                               , UNIQUE (nCdUsuario)
                                );
 
 CREATE TABLE table_log.HabilidadeUsuario ( nCdLog        BIGSERIAL
