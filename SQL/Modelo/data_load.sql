@@ -1,11 +1,12 @@
 -- Limpa todas as tabelas e reinicia as sequências para garantir uma carga de dados limpa (CORRIGIDO)
-TRUNCATE TABLE public.PlanoPagamento, public.Mensagem, public.Empresa, public.PlanoVantagem, public.Habilidade, public.Setor, public.Usuario, public.HabilidadeUsuario, public.Tarefa, table_log.LogAtribuicaoTarefa, public.Report, public.TarefaHabilidade, public.TarefaUsuario RESTART IDENTITY CASCADE;
+TRUNCATE TABLE public.PlanoPagamento, public.Mensagem, public.Empresa, public.PlanoVantagem, public.Habilidade, public.Setor, public.Cargo, public.Usuario, public.HabilidadeUsuario, public.Tarefa, table_log.LogAtribuicaoTarefa, public.Report, public.TarefaHabilidade, public.TarefaUsuario RESTART IDENTITY CASCADE;
 ALTER SEQUENCE public.sq_PlanoPagamento         RESTART WITH 1;
 ALTER SEQUENCE public.sq_Empresa                RESTART WITH 1;
 ALTER SEQUENCE public.sq_Mensagem               RESTART WITH 1;
 ALTER SEQUENCE public.sq_PlanoVantagem          RESTART WITH 1;
 ALTER SEQUENCE public.sq_Report                 RESTART WITH 1;
 ALTER SEQUENCE public.sq_Setor                  RESTART WITH 1;
+ALTER SEQUENCE public.sq_Cargo                  RESTART WITH 1;
 ALTER SEQUENCE public.sq_Tarefa                 RESTART WITH 1;
 ALTER SEQUENCE public.sq_Usuario                RESTART WITH 1;
 ALTER SEQUENCE public.sq_Habilidade             RESTART WITH 1;
@@ -110,6 +111,41 @@ INSERT INTO public.Setor (nCdSetor, nCdEmpresa, cNmSetor, cSgSetor) VALUES
                                                                         (nextval('public.sq_Setor'), 9, 'TI - Saúde', 'TIS'),
                                                                         (nextval('public.sq_Setor'), 10, 'Produção Agrícola', 'PAG'),
                                                                         (nextval('public.sq_Setor'), 10, 'Pecuária', 'PEC');
+
+
+-- Inserindo dados na tabela Cargo
+INSERT INTO public.Cargo (nCdCargo, cNmCargo, cCdCBO, cNmFamiliaOcupacional) VALUES
+(101, 'Diretor de Tecnologia da Informação', '1234', 'Diretoria'),
+(102, 'Diretora de Marketing', '5678', 'Diretoria'),
+(103, 'Diretor Financeiro', '9101', 'Diretoria'),
+(104, 'Gerente de Logística', '1121', 'Gerência'),
+(105, 'Diretor de Pesquisa e Desenvolvimento (P&D)', '3141', 'Diretoria'),
+(106, 'Diretora de Criação', '5161', 'Diretoria'),
+(107, 'Gerente de Produção e Operações', '7181', 'Gerência'),
+(108, 'Gerente de E-commerce', '9202', 'Gerência'),
+(109, 'Diretora de Serviços de Saúde', '1222', 'Diretoria'),
+(110, 'Diretor de Produção Agropecuária', '3242', 'Diretoria'),
+(201, 'Analista de Desenvolvimento de Sistemas', '5262', 'Analista'),
+(202, 'Administradora de Redes', '7282', 'Analista'),
+(203, 'Analista de Suporte Computacional', '9303', 'Analista'),
+(204, 'Analista de Marketing', '1323', 'Analista'),
+(205, 'Assistente de Vendas', '3343', 'Assistente'),
+(206, 'Analista Financeiro', '5363', 'Analista'),
+(207, 'Contador', '7383', 'Analista'),
+(208, 'Analista de Logística', '9404', 'Analista'),
+(209, 'Almoxarife', '1424', 'Assistente'),
+(210, 'Pesquisadora de Engenharia e Tecnologia', '3444', 'Pesquisador'),
+(211, 'Inspetor de Qualidade', '5464', 'Analista'),
+(212, 'Designer Gráfico', '7484', 'Analista'),
+(213, 'Analista de Mídias Sociais', '9505', 'Analista'),
+(214, 'Alimentador de Linha de Produção', '1525', 'Operacional'),
+(215, 'Mecânico de Manutenção de Máquinas', '3545', 'Operacional'),
+(216, 'Analista de E-commerce', '5565', 'Analista'),
+(217, 'Operador de Telemarketing', '7585', 'Operacional'),
+(218, 'Enfermeira', '9606', 'Profissional de Saúde'),
+(219, 'Recepcionista de Consultório Médico', '1626', 'Profissional de Saúde'),
+(220, 'Trabalhadora da Pecuária (Bovinos)', '3646', 'Operacional'),
+(221, 'Comprador', '5666', 'Analista');
 
 -- Inserindo dados na tabela Usuario
 -- Gestores (IDs 1 a 10)
