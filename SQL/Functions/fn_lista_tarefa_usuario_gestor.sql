@@ -1,31 +1,37 @@
-CREATE OR REPLACE FUNCTION fn_lista_tarefas_usuario_gestor
+CREATE OR REPLACE FUNCTION fn_lista_tarefa_usuario_gestor
 (
     p_cd_gerente  BIGINT
 ,   p_ctptarefa   CHAR(1) DEFAULT '1' -- 1-Todas / 2-Realocadas / 3-Original
 ,   p_cstatus     CHAR(1) DEFAULT '1' -- 1-Não concluídas / 2-Concluídas / 3-Canceladas / 4-Todas
 )
-    RETURNS TABLE ( ncdtarefa           BIGINT
-                  , cnmtarefa           VARCHAR(255)
-                  , ncdusuariorelator   BIGINT
-                  , nCdUsuarioAtuante   BIGINT
-                  , cNmUsuarioAtuante   VARCHAR(100)
-                  , igravidade          INTEGER
-                  , iurgencia           INTEGER
-                  , itendencia          INTEGER
-                  , itempoestimado      INTEGER
-                  , cdescricao          TEXT
-                  , cstatus             OPCAO_STATUS
-                  , ddataatribuicao     TIMESTAMP
-                  , ddataconclusao      TIMESTAMP
-                  , cOrigemTarefa        TEXT
+    RETURNS TABLE ( ncdtarefa              BIGINT
+                  , cnmtarefa              VARCHAR(255)
+                  , ncdusuariorelator      BIGINT
+                  , nCdUsuarioAtuante      BIGINT
+                  , cNmUsuarioAtuante      VARCHAR(100)
+                  , cFotoUsuarioAtuante    VARCHAR
+                  , nCdSetorUsuarioAtuante BIGINT
+                  , cNmSetorUsuarioAtuante VARCHAR(100)
+                  , igravidade             INTEGER
+                  , iurgencia              INTEGER
+                  , itendencia             INTEGER
+                  , itempoestimado         INTEGER
+                  , cdescricao             TEXT
+                  , cstatus                OPCAO_STATUS
+                  , ddataatribuicao        TIMESTAMP
+                  , ddataconclusao         TIMESTAMP
+                  , cOrigemTarefa          TEXT
                   ) AS $$
 BEGIN
     RETURN QUERY
         SELECT tarefa.ncdtarefa
              , tarefa.cnmtarefa
              , tarefa.ncdusuariorelator
-             , usuario.nCdUsuario AS nCdUsuarioAtuante
-             , usuario.cNmUsuario AS cNmUsuarioAtuante
+             , usuario.nCdUsuario       AS nCdUsuarioAtuante
+             , usuario.cNmUsuario       AS cNmUsuarioAtuante
+             , usuario.cFoto            AS cFotoUsuarioAtuante
+             , usuario.nCdSetor         AS nCdSetorUsuarioAtuante
+             , setor.cNmSetor           AS cNmSetorUsuarioAtuante
              , tarefa.igravidade
              , tarefa.iurgencia
              , tarefa.itendencia
@@ -41,6 +47,7 @@ BEGIN
           FROM tarefausuario
                INNER JOIN tarefa  ON tarefausuario.ncdtarefa         = tarefa.ncdtarefa
                INNER JOIN usuario ON tarefausuario.ncdusuarioatuante = usuario.ncdusuario
+               INNER JOIN setor   ON usuario.ncdsetor                = setor.ncdsetor
          WHERE usuario.nCdGestor = p_cd_gerente
            AND (  (p_cstatus = '1' AND tarefa.cstatus IN ('Pendente', 'Em Andamento'))
                OR (p_cstatus = '2' AND tarefa.cstatus = 'Concluída')

@@ -15,6 +15,7 @@ CREATE OR REPLACE FUNCTION fn_funcinarios_gestor
                   , cCPF           VARCHAR(15)
                   , cTelefone      VARCHAR(20)
                   , cEmail         VARCHAR(255)
+                  , cFoto          VARCHAR
                   , bAtivo         BOOLEAN
                   ) AS $$
 BEGIN
@@ -32,6 +33,7 @@ BEGIN
              , vwIF.cCPF
              , vwIF.cTelefone
              , vwIF.cEmail
+             , vwIF.cFoto
              , vwIF.bAtivo
           FROM vw_info_funcionario vwIF
          WHERE vwIF.nCdGestor = p_cd_gestor;
