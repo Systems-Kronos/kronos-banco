@@ -2,7 +2,7 @@ CREATE OR REPLACE FUNCTION fn_lista_tarefa_usuario_gestor
 (
     p_cd_gerente  BIGINT
 ,   p_ctptarefa   CHAR(1) DEFAULT '1' -- 1-Todas / 2-Realocadas / 3-Original
-,   p_cstatus     CHAR(1) DEFAULT '1' -- 1-Não concluídas / 2-Concluídas / 3-Canceladas / 4-Todas
+,   p_cstatus     CHAR(1) DEFAULT '1' -- 1-Pendentes / 2-Em Andamento / 3-Concluídas / 4-Canceladas / 5-Todas
 )
     RETURNS TABLE ( ncdtarefa              BIGINT
                   , cnmtarefa              VARCHAR(255)
@@ -49,10 +49,11 @@ BEGIN
                INNER JOIN usuario ON tarefausuario.ncdusuarioatuante = usuario.ncdusuario
                INNER JOIN setor   ON usuario.ncdsetor                = setor.ncdsetor
          WHERE usuario.nCdGestor = p_cd_gerente
-           AND (  (p_cstatus = '1' AND tarefa.cstatus IN ('Pendente', 'Em Andamento'))
-               OR (p_cstatus = '2' AND tarefa.cstatus = 'Concluída')
-               OR (p_cstatus = '3' AND tarefa.cstatus = 'Cancelada')
-               OR (p_cstatus = '4')
+           AND (  (p_cstatus = '1' AND tarefa.cstatus = 'Pendente')
+               OR (p_cstatus = '2' AND tarefa.cstatus = 'Em Andamento')
+               OR (p_cstatus = '3' AND tarefa.cstatus = 'Concluída')
+               OR (p_cstatus = '4' AND tarefa.cstatus = 'Cancelada')
+               OR (p_cstatus = '5')
                )
            AND (  (p_ctptarefa = '3' AND tarefausuario.ncdusuariooriginal  = usuario.nCdUsuario)
                OR (p_ctptarefa = '2' AND tarefausuario.ncdusuariooriginal != usuario.nCdUsuario)
