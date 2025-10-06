@@ -7,6 +7,7 @@
     <file url="file://$PROJECT_DIR$/SQL/Functions/fn_lista_tarefa_usuario_gestor.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/SQL/Functions/fn_reports_gestor.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/SQL/Functions/̶f̶n̶_̶a̶l̶t̶e̶r̶a̶_̶s̶t̶a̶t̶u̶s̶_̶t̶a̶r̶e̶f̶a̶.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/SQL/JOBS/extensoes.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/SQL/JOBS/job-encerra-sessao.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/SQL/Modelo/data_load.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/SQL/Modelo/schema_table_log.sql" dialect="PostgreSQL" />
