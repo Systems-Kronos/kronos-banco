@@ -1,8 +1,7 @@
 -- Limpa todas as tabelas e reinicia as sequências para garantir uma carga de dados limpa (CORRIGIDO)
-TRUNCATE TABLE public.PlanoPagamento, public.Mensagem, public.Empresa, public.PlanoVantagem, public.Habilidade, public.Setor, public.Cargo, public.Usuario, public.HabilidadeUsuario, public.Tarefa, table_log.LogAtribuicaoTarefa, public.Report, public.TarefaHabilidade, public.TarefaUsuario RESTART IDENTITY CASCADE;
+TRUNCATE TABLE public.PlanoPagamento, public.Empresa, public.PlanoVantagem, public.Habilidade, public.Setor, public.Cargo, public.Usuario, public.HabilidadeUsuario, public.Tarefa, table_log.LogAtribuicaoTarefa, public.Report, public.TarefaHabilidade, public.TarefaUsuario RESTART IDENTITY CASCADE;
 ALTER SEQUENCE public.sq_PlanoPagamento         RESTART WITH 1;
 ALTER SEQUENCE public.sq_Empresa                RESTART WITH 1;
-ALTER SEQUENCE public.sq_Mensagem               RESTART WITH 1;
 ALTER SEQUENCE public.sq_PlanoVantagem          RESTART WITH 1;
 ALTER SEQUENCE public.sq_Report                 RESTART WITH 1;
 ALTER SEQUENCE public.sq_Setor                  RESTART WITH 1;
@@ -22,18 +21,6 @@ INSERT INTO public.PlanoPagamento (nCdPlano, cNmPlano, nPreco) VALUES
                                                                    (nextval('public.sq_PlanoPagamento'), 'Empresarial', 1000.00),
                                                                    (nextval('public.sq_PlanoPagamento'), 'Corporativo', 2500.00);
 
--- Inserindo dados na tabela Mensagem
-INSERT INTO public.Mensagem (nCdMensagem, cTitulo, cMensagem, cCategoria) VALUES
-                                                                              (nextval('public.sq_Mensagem'), 'Bem-vindo(a)!', 'Sua conta foi criada com sucesso! Explore todas as funcionalidades.', 'Boas-vindas'),
-                                                                              (nextval('public.sq_Mensagem'), 'Tarefa Concluída', 'A Tarefa "Melhoria da Interface do Usuário" foi finalizada.', 'Notificação'),
-                                                                              (nextval('public.sq_Mensagem'), 'Nova Atribuição', 'Você foi atribuído a uma nova Tarefa. Verifique seus projetos.', 'Atribuição'),
-                                                                              (nextval('public.sq_Mensagem'), 'Alerta de Prazo', 'O prazo para a Tarefa "Relatório de Vendas Q3" está se esgotando!', 'Urgência'),
-                                                                              (nextval('public.sq_Mensagem'), 'Atualização de Sistema', 'O sistema Kronos foi atualizado com novos recursos. Confira as novidades.', 'Informativo'),
-                                                                              (nextval('public.sq_Mensagem'), 'Novo Setor', 'Um novo Setor foi adicionado na sua Empresa.', 'Informativo'),
-                                                                              (nextval('public.sq_Mensagem'), 'Habilidade Adicionada', 'Uma nova Habilidade foi adicionada ao sistema.', 'Informativo'),
-                                                                              (nextval('public.sq_Mensagem'), 'Report Criado', 'Um novo Report foi criado para a Tarefa "Revisão de Código".', 'Notificação'),
-                                                                              (nextval('public.sq_Mensagem'), 'Reunião Agendada', 'Foi agendada uma reunião com a equipe de projetos.', 'Reunião'),
-                                                                              (nextval('public.sq_Mensagem'), 'Feedback Recebido', 'Você recebeu um feedback sobre seu trabalho.', 'Feedback');
 
 -- Inserindo dados na tabela Empresa
 INSERT INTO public.Empresa (nCdEmpresa, cNmEmpresa, cSgEmpresa, cCNPJ, cTelefone, cEmail, cCEP, nCdPlanoPagamento, bAtivo) VALUES
