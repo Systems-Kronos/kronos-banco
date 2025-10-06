@@ -178,3 +178,52 @@ CREATE TABLE public.TarefaUsuario ( nCdTarefaUsuario   BIGINT        NOT NULL DE
                                   , FOREIGN KEY (nCdUsuarioOriginal) REFERENCES public.Usuario(nCdUsuario)
                                   , FOREIGN KEY (nCdUsuarioAtuante)  REFERENCES public.Usuario(nCdUsuario)
                                   );
+
+-- Índices
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+-- Empresas
+CREATE INDEX idx_empresa_plano_pagamento ON public.Empresa(nCdPlanoPagamento);
+CREATE INDEX idx_empresa_ativo           ON public.Empresa(bAtivo);
+
+-- Setor
+CREATE INDEX idx_setor_empresa ON public.Setor(nCdEmpresa);
+
+-- Habilidade
+CREATE INDEX idx_habilidade_empresa ON public.Habilidade(nCdEmpresa);
+
+-- Usuário (FKs)
+CREATE INDEX idx_usuario_empresa ON public.Usuario(nCdEmpresa);
+CREATE INDEX idx_usuario_setor   ON public.Usuario(nCdSetor);
+CREATE INDEX idx_usuario_gestor  ON public.Usuario(nCdGestor);
+CREATE INDEX idx_usuario_ativo   ON public.Usuario(bAtivo);
+
+-- Tarefa
+CREATE INDEX idx_tarefa_status          ON public.Tarefa(cStatus);
+CREATE INDEX idx_tarefa_usuario_relator ON public.Tarefa(nCdUsuarioRelator);
+
+-- Report
+CREATE INDEX idx_report_usuario ON public.Report(nCdUsuario);
+CREATE INDEX idx_report_tarefa  ON public.Report(nCdTarefa);
+CREATE INDEX idx_report_status  ON public.Report(cStatus);
+
+-- Mensagem
+CREATE INDEX idx_mensagem_categoria ON public.Mensagem(cCategoria);
+
+-- TarefaHabilidade
+CREATE INDEX idx_tarefa_habilidade_prioridade ON public.TarefaHabilidade(iPrioridade);
+
+-- Tabela TarefaUsuario: Críticos para listagem (fn_lista_tarefa_usuario) e realocação (sp_realoca_tarefa)
+CREATE INDEX idx_tu_usuario_atuante  ON public.TarefaUsuario(nCdUsuarioAtuante);
+CREATE INDEX idx_tu_tarefa_id        ON public.TarefaUsuario(nCdTarefa);
+CREATE INDEX idx_tu_usuario_original ON public.TarefaUsuario(nCdUsuarioOriginal);
+
+-- Tabela HabilidadeUsuario
+CREATE INDEX idx_hu_usuario_id ON public.HabilidadeUsuario(nCdUsuario);
+
+-- Tabela de Log RegistroDAU
+CREATE INDEX idx_rdau_sessao_ativa ON table_log.RegistroDAU(nCdUsuario, dDataSaida, cLocalUso);
+
+-- GIN
+CREATE INDEX idx_usuario_nome_trgm ON public.Usuario USING GIN (cNmUsuario gin_trgm_ops);
+CREATE INDEX idx_tarefa_nome_trgm  ON public.Tarefa  USING GIN (cNmTarefa  gin_trgm_ops);

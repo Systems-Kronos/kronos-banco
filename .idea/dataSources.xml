@@ -5,14 +5,14 @@
       <driver-ref>mongo.4</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.dbschema.MongoJdbcDriver</jdbc-driver>
-      <jdbc-url>mongodb+srv://db-mongo-kronos.qpis8hl.mongodb.net/</jdbc-url>
+      <jdbc-url>mongodb+srv://db-mongo-kronos.qpis8hl.mongodb.net/?retryWrites=true&amp;w=majority&amp;appName=db-mongo-kronos</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
     <data-source source="LOCAL" name="Kronos_Redis" uuid="962ed935-efa5-41ec-91e5-8670d412718c">
       <driver-ref>redis</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>jdbc.RedisDriver</jdbc-driver>
-      <jdbc-url>jdbc:redis://redis-17272.c308.sa-east-1-1.ec2.redns.redis-cloud.com:17272/</jdbc-url>
+      <jdbc-url>jdbc:redis://redis-19041.c278.us-east-1-4.ec2.redns.redis-cloud.com:19041/</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
     <data-source source="LOCAL" name="Kronos_SQL_DEV" uuid="fa026dcd-3be3-4a4b-be5a-26806b832ab8">

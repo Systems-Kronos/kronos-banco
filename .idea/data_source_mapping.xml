@@ -3,9 +3,11 @@
   <component name="DataSourcePerFileMappings">
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/ec17565c-7921-4657-9e1e-185135df8219/console_2.sql" value="ec17565c-7921-4657-9e1e-185135df8219" />
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/ec17565c-7921-4657-9e1e-185135df8219/console_3.sql" value="ec17565c-7921-4657-9e1e-185135df8219" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/ec17565c-7921-4657-9e1e-185135df8219/console_4.sql" value="ec17565c-7921-4657-9e1e-185135df8219" />
     <file url="file://$PROJECT_DIR$/SQL/Functions/fn_funcinarios_gestor.sql" value="ec17565c-7921-4657-9e1e-185135df8219" />
     <file url="file://$PROJECT_DIR$/SQL/Functions/fn_lista_tarefa_usuario_gestor.sql" value="ec17565c-7921-4657-9e1e-185135df8219" />
     <file url="file://$PROJECT_DIR$/SQL/Functions/fn_reports_gestor.sql" value="ec17565c-7921-4657-9e1e-185135df8219" />
+    <file url="file://$PROJECT_DIR$/SQL/JOBS/extensoes.sql" value="ec17565c-7921-4657-9e1e-185135df8219" />
     <file url="file://$PROJECT_DIR$/SQL/Modelo/schema_table_log.sql" value="ec17565c-7921-4657-9e1e-185135df8219" />
     <file url="file://$PROJECT_DIR$/SQL/Procedures/sp_envia_sinal_vida.sql" value="ec17565c-7921-4657-9e1e-185135df8219" />
     <file url="file://$PROJECT_DIR$/SQL/Views/vw_info_funcionario.sql" value="ec17565c-7921-4657-9e1e-185135df8219" />
