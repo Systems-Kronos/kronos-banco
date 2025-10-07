@@ -168,4 +168,10 @@ CREATE TABLE table_log.TarefaUsuario ( nCdLog             BIGSERIAL
                                      , cOperacao          VARCHAR(50)
                                      , dOperacao          TIMESTAMP     																		
                                      , PRIMARY KEY (nCdLog)
-                                     );									
+                                     );
+
+
+-- Índices
+-- Tabela de Log RegistroDAU
+CREATE INDEX idx_rdau_sessao_ativa ON table_log.RegistroDAU(nCdUsuario, dDataSaida, cLocalUso);
+

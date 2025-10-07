@@ -210,9 +210,6 @@ CREATE INDEX idx_tu_usuario_original ON public.TarefaUsuario(nCdUsuarioOriginal)
 -- Tabela HabilidadeUsuario
 CREATE INDEX idx_hu_usuario_id ON public.HabilidadeUsuario(nCdUsuario);
 
--- Tabela de Log RegistroDAU
-CREATE INDEX idx_rdau_sessao_ativa ON table_log.RegistroDAU(nCdUsuario, dDataSaida, cLocalUso);
-
 -- GIN
 CREATE INDEX idx_usuario_nome_trgm ON public.Usuario USING GIN (cNmUsuario gin_trgm_ops);
 CREATE INDEX idx_tarefa_nome_trgm  ON public.Tarefa  USING GIN (cNmTarefa  gin_trgm_ops);
