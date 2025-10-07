@@ -47,9 +47,6 @@ for i in range(1, TOTAL_USUARIOS + 1):
             "nCdMensagem": mensagem_id
         })
 
-        # Adiciona a ID da notificação ao set do usuário
-        pipeline.sadd(usuario_key, notificacao_id)
-
 result = pipeline.execute()
 
 print("Inserção concluída com sucesso!")
