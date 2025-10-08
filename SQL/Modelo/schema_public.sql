@@ -8,7 +8,6 @@ CREATE SCHEMA public;
 -- IDs
 CREATE SEQUENCE public.sq_PlanoPagamento         START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_Empresa                START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE public.sq_Mensagem               START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_PlanoVantagem          START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_Report                 START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_Setor                  START WITH 1 INCREMENT BY 1;
@@ -41,13 +40,6 @@ CREATE TABLE public.PlanoPagamento ( nCdPlano BIGINT        NOT NULL DEFAULT NEX
                                    , UNIQUE (cNmPlano)
                                    , PRIMARY KEY(nCdPlano)
                                    );
-
-CREATE TABLE public.Mensagem ( nCdMensagem BIGINT      NOT NULL DEFAULT NEXTVAL('public.sq_Mensagem')
-                             , cTitulo    VARCHAR(50)  NOT NULL
-                             , cMensagem  VARCHAR(255) NOT NULL
-                             , cCategoria VARCHAR(70)  NOT NULL
-                             , PRIMARY KEY(nCdMensagem)
-                             );
 
 CREATE TABLE public.Cargo ( nCdCargo BIGINT NOT NULL DEFAULT NEXTVAL('public.sq_Cargo')
                           , cNmCargo                 VARCHAR(255) NOT NULL
@@ -119,7 +111,7 @@ CREATE TABLE public.Usuario ( nCdUsuario  BIGINT        NOT NULL DEFAULT NEXTVAL
                             , FOREIGN KEY (nCdCargo)   REFERENCES public.Cargo (nCdCargo)
                             );
 
--- Tabelas com dependência de Habilidade, Usuario e Mensagem
+-- Tabelas com dependência de Habilidade e Usuario
 CREATE TABLE public.HabilidadeUsuario ( nCdHabilidadeUsuario BIGINT NOT NULL DEFAULT NEXTVAL('public.sq_HabilidadeUsuario')
                                       , nCdHabilidade        BIGINT NOT NULL
                                       , nCdUsuario           BIGINT NOT NULL
@@ -207,9 +199,6 @@ CREATE INDEX idx_report_usuario ON public.Report(nCdUsuario);
 CREATE INDEX idx_report_tarefa  ON public.Report(nCdTarefa);
 CREATE INDEX idx_report_status  ON public.Report(cStatus);
 
--- Mensagem
-CREATE INDEX idx_mensagem_categoria ON public.Mensagem(cCategoria);
-
 -- TarefaHabilidade
 CREATE INDEX idx_tarefa_habilidade_prioridade ON public.TarefaHabilidade(iPrioridade);
 
@@ -220,9 +209,6 @@ CREATE INDEX idx_tu_usuario_original ON public.TarefaUsuario(nCdUsuarioOriginal)
 
 -- Tabela HabilidadeUsuario
 CREATE INDEX idx_hu_usuario_id ON public.HabilidadeUsuario(nCdUsuario);
-
--- Tabela de Log RegistroDAU
-CREATE INDEX idx_rdau_sessao_ativa ON table_log.RegistroDAU(nCdUsuario, dDataSaida, cLocalUso);
 
 -- GIN
 CREATE INDEX idx_usuario_nome_trgm ON public.Usuario USING GIN (cNmUsuario gin_trgm_ops);

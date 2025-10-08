@@ -37,16 +37,6 @@ CREATE TABLE table_log.PlanoPagamento ( nCdLog        BIGSERIAL
                                       , PRIMARY KEY (nCdLog)
                                       );
 
-CREATE TABLE table_log.Mensagem ( nCdLog        BIGSERIAL
-								, nCdMensagem   BIGINT       NOT NULL 
-                                , cTitulo       VARCHAR(50)  NOT NULL
-                                , cMensagem     VARCHAR(255) NOT NULL
-                                , cCategoria    VARCHAR(70)  NOT NULL
-                                , cOperacao     VARCHAR(50)
-                                , dOperacao     TIMESTAMP                 
-                                , PRIMARY KEY (nCdLog)
-                                );
-								
 CREATE TABLE table_log.Cargo ( nCdLog                BIGSERIAL
                              , nCdCargo              BIGINT       NOT NULL 
                              , cNmCargo              VARCHAR(255) NOT NULL
@@ -178,4 +168,10 @@ CREATE TABLE table_log.TarefaUsuario ( nCdLog             BIGSERIAL
                                      , cOperacao          VARCHAR(50)
                                      , dOperacao          TIMESTAMP     																		
                                      , PRIMARY KEY (nCdLog)
-                                     );									
+                                     );
+
+
+-- Índices
+-- Tabela de Log RegistroDAU
+CREATE INDEX idx_rdau_sessao_ativa ON table_log.RegistroDAU(nCdUsuario, dDataSaida, cLocalUso);
+
