@@ -76,7 +76,7 @@ calendario_data = []
 load_dotenv()
 try:
 
-    DATABASE_URL_DEV = os.getenv("DATABASE_URL_QA")
+    DATABASE_URL_DEV = os.getenv("DATABASE_URL_DEV")
     if not DATABASE_URL_DEV:
         raise Exception("Variável de ambiente DATABASE_URL_DEV não encontrada. Verifique o arquivo .env.")
 
