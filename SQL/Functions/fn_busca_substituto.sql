@@ -1,16 +1,16 @@
 CREATE OR REPLACE FUNCTION fn_busca_substituto
 (
-    p_nCdUsuarioAusente DECIMAL(10,0)
+    p_nCdUsuarioAusente BIGINT
 )
-    RETURNS TABLE ( nCdTarefa            DECIMAL(10,0)
-                  , nCdUsuarioSubstituto DECIMAL(10,0)
+    RETURNS TABLE ( nCdTarefa            BIGINT
+                  , nCdUsuarioSubstituto BIGINT
                   )
 AS $$
 BEGIN
     RETURN QUERY
         WITH TarefasPendentes AS (
             SELECT TarefaUsuario.nCdTarefa
-                 , (SELECT fn_calcular_prioridade_tarefa(TarefaUsuario.nCdTarefa)) AS iPrioridadeTarefa
+                 , (SELECT fn_calcula_prioridade_tarefa(TarefaUsuario.nCdTarefa)) AS iPrioridadeTarefa
                  , TarefaHabilidade.nCdHabilidade
                  , TarefaHabilidade.iPrioridade AS iProridadeHabilidade
                  , Usuario.nCdEmpresa           AS nCdEmpresaUsuarioAtuante
