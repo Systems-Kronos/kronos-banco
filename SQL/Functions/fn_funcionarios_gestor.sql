@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION fn_funcinarios_gestor
+CREATE OR REPLACE FUNCTION fn_funcionarios_gestor
 (
     p_cd_gestor  BIGINT
 )

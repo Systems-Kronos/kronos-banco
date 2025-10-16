@@ -52,7 +52,7 @@ def fetch_usuario_gestor_map(connection_url):
         conn = psycopg2.connect(connection_url)
         cursor = conn.cursor()
         
-        cursor.execute("SELECT \"nCdUsuario\", \"nCdGestor\" FROM public.\"Usuario\";")
+        cursor.execute("SELECT nCdUsuario, nCdGestor FROM public.Usuario;")
         
         # Cria o dicionário de mapeamento {nCdUsuario: nCdGestor}
         for nCdUsuario, nCdGestor in cursor.fetchall():
