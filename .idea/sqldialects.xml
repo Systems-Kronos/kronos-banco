@@ -2,7 +2,7 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/SQL/Functions/fn_busca_substituto.sql" dialect="PostgreSQL" />
-    <file url="file://$PROJECT_DIR$/SQL/Functions/fn_funcinarios_gestor.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/SQL/Functions/fn_funcionarios_gestor.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/SQL/Functions/fn_lista_tarefa_usuario.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/SQL/Functions/fn_lista_tarefa_usuario_gestor.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/SQL/Functions/fn_reports_gestor.sql" dialect="PostgreSQL" />
@@ -10,6 +10,7 @@
     <file url="file://$PROJECT_DIR$/SQL/JOBS/extensoes.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/SQL/JOBS/job-encerra-sessao.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/SQL/Modelo/data_load.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/SQL/Modelo/schema_public.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/SQL/Modelo/schema_table_log.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/SQL/Procedures/sp_encerrar_sessao_inativa.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/SQL/Procedures/sp_envia_sinal_vida.sql" dialect="PostgreSQL" />

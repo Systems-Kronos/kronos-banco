@@ -18,6 +18,7 @@ CREATE SEQUENCE public.sq_TarefaUsuario          START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_TarefaHabilidade       START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_HabilidadeUsuario      START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_Cargo                  START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE public.sq_Administracao          START WITH 1 INCREMENT BY 1;
 
 -- Types (Para substituit check)
 CREATE TYPE public.TIPO_LOCAL_USO AS ENUM ( 'APP_MOBILE'
@@ -47,6 +48,13 @@ CREATE TABLE public.Cargo ( nCdCargo BIGINT NOT NULL DEFAULT NEXTVAL('public.sq_
                           , cNmFamiliaOcupacional    VARCHAR(255)     NULL
                           , PRIMARY KEY (nCdCargo)
                           );
+
+CREATE TABLE public.Administracao ( nCdAdm     BIGINT       NOT NULL DEFAULT NEXTVAL('sq_Administracao')
+                                  , cNmAdm     VARCHAR(255) NOT NULL
+                                  , cEmailAdm  VARCHAR(255) NOT NULL
+                                  , cSenha     VARCHAR(255) NOT NULL DEFAULT 't33'
+                                  , PRIMARY KEY (nCdAdm)
+                                  );
 
 -- Tabelas com dependência de PlanoPagamento
 CREATE TABLE public.Empresa ( nCdEmpresa        BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_Empresa')
@@ -100,7 +108,7 @@ CREATE TABLE public.Usuario ( nCdUsuario  BIGINT        NOT NULL DEFAULT NEXTVAL
                             , cCPF        VARCHAR(15)   NOT NULL
                             , cTelefone   VARCHAR(20)       NULL
                             , cEmail      VARCHAR(255)      NULL
-                            , cSenha      VARCHAR(50)   NOT NULL DEFAULT 't33'
+                            , cSenha      VARCHAR(255)   NOT NULL DEFAULT 't33'
                             , cFoto       VARCHAR           NULL
                             , bAtivo      BOOLEAN       NOT NULL DEFAULT True
                             , UNIQUE      (cCPF, cTelefone, cEmail) 
@@ -130,7 +138,7 @@ CREATE TABLE public.Tarefa ( nCdTarefa         BIGINT        NOT NULL DEFAULT NE
                                 CHECK (iUrgencia >= 1 AND iUrgencia <= 5)
                            , iTendencia        INTEGER       NOT NULL DEFAULT 1
                                 CHECK (iTendencia >= 1 AND iTendencia <= 5)
-                           , iTempoEstimado    INTEGER       NOT NULL
+                           , iTempoEstimado    INTEGER           NULL
                            , cDescricao        TEXT          NOT NULL
                            , cStatus           OPCAO_STATUS  NOT NULL DEFAULT 'Pendente'
                            , dDataAtribuicao   TIMESTAMP     NOT NULL DEFAULT NOW()
