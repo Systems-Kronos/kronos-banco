@@ -16,6 +16,16 @@ CREATE TABLE table_log.RegistroDAU ( nCdSessao           BIGSERIAL       NOT NUL
                                    , FOREIGN KEY (nCdUsuario) REFERENCES public.Usuario(nCdUsuario)
                                    );
 
+CREATE TABLE table_log.Administracao ( nCdLog     BIGSERIAL
+                                     , nCdAdm     BIGINT       NOT NULL
+                                     , cNmAdm     VARCHAR(255) NOT NULL
+                                     , cEmailAdm  VARCHAR(255) NOT NULL
+                                     , cSenha     VARCHAR(255) NOT NULL
+                                     , cOperacao     VARCHAR(50)
+                                     , dOperacao     TIMESTAMP
+                                     , PRIMARY KEY (nCdAdm)
+                                     );
+
 -- Tabelas com dependência de Tarefa e Usuario
 CREATE TABLE table_log.LogAtribuicaoTarefa ( nCdLogAtribuicao  BIGSERIAL     NOT NULL
                                            , nCdTarefa         BIGINT        NOT NULL
