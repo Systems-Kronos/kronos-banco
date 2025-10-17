@@ -142,6 +142,8 @@ CREATE TABLE public.Tarefa ( nCdTarefa         BIGINT        NOT NULL DEFAULT NE
                            , cDescricao        TEXT          NOT NULL
                            , cStatus           OPCAO_STATUS  NOT NULL DEFAULT 'Pendente'
                            , dDataAtribuicao   TIMESTAMP     NOT NULL DEFAULT NOW()
+                           , dDataPrazo        TIMESTAMP         NULL
+                                CHECK ( dDataPrazo > dDataAtribuicao )
                            , dDataConclusao    TIMESTAMP         NULL
                            , PRIMARY KEY (nCdTarefa)
                            , FOREIGN KEY (nCdUsuarioRelator) REFERENCES public.Usuario (nCdUsuario)

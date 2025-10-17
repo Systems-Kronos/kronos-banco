@@ -138,11 +138,12 @@ CREATE TABLE table_log.Tarefa ( nCdLog            BIGSERIAL
                               , iGravidade        INTEGER      NOT NULL
                               , iUrgencia         INTEGER      NOT NULL
                               , iTendencia        INTEGER      NOT NULL
-                              , iTempoEstimado    INTEGER      NOT NULL
+                              , iTempoEstimado    INTEGER          NULL
                               , cDescricao        TEXT         NOT NULL
                               , cStatus           OPCAO_STATUS NOT NULL
                               , dDataAtribuicao   TIMESTAMP    NOT NULL
                               , dDataConclusao    TIMESTAMP        NULL
+                              , dDataPrazo        TIMESTAMP        NULL
                               , cOperacao         VARCHAR(50)
                               , dOperacao         TIMESTAMP              														 
                               , PRIMARY KEY (nCdLog)
