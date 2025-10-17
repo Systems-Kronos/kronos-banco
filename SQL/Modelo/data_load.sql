@@ -206,7 +206,7 @@ INSERT INTO public.HabilidadeUsuario (nCdHabilidade, nCdUsuario) VALUES
                                                                      (21, 31); -- Vinicius
 
 -- Inserindo dados na tabela Tarefa
-INSERT INTO public.Tarefa (nCdTarefa, cNmTarefa, nCdUsuarioRelator, iGravidade, iUrgencia, iTendencia, iTempoEstimado, cDescricao, cStatus, dDataAtribuicao, dDataConclusao) VALUES
+INSERT INTO public.Tarefa (nCdTarefa, cNmTarefa, nCdUsuarioRelator, iGravidade, iUrgencia, iTendencia, iTempoEstimado, cDescricao, cStatus, dDataAtribuicao, dDataPrazo) VALUES
                                                                                                                                                                                  (nextval('public.sq_Tarefa'), 'Desenvolver API de Autenticação', 1, 5, 4, 5, 80, 'Criar uma API REST para o sistema de autenticação.', 'Em Andamento', '2025-08-20', NULL),
                                                                                                                                                                                  (nextval('public.sq_Tarefa'), 'Otimizar Query de Relatórios', 1, 4, 5, 4, 25, 'Revisar e otimizar a consulta para o dashboard principal.', 'Pendente', '2025-08-21', NULL),
                                                                                                                                                                                  (nextval('public.sq_Tarefa'), 'Planejar Sprint 3', 1, 3, 3, 4, 15, 'Definir as Tarefas e estimativas para a próxima sprint.', 'Concluída', '2025-08-15', '2025-08-19'),
