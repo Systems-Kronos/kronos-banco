@@ -115,7 +115,7 @@ CREATE TABLE table_log.Usuario ( nCdLog        BIGSERIAL
                                , cCPF          VARCHAR(15)  NOT NULL
                                , cTelefone     VARCHAR(20)      NULL
                                , cEmail        VARCHAR(255)     NULL
-                               , cSenha        VARCHAR(50)  NOT NULL 
+                               , cSenha        VARCHAR(255)  NOT NULL
                                , cFoto         VARCHAR          NULL
                                , bAtivo        BOOLEAN      NOT NULL 
                                , cOperacao     VARCHAR(50)

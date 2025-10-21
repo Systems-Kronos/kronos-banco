@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 load_dotenv() 
 
 # URL do banco de dados para conexão
-DB_URL = os.getenv("DATABASE_URL_DEV")
+DB_URL = os.getenv("DATA_LOAD_DB_URL")
 
 # Quantidades
 NUM_PLANOS = 5
@@ -497,7 +497,7 @@ def generate_tarefas(conn):
             random.randint(1, 5), # iGravidade
             random.randint(1, 5), # iUrgencia
             random.randint(1, 5), # iTendencia
-            random.randint(5, 240), # iTempo Estimado (minutos)
+            random.randint(1, 60), # iTempo Estimado (horas)
             random.choice(TAREFA_DESCRICOES), # cDescricao > Descrição das tarefas
             status,
             data_atribuicao,
