@@ -16,6 +16,16 @@ CREATE TABLE table_log.RegistroDAU ( nCdSessao           BIGSERIAL       NOT NUL
                                    , FOREIGN KEY (nCdUsuario) REFERENCES public.Usuario(nCdUsuario)
                                    );
 
+CREATE TABLE table_log.Administracao ( nCdLog     BIGSERIAL
+                                     , nCdAdm     BIGINT       NOT NULL
+                                     , cNmAdm     VARCHAR(255) NOT NULL
+                                     , cEmailAdm  VARCHAR(255) NOT NULL
+                                     , cSenha     VARCHAR(255) NOT NULL
+                                     , cOperacao     VARCHAR(50)
+                                     , dOperacao     TIMESTAMP
+                                     , PRIMARY KEY (nCdAdm)
+                                     );
+
 -- Tabelas com dependência de Tarefa e Usuario
 CREATE TABLE table_log.LogAtribuicaoTarefa ( nCdLogAtribuicao  BIGSERIAL     NOT NULL
                                            , nCdTarefa         BIGINT        NOT NULL
@@ -37,15 +47,15 @@ CREATE TABLE table_log.PlanoPagamento ( nCdLog        BIGSERIAL
                                       , PRIMARY KEY (nCdLog)
                                       );
 
-CREATE TABLE table_log.Mensagem ( nCdLog        BIGSERIAL
-								, nCdMensagem   BIGINT       NOT NULL 
-                                , cTitulo       VARCHAR(50)  NOT NULL
-                                , cMensagem     VARCHAR(255) NOT NULL
-                                , cCategoria    VARCHAR(70)  NOT NULL
-                                , cOperacao     VARCHAR(50)
-                                , dOperacao     TIMESTAMP                 
-                                , PRIMARY KEY (nCdLog)
-                                );
+CREATE TABLE table_log.Cargo ( nCdLog                BIGSERIAL
+                             , nCdCargo              BIGINT       NOT NULL 
+                             , cNmCargo              VARCHAR(255) NOT NULL
+                             , cCdCBO                VARCHAR(10)      NULL
+                             , cNmFamiliaOcupacional VARCHAR(255)     NULL
+                             , cOperacao             VARCHAR(50)
+                             , dOperacao             TIMESTAMP     							  
+                             , PRIMARY KEY (nCdLog)
+                             );
 
 CREATE TABLE table_log.Empresa ( nCdLog            BIGSERIAL
 							   , nCdEmpresa        BIGINT       NOT NULL 
@@ -95,23 +105,22 @@ CREATE TABLE table_log.Setor ( nCdLog        BIGSERIAL
 
 CREATE TABLE table_log.Usuario ( nCdLog        BIGSERIAL
 							   , nCdUsuario    BIGINT       NOT NULL 
-                               , cNmUsuario    VARCHAR(100) NOT NULL
-                               , cSbrUsuario   VARCHAR(255) NOT NULL
+                               , cNmUsuario    VARCHAR(200) NOT NULL
                                , cSgUsuario    VARCHAR(50)      NULL
                                , nCdGestor     BIGINT           NULL
                                , bGestor       BOOLEAN      NOT NULL
                                , nCdEmpresa    BIGINT       NOT NULL
                                , nCdSetor      BIGINT       NOT NULL
-                               , nCPF          VARCHAR(15)  NOT NULL
+                               , nCdCargo      BIGINT       NOT NULL
+                               , cCPF          VARCHAR(15)  NOT NULL
                                , cTelefone     VARCHAR(20)      NULL
                                , cEmail        VARCHAR(255)     NULL
-                               , cSenha        VARCHAR(50)  NOT NULL 
+                               , cSenha        VARCHAR(255)  NOT NULL
                                , cFoto         VARCHAR          NULL
                                , bAtivo        BOOLEAN      NOT NULL 
                                , cOperacao     VARCHAR(50)
                                , dOperacao     TIMESTAMP              											  
                                , PRIMARY KEY (nCdLog)
-                               , UNIQUE (nCdUsuario)
                                );
 
 CREATE TABLE table_log.HabilidadeUsuario ( nCdLog        BIGSERIAL
@@ -126,13 +135,15 @@ CREATE TABLE table_log.Tarefa ( nCdLog            BIGSERIAL
 							  , nCdTarefa         BIGINT       NOT NULL
                               , cNmTarefa         VARCHAR(255) NOT NULL
                               , nCdUsuarioRelator BIGINT       NOT NULL
-                              , nCdHabilidade     BIGINT       NOT NULL
                               , iGravidade        INTEGER      NOT NULL
                               , iUrgencia         INTEGER      NOT NULL
                               , iTendencia        INTEGER      NOT NULL
-                              , nTempoEstimado    BIGINT       NOT NULL
-                              , cDescricao        VARCHAR(255) NOT NULL
+                              , iTempoEstimado    INTEGER          NULL
+                              , cDescricao        TEXT         NOT NULL
                               , cStatus           OPCAO_STATUS NOT NULL
+                              , dDataAtribuicao   TIMESTAMP    NOT NULL
+                              , dDataConclusao    TIMESTAMP        NULL
+                              , dDataPrazo        TIMESTAMP        NULL
                               , cOperacao         VARCHAR(50)
                               , dOperacao         TIMESTAMP              														 
                               , PRIMARY KEY (nCdLog)
@@ -141,8 +152,10 @@ CREATE TABLE table_log.Tarefa ( nCdLog            BIGSERIAL
 CREATE TABLE table_log.Report ( nCdLog        BIGSERIAL
 							  , nCdReport     BIGINT       NOT NULL 
                               , nCdTarefa     BIGINT       NOT NULL
+                              , nCdUsuario    BIGINT       NOT NULL
                               , cDescricao    VARCHAR(255) NOT NULL
                               , cProblema     VARCHAR(255) NOT NULL
+                              , cStatus       VARCHAR(50)  NOT NULL
                               , cOperacao     VARCHAR(50)
                               , dOperacao     TIMESTAMP              													 
                               , PRIMARY KEY (nCdLog)
@@ -166,4 +179,10 @@ CREATE TABLE table_log.TarefaUsuario ( nCdLog             BIGSERIAL
                                      , cOperacao          VARCHAR(50)
                                      , dOperacao          TIMESTAMP     																		
                                      , PRIMARY KEY (nCdLog)
-                                     );									
+                                     );
+
+
+-- Índices
+-- Tabela de Log RegistroDAU
+CREATE INDEX idx_rdau_sessao_ativa ON table_log.RegistroDAU(nCdUsuario, dDataSaida, cLocalUso);
+

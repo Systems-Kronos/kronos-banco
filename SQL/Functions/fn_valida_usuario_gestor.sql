@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION fn_validar_usuario_gestor()
+CREATE OR REPLACE FUNCTION fn_valida_usuario_gestor()
     RETURNS TRIGGER
 AS $$
 BEGIN

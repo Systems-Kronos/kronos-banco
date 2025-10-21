@@ -1,7 +1,80 @@
 import os
 import re
 import psycopg2
+from psycopg2.extras import execute_values
+import pandas as pd
+import io
 from dotenv import load_dotenv
+
+def importar_cargos_cbo(cursor):
+    """
+    Lê os arquivos cbo2002-ocupacao.csv e cbo2002-subgrupo.csv, cruza as informações
+    e insere o resultado no banco de dados usando a conexão fornecida.
+    """
+    # --- Configurações da importação ---
+    ocupacao_file = 'cbo2002-ocupacao.csv'
+    subgrupo_file = 'cbo2002-subgrupo.csv'
+    nome_tabela_alvo = 'cargo'
+
+    try:
+        print(f"   - Lendo o arquivo '{ocupacao_file}'...")
+        # ALTERAÇÃO AQUI: Adicionado encoding='latin1' para ler o arquivo com acentuação
+        df_ocupacao = pd.read_csv(ocupacao_file, sep=';', dtype=str, encoding='latin1')
+        
+        print(f"   - Lendo o arquivo '{subgrupo_file}'...")
+        # ALTERAÇÃO AQUI: Adicionado encoding='latin1' também
+        df_subgrupo = pd.read_csv(subgrupo_file, sep=';', dtype=str, encoding='latin1')
+    
+    except FileNotFoundError as e:
+        print(f"   - ERRO: Arquivo não encontrado: {e.filename}.")
+        print("   - Por favor, certifique-se que os arquivos .csv estão na mesma pasta do script.")
+        return False
+    except Exception as e:
+        print(f"   - ERRO ao ler os arquivos CSV: {e}")
+        return False
+
+    # --- Tratamento e Cruzamento dos Dados ---
+    df_subgrupo['TITULO'] = df_subgrupo['TITULO'].str.strip()
+    df_ocupacao['COD_SUBGRUPO'] = df_ocupacao['CODIGO'].str[:3]
+    
+    df_merged = pd.merge(
+        df_ocupacao,
+        df_subgrupo,
+        left_on='COD_SUBGRUPO',
+        right_on='CODIGO',
+        how='left',
+        suffixes=('_ocupacao', '_subgrupo')
+    )
+    
+    df_final = df_merged[['TITULO_ocupacao', 'CODIGO_ocupacao', 'TITULO_subgrupo']].rename(columns={
+        'TITULO_ocupacao': 'nome_cargo',
+        'CODIGO_ocupacao': 'cbo_codigo',
+        'TITULO_subgrupo': 'familia_ocupacional'
+    })
+    
+    df_final = df_final[df_final['cbo_codigo'].str.startswith(('7', '8'))].copy()
+
+    if df_final.empty:
+        print("   - Nenhum cargo de indústria (grupos 7 ou 8) encontrado para importar.")
+        return True
+
+    print(f"   - {len(df_final)} cargos de indústria prontos para inserção...")
+    
+    # --- Inserção no banco de dados (psycopg2) ---
+    try:
+        sql_insert_query = f"""
+            INSERT INTO {nome_tabela_alvo} (cNmCargo, cCdCBO, cNmFamiliaOcupacional) 
+            VALUES %s
+        """
+        data_to_insert = [tuple(row) for row in df_final.itertuples(index=False)]
+
+        execute_values(cursor, sql_insert_query, data_to_insert)
+
+        print(f"   - SUCESSO! {len(df_final)} cargos foram inseridos na tabela '{nome_tabela_alvo}'.")
+        return True
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(f"   - ERRO durante a inserção dos cargos: {error}")
+        return False
 
 def get_sql_files(sql_dir="."):
     sql_files = []
@@ -15,7 +88,7 @@ def get_sql_files(sql_dir="."):
 
 def separate_files_by_phase(sql_files):
     creation_files, deletion_files, job_files = [], [], []
-    strikethrough_char = '\u0336' #Código identificador de texto riscado
+    strikethrough_char = '\u0336'
     
     for file_path in sql_files:
         if "JOBS" in file_path.split(os.sep):
@@ -29,15 +102,16 @@ def separate_files_by_phase(sql_files):
 
 def get_category(file_path):
     path_parts = file_path.split(os.sep)
-    if "Modelo" in path_parts:
-        return "DataLoad" if "data_load" in os.path.basename(file_path) else "Modelo"
+    if "data_load.sql" in os.path.basename(file_path): return "DataLoad"
+    if "Modelo" in path_parts: return "Modelo"
     if "Procedures" in path_parts: return "Procedures"
     if "Functions" in path_parts: return "Functions"
     if "Triggers" in path_parts: return "Triggers"
+    if "Views" in path_parts: return "Views"
     return "Outros"
 
 def order_deletion_files(deletion_files):
-    order_priority = {"Triggers": 1, "Functions": 2, "Procedures": 3} #Ordenação padrão de delete, paranão dar erro de dependência
+    order_priority = {"Triggers": 1, "Functions": 2, "Procedures": 3, "Views": 4}
     deletion_files.sort(key=lambda f: (order_priority.get(get_category(f), 99), f))
     return deletion_files
 
@@ -52,7 +126,7 @@ def analyze_dependencies(file_path, all_functions):
                 if re.search(r'\b' + re.escape(func_name) + r'\b', content):
                     dependencies.add(func_path)
     except Exception as e:
-        print(f"  - Aviso: Não foi possível analisar o arquivo {file_path}: {e}")
+        print(f"   - Aviso: Não foi possível analisar o arquivo {file_path}: {e}")
     return list(dependencies)
 
 def topological_sort(graph):
@@ -71,27 +145,29 @@ def topological_sort(graph):
         return sorted_order
     else:
         cycle_nodes = {node for node, degree in in_degree.items() if degree > 0}
-        cycle_files = "\n - " + "\n - ".join([os.path.basename(f) for f in cycle_nodes]) #Arquvios que chama um ao outro, gerando um looping infinito de dependência
+        cycle_files = "\n - " + "\n - ".join([os.path.basename(f) for f in cycle_nodes])
         raise Exception(f"Erro: Ciclo de dependência detectado. Verifique os seguintes arquivos:{cycle_files}")
 
 def order_creation_files(creation_files):
-    all_files_by_cat = {"Modelo": [], "Procedures": [], "Functions": [], "Triggers": [], "DataLoad": []}
+    all_files_by_cat = {"Modelo": [], "Views": [],"Procedures": [], "Functions": [], "Triggers": [], "DataLoad": []}
     for f in creation_files:
         cat = get_category(f)
         if cat in all_files_by_cat: all_files_by_cat[cat].append(f)
+
+    modelo_files = sorted(all_files_by_cat["Modelo"], key=lambda f: ('schema_table_log' in f, f))
 
     function_files = all_files_by_cat["Functions"]
     dependency_graph = {func: analyze_dependencies(func, function_files) for func in function_files}
     sorted_functions = topological_sort(dependency_graph)
 
     return (
-        all_files_by_cat["Modelo"] + all_files_by_cat["Procedures"] +
+        modelo_files + all_files_by_cat["Views"] + all_files_by_cat["Procedures"] +
         sorted_functions + all_files_by_cat["Triggers"] +
         all_files_by_cat["DataLoad"]
     )
 
 def order_job_files(job_files):
-    extensoes_file = next((f for f in job_files if os.path.basename(f) == 'extensoes.sql'), None) #Garantir que o arquivo extensoes.sql seja o primeiro a ser executado, já que ele cria tipos personalizados usados pelos outros jobs
+    extensoes_file = next((f for f in job_files if os.path.basename(f) == 'extensoes.sql'), None)
     if extensoes_file:
         job_files.remove(extensoes_file)
         return [extensoes_file] + sorted(job_files)
@@ -108,18 +184,22 @@ def execute_sql_scripts(connection_url, sql_files, action_verb):
         cur = conn.cursor()
         
         for file_path in sql_files:
+            if get_category(file_path) == "DataLoad":
+                qa_cbo_success = importar_cargos_cbo(cur)
+                if not qa_cbo_success: raise Exception("Falha na carga de cargos em QA.")
+
             with open(file_path, 'r', encoding='utf-8') as f:
                 sql_script = f.readline() if action_verb == "removido" else f.read()
                 if sql_script.strip():
                     cur.execute(sql_script)
                     success_count += 1
-                    print(f"  ({success_count}/{total_count}) - Script '{os.path.basename(file_path)}' {action_verb} com sucesso.")
-        
+                    print(f"   ({success_count}/{total_count}) - Script '{os.path.basename(file_path)}' {action_verb} com sucesso.")
+            
         conn.commit()
         return (True, success_count)
     except (Exception, psycopg2.DatabaseError) as error:
         failed_file = os.path.basename(sql_files[success_count])
-        print(f"  - ERRO ao processar o script '{failed_file}': {error}")
+        print(f"   - ERRO ao processar o script '{failed_file}': {error}")
         if conn: conn.rollback()
         return (False, success_count)
     finally:
@@ -142,10 +222,9 @@ def main():
         creation_files, deletion_files, job_files = separate_files_by_phase(all_sql_files)
         
         # --- FASE 1: EXCLUSÃO --- #
-        ordered_deletions = order_deletion_files(deletion_files)
-        if ordered_deletions:
+        if deletion_files:
+            ordered_deletions = order_deletion_files(deletion_files)
             print(f"--- FASE 1: EXCLUSÃO ({len(ordered_deletions)} arquivos) ---")
-            for i, f in enumerate(ordered_deletions, 1): print(f"{i}. {os.path.basename(f)}")
             
             print("\n[QA] INICIANDO EXCLUSÃO...")
             qa_del_success, _ = execute_sql_scripts(DATABASE_URL_QA, ordered_deletions, "removido")
@@ -157,8 +236,8 @@ def main():
             print("--- FASE DE EXCLUSÃO CONCLUÍDA ---\n")
 
         # --- FASE 2: CRIAÇÃO/ALTERAÇÃO --- #
-        ordered_creations = order_creation_files(creation_files)
-        if ordered_creations:
+        if creation_files:
+            ordered_creations = order_creation_files(creation_files)
             print(f"--- FASE 2: CRIAÇÃO/ALTERAÇÃO ({len(ordered_creations)} arquivos) ---")
             for i, f in enumerate(ordered_creations, 1): print(f"{i}. {f}")
             
@@ -172,15 +251,13 @@ def main():
             print("--- FASE DE CRIAÇÃO/ALTERAÇÃO CONCLUÍDA ---\n")
 
         # --- FASE 3: JOBS --- #
-        ordered_jobs = order_job_files(job_files)
-        if ordered_jobs:
+        if job_files:
+            ordered_jobs = order_job_files(job_files)
             print(f"--- FASE 3: JOBS ({len(ordered_jobs)} arquivos) ---")
-            for i, f in enumerate(ordered_jobs, 1): print(f"{i}. {os.path.basename(f)}")
             
-            # Modifica as URLs de conexão para os JOBS, visto que eles precisam ser executados no banco padrão "defaultdb"
             JOB_DB_NAME = "defaultdb"
-            JOB_URL_QA = re.sub(r'/dsSegundoAno', f'/{JOB_DB_NAME}', DATABASE_URL_QA)
-            JOB_URL_DEV = re.sub(r'/dbSegundoAno', f'/{JOB_DB_NAME}', DATABASE_URL_DEV)
+            JOB_URL_QA = re.sub(r'/[^/]+$', f'/{JOB_DB_NAME}', DATABASE_URL_QA)
+            JOB_URL_DEV = re.sub(r'/[^/]+$', f'/{JOB_DB_NAME}', DATABASE_URL_DEV)
 
             print("\n[QA] INICIANDO EXECUÇÃO DE JOBS...")
             qa_job_success, _ = execute_sql_scripts(JOB_URL_QA, ordered_jobs, "executado")
