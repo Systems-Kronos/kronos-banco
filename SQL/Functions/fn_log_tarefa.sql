@@ -14,6 +14,7 @@ BEGIN
                                  , cStatus
 								 , dDataAtribuicao
 								 , dDataConclusao								  
+								 , dDataPrazo
                                  , cOperacao
                                  , dOperacao
                                  )
@@ -29,6 +30,7 @@ BEGIN
                                  , NEW.cStatus
 								 , NEW.dDataAtribuicao
 								 , NEW.dDataConclusao									  
+								 , NEW.dDataPrazo
                                  , TG_OP
                                  , CURRENT_TIMESTAMP
                                  );
@@ -46,6 +48,7 @@ BEGIN
                                  , cStatus
 								 , dDataAtribuicao
 								 , dDataConclusao									  
+								 , dDataPrazo
                                  , cOperacao
                                  , dOperacao
                                  )
@@ -61,6 +64,7 @@ BEGIN
                                  , OLD.cStatus
 								 , OLD.dDataAtribuicao
 								 , OLD.dDataConclusao									  
+								 , OLD.dDataPrazo
                                  , TG_OP
                                  , CURRENT_TIMESTAMP
                                  );
