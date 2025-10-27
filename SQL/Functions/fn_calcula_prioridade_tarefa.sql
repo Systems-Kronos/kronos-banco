@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION fn_calcular_prioridade_tarefa
+CREATE OR REPLACE FUNCTION fn_calcula_prioridade_tarefa
 (
     p_nCdTarefa DECIMAL(10,0)
 )
