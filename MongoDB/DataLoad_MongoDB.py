@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 import os
 import psycopg2 
 
-# Dados base para gerar as entradas
 total_usuarios = 31  
 num_entradas_por_usuario = 100 
 
@@ -34,7 +33,6 @@ presenca_observacoes = [
     "Participou de workshop de treinamento"
 ]
 
-# Lista de URLs de imagens aleatórias para atestados médicos (usando placehold.co)
 atestado_urls = [
     "https://placehold.co/800x600/FF0000/FFFFFF/pdf.png?text=Atestado_1",
     "https://placehold.co/800x600/00FF00/000000/pdf.png?text=Atestado_2",
@@ -44,7 +42,6 @@ atestado_urls = [
 ]
 
 def fetch_usuario_gestor_map(connection_url):
-    """Conecta ao PostgreSQL e busca o mapeamento nCdUsuario -> nCdGestor."""
     conn = None
     usuario_gestor_map = {}
     print("Iniciando conexão com PostgreSQL para buscar o mapeamento de gestores...")
@@ -54,7 +51,6 @@ def fetch_usuario_gestor_map(connection_url):
         
         cursor.execute("SELECT nCdUsuario, nCdGestor FROM public.Usuario;")
         
-        # Cria o dicionário de mapeamento {nCdUsuario: nCdGestor}
         for nCdUsuario, nCdGestor in cursor.fetchall():
             usuario_gestor_map[int(nCdUsuario)] = int(nCdGestor) if nCdGestor is not None else None
             
@@ -76,7 +72,7 @@ calendario_data = []
 load_dotenv()
 try:
 
-    DATABASE_URL_DEV = os.getenv("DATABASE_URL_DEV")
+    DATABASE_URL_DEV = os.getenv("DATABASE_URL_QA")
     if not DATABASE_URL_DEV:
         raise Exception("Variável de ambiente DATABASE_URL_DEV não encontrada. Verifique o arquivo .env.")
 
@@ -85,13 +81,8 @@ try:
     if usuario_gestor_map is None:
         raise Exception("A carga de dados foi interrompida devido a falha na obtenção do mapeamento de gestores.")
 
-    # Atualiza a lista de IDs de usuário para iterar sobre os IDs válidos
     valid_user_ids = list(usuario_gestor_map.keys())
     
-    
-    # -----------------------------------------------------
-    # Loop para gerar dados para cada usuário (com nCdGestor)
-    # -----------------------------------------------------
     print("\nIniciando a geração de documentos para o MongoDB...")
     for i in valid_user_ids:
         nCdGestor = usuario_gestor_map.get(i) 
@@ -99,8 +90,13 @@ try:
         for j in range(num_entradas_por_usuario):
             tipo_evento = random.randint(0, 2)
 
-            dias_aleatorios = random.randint(0, 365)
-            data_evento = datetime.now() - timedelta(days=dias_aleatorios)
+            data_evento = None
+            while True:
+                dias_aleatorios = random.randint(0, 365)
+                data_evento = datetime.now() - timedelta(days=dias_aleatorios)
+                
+                if data_evento.weekday() < 5: 
+                    break 
 
             evento = {}
             
@@ -139,8 +135,6 @@ try:
             
             calendario_data.append(evento)
 
-
-    # --- CONEXÃO COM MONGODB PARA INSERIR DADOS ---
     mongo_uri = os.getenv("MONGODB_URI")
     if not mongo_uri:
         raise Exception("Variável de ambiente MONGODB_URI não encontrada. Verifique o arquivo .env.")
@@ -153,8 +147,11 @@ try:
     collection = db['calendario']
     
     print(f"Iniciando a inserção de {len(calendario_data)} documentos...")
-    result = collection.insert_many(calendario_data)
-    
-    print(f"Inserção concluída com sucesso! Total de documentos inseridos: {len(result.inserted_ids)}")
+    if calendario_data:
+        result = collection.insert_many(calendario_data)
+        print(f"Inserção concluída com sucesso! Total de documentos inseridos: {len(result.inserted_ids)}")
+    else:
+        print("Nenhum dado gerado para inserção.")
+        
 except Exception as e:
     print(f"Ocorreu um erro crítico: {e}")
