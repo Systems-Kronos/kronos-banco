@@ -95,7 +95,15 @@ def order_creation_files(creation_files):
         cat = get_category(f)
         if cat in all_files_by_cat: all_files_by_cat[cat].append(f)
 
-    # Ordena as funções usando dependências
+    modelo_files = all_files_by_cat["Modelo"]
+    public_schema_file = next((f for f in modelo_files if os.path.basename(f) == 'schema_public.sql'), None)
+
+    if public_schema_file:
+        modelo_files.remove(public_schema_file)
+        all_files_by_cat["Modelo"] = [public_schema_file] + sorted(modelo_files)
+    else:
+        all_files_by_cat["Modelo"] = sorted(modelo_files)
+        
     function_files = all_files_by_cat["Functions"]
     dependency_graph = {func: analyze_dependencies(func, function_files) for func in function_files}
     sorted_functions = topological_sort(dependency_graph)
