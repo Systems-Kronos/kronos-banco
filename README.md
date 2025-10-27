@@ -1,33 +1,53 @@
-# Banco de Dados do Kronos
+# kronos-banco
+
+## Índice
+- [📓 Sobre](#-sobre)
+- [🚀 Tecnologias](#-tecnologias)
+- [🧱 Estrutura do Projeto](#-estrutura-do-projeto)
+- [📄 Licença](#-licença)
+- [💻 Autores](#-autores)
+
+</br>
+
+## 📓 Sobre
 Este repositório contém a configuração completa de bancos de dados para o projeto Kronos, incluindo o modelo relacional em SQL, scripts de carga de dados e scripts para bancos de dados NoSQL, como MongoDB e Redis.
 
-## Conteúdo
+</br>
 
-* **SQL/**: Scripts para o banco de dados relacional (PostgreSQL).
-    * **Modelo/**: Contém o modelo de dados e o script de carga inicial.
-        * `schema_public.sql`: Define o esquema do banco de dados com tabelas, chaves primárias, chaves estrangeiras e sequências.
-        * `data_load.sql`: Script de carga de dados de exemplo para popular as tabelas.
-    * **Procedures/**: Procedimentos armazenados para automatizar tarefas.
-        * `sp_desativar_empresa_completo.sql`: Um procedimento para desativar uma empresa e todos os seus usuários associados.
-    * **Functions/**: Funções para lógica de negócios e validações.
-        * `fn_altera_status_tarefa.sql`: Altera o status de uma tarefa para 'Em Andamento' após sua atribuição.
-        * `fn_calcula_prioridade_tarefa.sql`: Calcula a prioridade de uma tarefa com base em sua gravidade, urgência e tendência.
-        * `fn_get_user_permissions.sql`: Recupera as permissões (vantagens) de um usuário com base no seu plano de pagamento.
-        * `fn_log_atribuicao_tarefa.sql`: Insere um registro no log quando uma tarefa é atribuída ou realocada.
-        * `fn_obtem_gestor_usuario.sql`: Retorna o nome e e-mail do gestor de um usuário específico.
-        * `fn_tarefas_ativas_usuario.sql`: Lista as tarefas ativas de um usuário, ordenadas por prioridade.
-        * `fn_valida_atribuicao_tarefa.sql`: Valida a atribuição de tarefas para evitar conflitos de papéis.
-        * `fn_valida_usuario_gestor.sql`: Impede que um usuário seja o gestor de si mesmo.
-    * **Triggers/**: Gatilhos que executam as funções automaticamente.
-        * `tg_altera_status_tarefa.sql`: Ativa a função `fn_altera_status_tarefa` após a inserção de uma nova tarefa para um usuário.
-        * `tg_log_atribuicao_tarefa.sql`: Ativa a função `fn_log_atribuicao_tarefa` após a inserção ou atualização na tabela `TarefaUsuario`.
-        * `tg_valida_atribuicao_tarefa.sql`: Ativa a função `fn_valida_atribuicao_tarefa` antes de inserir ou atualizar na tabela `TarefaUsuario`.
-        * `tg_validar_usuario_gestor.sql`: Ativa a função `fn_validar_usuario_gestor` antes de inserir ou atualizar um usuário.
-* **MongoDB/**: Scripts para o banco de dados NoSQL.
-    * `DataLoad_MongoDB.py`: Script Python para carregar dados de calendário para cada usuário no MongoDB, com diferentes tipos de eventos (atestados, faltas, presenças).
-* **Redis/**: Scripts para o banco de dados de cache.
-    * `DataLoad_Redis.py`: Script Python para gerar e carregar dados de notificações no Redis, usando chaves de hash e conjuntos (sets).
+## 🚀 Tecnologias
+- PostgreSQL
+- MongoDB
+- Redis
+- Python
+- SQL (PL/pgSQL)
 
-## Licença
+</br>
 
-Este repositório está sob a licença MIT. O texto completo da licença pode ser encontrado abaixo:
+## 🧱 Estrutura do Projeto
+```
+kronos-banco
+├── /MongoDB                   # Scripts para o banco de dados NoSQL
+  └── /DataLoad_MongoDB.py     # Script Python para carregar dados no MongoDB
+├── /Redis                     # Scripts para o banco de dados de cache
+  └── /DataLoad_Redis.py       # Script Python para carregar dados no Redis
+├── /SQL                       # Scripts para o banco de dados relacional (PostgreSQL)
+  └── /Functions               # Funções para lógica de negócios e validações
+  └── /JOBS
+  └── /Modelo                  # Contém o modelo de dados e o script de carga inicial
+  └── /Procedures              # Procedimentos armazenados para automatizar tarefas
+  └── /Triggers                # Gatilhos que executam as funções automaticamente.
+  └── /Views
+├── requirements.txt           # Lista de dependências
+└── README.md                  # Documentação do projeto
+```
+
+</br>
+
+## 📄 Licença
+Este projeto está licenciado sob a licença MIT — veja o arquivo LICENSE para mais detalhes.
+
+</br>
+
+## 💻 Autores
+- [Dmitri Kogake](https://github.com/Kogake7)
+- [Theo Martins](https://github.com/TheoMGtech)
