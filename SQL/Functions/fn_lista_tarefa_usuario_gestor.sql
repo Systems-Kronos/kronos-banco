@@ -20,6 +20,7 @@ CREATE OR REPLACE FUNCTION fn_lista_tarefa_usuario_gestor
                   , cstatus                OPCAO_STATUS
                   , ddataatribuicao        TIMESTAMP
                   , ddataconclusao         TIMESTAMP
+                  , dDataPrazo          TIMESTAMP
                   , cOrigemTarefa          TEXT
                   ) AS $$
 BEGIN
@@ -40,6 +41,7 @@ BEGIN
              , tarefa.cstatus
              , tarefa.ddataatribuicao
              , tarefa.ddataconclusao
+             , tarefa.dDataPrazo
              , CASE
                  WHEN tarefausuario.ncdusuariooriginal = usuario.nCdUsuario THEN 'Original'
                  ELSE 'Realocada'
