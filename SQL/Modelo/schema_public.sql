@@ -74,7 +74,7 @@ CREATE TABLE public.Empresa ( nCdEmpresa        BIGINT        NOT NULL DEFAULT N
 CREATE TABLE public.PlanoVantagem ( nCdPlanoVantagem BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_PlanoVantagem')
                                   , nCdPlano         BIGINT        NOT NULL
                                   , cNmVantagem      VARCHAR(100)  NOT NULL 
-                                  , cDescricao       VARCHAR(255)  NOT NULL
+                                  , cDescricao       VARCHAR(255)      NULL
                                   , UNIQUE      (cNmVantagem)
                                   , PRIMARY KEY (nCdPlano, nCdPlanoVantagem)
                                   , FOREIGN KEY (nCdPlano) REFERENCES public.PlanoPagamento(nCdPlano)

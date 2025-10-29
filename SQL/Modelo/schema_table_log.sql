@@ -16,6 +16,15 @@ CREATE TABLE table_log.RegistroDAU ( nCdSessao           BIGSERIAL       NOT NUL
                                    , FOREIGN KEY (nCdUsuario) REFERENCES public.Usuario(nCdUsuario)
                                    );
 
+CREATE TABLE table_log.rpa_mapa_ids ( nCdMapa            BIGSERIAL    NOT NULL
+                                    , cNmTabela          VARCHAR(100) NOT NULL
+                                    , nCdOrigem          BIGINT       NOT NULL
+                                    , nCdDestino         BIGINT       NOT NULL
+                                    , dDataProcessamento TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                    , PRIMARY KEY (nCdMapa)
+                                    , UNIQUE (cNmTabela, nCdOrigem)
+                                    );
+
 CREATE TABLE table_log.Administracao ( nCdLog     BIGSERIAL
                                      , nCdAdm     BIGINT       NOT NULL
                                      , cNmAdm     VARCHAR(255) NOT NULL
