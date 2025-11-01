@@ -24,13 +24,9 @@ jobs:
           sudo apt-get install -y postgresql-client
 
       - name: Chamar a Procedure sp_encerrar_sessao_inativa em QA
-        env:
-          PGDATABASE: ${{ secrets.DATABASE_URL_QA }}
         run: |
-          psql -c "CALL public.sp_encerrar_sessao_inativa(15);"
-      
+          psql -d "${{ secrets.DATABASE_URL_QA }}" -c "CALL public.sp_encerrar_sessao_inativa(15);"
+          
       - name: Chamar a Procedure sp_encerrar_sessao_inativa em DEV
-        env:
-          PGDATABASE: ${{ secrets.DATABASE_URL_DEV }}
         run: |
-          psql -c "CALL public.sp_encerrar_sessao_inativa(15);"
+          psql -d "${{ secrets.DATABASE_URL_DEV }}" -c "CALL public.sp_encerrar_sessao_inativa(15);"
