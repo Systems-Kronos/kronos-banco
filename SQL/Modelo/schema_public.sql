@@ -21,10 +21,6 @@ CREATE SEQUENCE public.sq_Cargo                  START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE public.sq_Administracao          START WITH 1 INCREMENT BY 1;
 
 -- Types (Para substituit check)
-CREATE TYPE public.TIPO_LOCAL_USO AS ENUM ( 'APP_MOBILE'
-                                          , 'APP_WEB'
-                                          );
-
 CREATE TYPE public.OPCAO_STATUS   AS ENUM ( 'Pendente'
                                           , 'Em Andamento'
                                           , 'Concluída'
@@ -47,6 +43,7 @@ CREATE TABLE public.Cargo ( nCdCargo BIGINT NOT NULL DEFAULT NEXTVAL('public.sq_
                           , cCdCBO                   VARCHAR(10)      NULL
                           , cNmFamiliaOcupacional    VARCHAR(255)     NULL
                           , PRIMARY KEY (nCdCargo)
+                          , UNIQUE (cNmCargo)
                           );
 
 CREATE TABLE public.Administracao ( nCdAdm     BIGINT       NOT NULL DEFAULT NEXTVAL('sq_Administracao')
@@ -55,6 +52,12 @@ CREATE TABLE public.Administracao ( nCdAdm     BIGINT       NOT NULL DEFAULT NEX
                                   , cSenha     VARCHAR(255) NOT NULL DEFAULT 't33'
                                   , PRIMARY KEY (nCdAdm)
                                   );
+
+CREATE TABLE public.Habilidade ( nCdHabilidade BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_Habilidade')
+                               , cNmHabilidade VARCHAR(255)  NOT NULL
+                               , cDescricao    VARCHAR(255)  NOT NULL
+                               , PRIMARY KEY (nCdHabilidade)
+                               );
 
 -- Tabelas com dependência de PlanoPagamento
 CREATE TABLE public.Empresa ( nCdEmpresa        BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_Empresa')
@@ -74,20 +77,13 @@ CREATE TABLE public.Empresa ( nCdEmpresa        BIGINT        NOT NULL DEFAULT N
 CREATE TABLE public.PlanoVantagem ( nCdPlanoVantagem BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_PlanoVantagem')
                                   , nCdPlano         BIGINT        NOT NULL
                                   , cNmVantagem      VARCHAR(100)  NOT NULL 
-                                  , cDescricao       VARCHAR(255)  NOT NULL
+                                  , cDescricao       VARCHAR(255)      NULL
                                   , UNIQUE      (cNmVantagem)
                                   , PRIMARY KEY (nCdPlano, nCdPlanoVantagem)
                                   , FOREIGN KEY (nCdPlano) REFERENCES public.PlanoPagamento(nCdPlano)
                                   );
 
 -- Tabelas com dependência de Empresa
-CREATE TABLE public.Habilidade ( nCdHabilidade BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_Habilidade')
-                               , nCdEmpresa    BIGINT        NOT NULL
-                               , cNmHabilidade VARCHAR(255)  NOT NULL
-                               , cDescricao    VARCHAR(255)  NOT NULL
-                               , PRIMARY KEY (nCdHabilidade)
-                               , FOREIGN KEY (nCdEmpresa) REFERENCES public.Empresa(nCdEmpresa)
-                               );
 
 CREATE TABLE public.Setor ( nCdSetor   BIGINT        NOT NULL DEFAULT NEXTVAL('public.sq_Setor')
                           , nCdEmpresa BIGINT        NOT NULL
@@ -190,9 +186,6 @@ CREATE INDEX idx_empresa_ativo           ON public.Empresa(bAtivo);
 
 -- Setor
 CREATE INDEX idx_setor_empresa ON public.Setor(nCdEmpresa);
-
--- Habilidade
-CREATE INDEX idx_habilidade_empresa ON public.Habilidade(nCdEmpresa);
 
 -- Usuário (FKs)
 CREATE INDEX idx_usuario_empresa ON public.Usuario(nCdEmpresa);

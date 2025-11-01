@@ -26,13 +26,13 @@ def separate_files_by_phase(sql_files):
     
     for file_path in sql_files:
         if "JOBS" in file_path.split(os.sep):
-            job_files.append(file_path)
+            continue  # Ignora arquivos de JOBS nesta versão
         elif strikethrough_char in os.path.basename(file_path):
             deletion_files.append(file_path)
         else:
             creation_files.append(file_path)
             
-    return creation_files, deletion_files, job_files
+    return creation_files, deletion_files #, job_files
 
 def get_category(file_path):
     """Retorna a categoria do script para ordenação."""
@@ -114,13 +114,13 @@ def order_creation_files(creation_files):
         all_files_by_cat["DataLoad"]
     )
 
-def order_job_files(job_files):
-    """Ordena a execução de Jobs, priorizando 'extensoes.sql'."""
-    extensoes_file = next((f for f in job_files if os.path.basename(f) == 'extensoes.sql'), None)
-    if extensoes_file:
-        job_files.remove(extensoes_file)
-        return [extensoes_file] + sorted(job_files)
-    return sorted(job_files)
+# def order_job_files(job_files):
+#     """Ordena a execução de Jobs, priorizando 'extensoes.sql'."""
+#     extensoes_file = next((f for f in job_files if os.path.basename(f) == 'extensoes.sql'), None)
+#     if extensoes_file:
+#         job_files.remove(extensoes_file)
+#         return [extensoes_file] + sorted(job_files)
+#     return sorted(job_files)
 
 def execute_python_data_load(database_url, python_script_path, environment_name):
     """Executa o script de Data Load em Python, passando a URL do banco via variável de ambiente."""
@@ -208,7 +208,7 @@ def main():
 
     try:
         all_files = get_sql_files()
-        creation_files, deletion_files, job_files = separate_files_by_phase(all_files)
+        creation_files, deletion_files = separate_files_by_phase(all_files)
         
         # --- FASE 1: EXCLUSÃO --- 
         if deletion_files:
@@ -262,26 +262,26 @@ def main():
             
             print("--- FASE DE CRIAÇÃO/ALTERAÇÃO CONCLUÍDA ---\n")
 
-        # --- FASE 3: JOBS --- 
-        if job_files:
-            ordered_jobs = order_job_files(job_files)
-            print(f"--- FASE 3: JOBS ({len(ordered_jobs)} arquivos) ---")
+        # # --- FASE 3: JOBS --- 
+        # if job_files:
+        #     ordered_jobs = order_job_files(job_files)
+        #     print(f"--- FASE 3: JOBS ({len(ordered_jobs)} arquivos) ---")
             
-            # Ajusta a URL para o banco de dados de Jobs/Extensões
-            JOB_DB_NAME = "defaultdb"
-            JOB_URL_QA = re.sub(r'/[^/]+$', f'/{JOB_DB_NAME}', DATABASE_URL_QA)
-            JOB_URL_DEV = re.sub(r'/[^/]+$', f'/{JOB_DB_NAME}', DATABASE_URL_DEV)
+        #     # Ajusta a URL para o banco de dados de Jobs/Extensões
+        #     JOB_DB_NAME = "defaultdb"
+        #     JOB_URL_QA = re.sub(r'/[^/]+$', f'/{JOB_DB_NAME}', DATABASE_URL_QA)
+        #     JOB_URL_DEV = re.sub(r'/[^/]+$', f'/{JOB_DB_NAME}', DATABASE_URL_DEV)
 
-            print("\n[QA] INICIANDO EXECUÇÃO DE JOBS...")
-            # Chamada corrigida: 4 argumentos
-            qa_job_success, _ = execute_sql_scripts(JOB_URL_QA, ordered_jobs, "executado", "QA")
-            if not qa_job_success: raise Exception("Falha na fase de JOBS em QA.")
+        #     print("\n[QA] INICIANDO EXECUÇÃO DE JOBS...")
+        #     # Chamada corrigida: 4 argumentos
+        #     qa_job_success, _ = execute_sql_scripts(JOB_URL_QA, ordered_jobs, "executado", "QA")
+        #     if not qa_job_success: raise Exception("Falha na fase de JOBS em QA.")
 
-            print("\n[DEV] INICIANDO EXECUÇÃO DE JOBS...")
-            # Chamada corrigida: 4 argumentos
-            dev_job_success, _ = execute_sql_scripts(JOB_URL_DEV, ordered_jobs, "executado", "DEV")
-            if not dev_job_success: raise Exception("Falha na fase de JOBS em DEV.")
-            print("--- FASE DE JOBS CONCLUÍDA ---")
+        #     print("\n[DEV] INICIANDO EXECUÇÃO DE JOBS...")
+        #     # Chamada corrigida: 4 argumentos
+        #     dev_job_success, _ = execute_sql_scripts(JOB_URL_DEV, ordered_jobs, "executado", "DEV")
+        #     if not dev_job_success: raise Exception("Falha na fase de JOBS em DEV.")
+        #     print("--- FASE DE JOBS CONCLUÍDA ---")
 
     except Exception as e:
         print(f"\nERRO CRÍTICO: {e}")

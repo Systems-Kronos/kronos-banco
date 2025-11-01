@@ -1,0 +1,36 @@
+name: Executa procedure para Encerrar Sessão de Usuarios
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  call-db-procedure:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Instalar PostgreSQL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Chamar a Procedure sp_encerrar_sessao_inativa em QA
+        env:
+          PGDATABASE: ${{ secrets.DATABASE_URL_QA }}
+        run: |
+          psql -c "CALL public.sp_encerrar_sessao_inativa(15);"
+      
+      - name: Chamar a Procedure sp_encerrar_sessao_inativa em DEV
+        env:
+          PGDATABASE: ${{ secrets.DATABASE_URL_DEV }}
+        run: |
+          psql -c "CALL public.sp_encerrar_sessao_inativa(15);"

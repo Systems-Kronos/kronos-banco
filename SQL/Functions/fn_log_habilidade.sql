@@ -4,7 +4,6 @@ BEGIN
   IF TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN
     INSERT INTO table_log.Habilidade ( nCdLog 
 									 , nCdHabilidade
-                                     , nCdEmpresa
                                      , cNmHabilidade
                                      , cDescricao
                                      , cOperacao
@@ -12,7 +11,6 @@ BEGIN
                                      )
                               VALUES ( DEFAULT
 								     , NEW.nCdHabilidade
-                                     , NEW.nCdEmpresa
                                      , NEW.cNmHabilidade
                                      , NEW.cDescricao
                                      , TG_OP
@@ -22,7 +20,6 @@ BEGIN
   ELSIF TG_OP = 'DELETE' THEN
     INSERT INTO table_log.Habilidade ( nCdLog
 									 , nCdHabilidade
-                                     , nCdEmpresa
                                      , cNmHabilidade
                                      , cDescricao
                                      , cOperacao
@@ -30,7 +27,6 @@ BEGIN
                                      )
                               VALUES ( DEFAULT
 									 , OLD.nCdHabilidade
-                                     , OLD.nCdEmpresa
                                      , OLD.cNmHabilidade
                                      , OLD.cDescricao
                                      , TG_OP

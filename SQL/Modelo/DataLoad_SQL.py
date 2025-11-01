@@ -25,7 +25,7 @@ NUM_CARGOS = 25
 NUM_EMPRESAS = 50
 SECTORS_PER_EMPRESA = 2
 USUARIOS_POR_EMPRESA = 10
-HABILIDADES_POR_EMPRESA = 3
+NUM_HABILIDADES = 50
 TAREFAS_POR_USUARIO = 5
 
 SENHA_PADRAO = "senha123" 
@@ -46,9 +46,23 @@ CARGOS_INDUSTRIAIS = [
     "Engenheiro de Processos", "Operador de Abate", "Analista de Sustentabilidade"
 ]
 HABILIDADES_INDUSTRIAIS = [
-    "HACCP (APPCC)", "Boas Práticas de Fabricação (BPF)", "Manuseio de Faca",
-    "Conhecimento ISO 9001", "Calibração de Balanças", "Segurança em Máquinas (NR-12)",
-    "Controle de Temperatura", "Leitura de Diagramas Elétricos", "Primeiros Socorros"
+    "Primeiros Socorros", "Segurança em Máquinas (NR-12)", "Trabalho em Altura (NR-35)",
+    "Espaço Confinado (NR-33)", "Segurança com Eletricidade (NR-10)", "Operação de Caldeiras e Vasos de Pressão (NR-13)",
+    "Prevenção e Combate a Incêndio (NR-23)", "Uso e Conservação de EPIs", "LOTO (Lockout/Tagout - Bloqueio e Etiquetagem)",
+    "Análise Preliminar de Risco (APR)", "Conhecimento ISO 14001 (Gestão Ambiental)", "Conhecimento ISO 45001 (Gestão de Saúde e Segurança)",
+    "Gestão de Resíduos Industriais", "HACCP (APPCC - Análise de Perigos e Pontos Críticos de Controle)", "Boas Práticas de Fabricação (BPF / GMP)",
+    "Conhecimento ISO 9001 (Gestão da Qualidade)", "Calibração de Balanças", "Controle de Temperatura (Processo e Armazenamento)",
+    "Metodologia 5S", "CEP (Controle Estatístico de Processo)", "Ferramentas da Qualidade (Ishikawa, Pareto, 5 Porquês)",
+    "Auditoria Interna (Qualidade ou Segurança de Alimentos)", "Boas Práticas de Laboratório (BPL)", "Análise Físico-Química",
+    "Análise Microbiológica", "Gestão de Não Conformidades e Ações Corretivas", "Controle Integrado de Pragas",
+    "Leitura de Diagramas Elétricos", "Leitura e Interpretação de Desenho Técnico Mecânico", "Manutenção Preventiva",
+    "Manutenção Preditiva (Ex: Termografia, Análise de Vibração)", "Manutenção Corretiva", "Conhecimento em Hidráulica Industrial",
+    "Conhecimento em Pneumática Industrial", "Programação de CLP (Nível Básico)", "Soldagem (Elétrica, MIG, TIG)",
+    "Lubrificação Industrial", "Alinhamento de Máquinas (Laser ou Relógio Comparador)", "Manuseio de Faca",
+    "Operação de Máquinas Específicas (Ex: Envasadoras, Prensas)", "Saneamento e Higienização Industrial", "Lean Manufacturing (Manufatura Enxuta)",
+    "Cronoanálise (Estudo de Tempos e Métodos)", "Metodologia PDCA / MASP", "Operação de Empilhadeira (NR-11)",
+    "Operação de Ponte Rolante (NR-11)", "Operação de Paleteira (Manual ou Elétrica)", "Gestão de Estoque (FIFO / FEFO)",
+    "Planejamento e Controle da Produção (PCP)", "Conhecimento em Software ERP (Ex: SAP, TOTVS - Módulo Industrial)"
 ]
 HABILIDADE_DESCRICOES = [ 
     "Capacidade de aplicar análise de perigos e pontos críticos de controle.", "Conhecimento em regulamentos de higiene e manipulação de alimentos.", 
@@ -100,7 +114,7 @@ fake = Faker("pt_BR")
 GLOBAL_DATA = {
     'PlanoPagamento': [], 'Cargo': [], 'Empresa': [], 'Setor': [], 'Usuario': [],
     'Habilidade': [], 'Tarefa': [], 'EmpresaGestorMap': {}, 'UsuariosByEmpresa': {},
-    'HabilidadesByEmpresa': {}, 'VantagensUsadas': set(), 'GestorIDs': [] 
+    'VantagensUsadas': set(), 'GestorIDs': [] 
 }
 
 def connect_db():
@@ -127,15 +141,15 @@ def bulk_insert_execute_values(conn, table_name_camel, columns_camel, data, sche
             if e.pgcode and e.pgcode.startswith('40'):
                 conn.rollback()
                 wait_time = 2 ** attempt
-                print(f"  [ATENÇÃO] Deadlock/Erro transiente no INSERT em {full_table_name}. Tentando novamente em {wait_time}s...")
+                print(f"   [ATENÇÃO] Deadlock/Erro transiente no INSERT em {full_table_name}. Tentando novamente em {wait_time}s...")
                 time.sleep(wait_time)
             else:
                 conn.rollback()
-                print(f"  [ERRO] Falha no INSERT em {full_table_name}: {e}")
+                print(f"   [ERRO] Falha no INSERT em {full_table_name}: {e}")
                 return 0
         except Exception as e:
             conn.rollback()
-            print(f"  [ERRO] Falha inesperada no INSERT em {full_table_name}: {e}")
+            print(f"   [ERRO] Falha inesperada no INSERT em {full_table_name}: {e}")
             return 0
     return 0
     
@@ -194,7 +208,6 @@ def telefone_formatado():
     numero = f"9{random.randint(1000_000, 9999_999)}"
     
     return f"({ddd}) {numero[:5]}-{numero[4:]}"
-
 
 def generate_empresas(conn):
     print("\n[3/12] Gerando Empresa...")
@@ -329,34 +342,35 @@ def generate_habilidades(conn):
     habilidades_disponiveis = HABILIDADES_INDUSTRIAIS.copy()
     descricoes_disponiveis = HABILIDADE_DESCRICOES.copy()
 
-    for empresa_id in GLOBAL_DATA['Empresa']:
-        GLOBAL_DATA['HabilidadesByEmpresa'][empresa_id] = []
-        habilidades_da_empresa = random.sample(habilidades_disponiveis, k=min(random.randint(HABILIDADES_POR_EMPRESA, HABILIDADES_POR_EMPRESA + 2), len(habilidades_disponiveis)))
-
-        for hab_nome in habilidades_da_empresa:
-            habilidades_data.append((empresa_id, hab_nome, random.choice(descricoes_disponiveis)))
+    for hab_nome in random.sample(habilidades_disponiveis, k=min(random.randint(NUM_HABILIDADES, NUM_HABILIDADES + 2), len(habilidades_disponiveis))):
+        habilidades_data.append((hab_nome, random.choice(descricoes_disponiveis)))
     
-    cols = ("nCdEmpresa", "cNmHabilidade", "cDescricao") 
+    cols = ("cNmHabilidade", "cDescricao") 
     bulk_insert_execute_values(conn, "Habilidade", cols, habilidades_data)
 
     # Coleta IDs gerados
     with conn.cursor() as cur:
-        cur.execute("SELECT nCdHabilidade, nCdEmpresa FROM public.habilidade ORDER BY nCdHabilidade")
-        for hab_id, emp_id in cur.fetchall():
-            GLOBAL_DATA['Habilidade'].append(hab_id)
-            GLOBAL_DATA['HabilidadesByEmpresa'][emp_id].append(hab_id)
+        cur.execute("SELECT nCdHabilidade FROM public.habilidade ORDER BY nCdHabilidade")
+        for row in cur.fetchall():
+            GLOBAL_DATA['Habilidade'].append(row[0])
 
 def generate_habilidade_usuario(conn):
     print("\n[8/12] Gerando HabilidadeUsuario...")
     habilidade_usuario_data = set()
     # nCdHabilidadeUsuario é gerado pelo banco
     
+    all_habilidade_ids = GLOBAL_DATA['Habilidade']
+    
+    if not all_habilidade_ids:
+        print("   [AVISO] Nenhuma habilidade global foi carregada. Pulando HabilidadeUsuario.")
+        return
+
+    # Itera sobre os usuários de cada empresa
     for empresa_id, usuario_ids in GLOBAL_DATA['UsuariosByEmpresa'].items():
-        habilidade_ids = GLOBAL_DATA['HabilidadesByEmpresa'].get(empresa_id, [])
-        if not habilidade_ids: continue
+        
         for user_id in usuario_ids:
             num_habilidades = random.randint(1, 3)
-            for hab_id in random.sample(habilidade_ids, k=min(num_habilidades, len(habilidade_ids))):
+            for hab_id in random.sample(all_habilidade_ids, k=min(num_habilidades, len(all_habilidade_ids))):
                 habilidade_usuario_data.add((hab_id, user_id))
 
     habilidade_usuario_list = [t for t in habilidade_usuario_data]
@@ -444,7 +458,7 @@ def generate_reports(conn):
         
     tarefas_com_report = random.sample(all_tarefa_ids, k=int(len(all_tarefa_ids) * 0.5))
     for tarefa_id in tarefas_com_report:
-        reports_data.append((tarefa_id, random.choice(all_user_ids), random.choice(REPORT_DESCRICOES), random.choice(PROBLEMAS_INDUSTRIAIS), random.choice(['Pendente','Em Andamento','Concluída'])))
+        reports_data.append((tarefa_id, random.choice(all_user_ids), random.choice(REPORT_DESCRICOES), random.choice(PROBLEMAS_INDUSTRIAIS), random.choice(['Pendente','Em Andamento','Concluído'])))
 
     cols = ("nCdTarefa", "nCdUsuario", "cDescricao", "cProblema", "cStatus") 
     bulk_insert_execute_values(conn, "Report", cols, reports_data)
