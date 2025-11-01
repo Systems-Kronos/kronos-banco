@@ -31,4 +31,4 @@ AS
                INNER JOIN public.Empresa           e  ON u.nCdEmpresa = e.nCdEmpresa
                INNER JOIN public.Setor             s  ON u.nCdSetor   = s.nCdSetor
                INNER JOIN public.Cargo             c  ON c.nCdCargo   = u.nCdCargo
-               INNER JOIN HabilidadesPorUsuario    hu    ON hu.nCdUsuario = u.nCdUsuario;
+                LEFT JOIN HabilidadesPorUsuario    hu    ON hu.nCdUsuario = u.nCdUsuario;

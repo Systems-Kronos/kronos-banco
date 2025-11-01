@@ -187,6 +187,13 @@ def generate_cargos(conn):
     
     if not GLOBAL_DATA['Cargo']: raise Exception("Nenhum cargo inserido.")
 
+# Gera número de telefone formatado "(XX) 9XXXX-XXXX"
+def telefone_formatado():
+    ddd = random.randint(11, 99)
+    
+    numero = f"9{random.randint(1000_000, 9999_999)}"
+    
+    return f"({ddd}) {numero[:5]}-{numero[4:]}"
 
 def generate_empresas(conn):
     print("\n[3/12] Gerando Empresa...")
@@ -196,7 +203,7 @@ def generate_empresas(conn):
     for _ in range(NUM_EMPRESAS):
         plano_id = random.choice(planos)
         nome_empresa = fake.unique.company() + " Industrial Ltda."
-        empresas_data.append((nome_empresa, fake.unique.lexify(text='???').upper(), fake.unique.cnpj(), fake.phone_number(), fake.unique.company_email(), fake.postcode(), plano_id, True))
+        empresas_data.append((nome_empresa, fake.unique.lexify(text='???').upper(), fake.unique.cnpj(), telefone_formatado(), fake.unique.company_email(), fake.postcode(), plano_id, True))
 
     cols = ("cNmEmpresa", "cSgEmpresa", "cCNPJ", "cTelefone", "cEmail", "cCEP", "nCdPlanoPagamento", "bAtivo") 
     bulk_insert_execute_values(conn, "Empresa", cols, empresas_data)
@@ -278,7 +285,7 @@ def generate_usuarios(conn):
             senha_bytes = SENHA_PADRAO.encode('utf-8')
             hash_bcrypt = bcrypt.hashpw(senha_bytes, bcrypt.gensalt(rounds=BCRYPT_ROUNDS)).decode('utf-8')
             # nCdUsuario (PK) e nCdGestor (FK) são NULL no insert
-            usuarios_data.append((fake.name(), None, is_gestor, empresa_id, ncd_setor, ncd_cargo, fake.unique.cpf(), fake.phone_number(), fake.unique.email(), hash_bcrypt, "", True))
+            usuarios_data.append((fake.name(), None, is_gestor, empresa_id, ncd_setor, ncd_cargo, fake.unique.cpf(), telefone_formatado(), fake.unique.email(), hash_bcrypt, "", True))
 
     cols = ("cNmUsuario", "nCdGestor", "bGestor", "nCdEmpresa", "nCdSetor", "nCdCargo", "cCPF", "cTelefone", "cEmail", "cSenha", "cFoto", "bAtivo") 
     
@@ -436,7 +443,7 @@ def generate_reports(conn):
         
     tarefas_com_report = random.sample(all_tarefa_ids, k=int(len(all_tarefa_ids) * 0.5))
     for tarefa_id in tarefas_com_report:
-        reports_data.append((tarefa_id, random.choice(all_user_ids), random.choice(REPORT_DESCRICOES), random.choice(PROBLEMAS_INDUSTRIAIS), random.choice(['Pendente','Em Andamento','Concluída'])))
+        reports_data.append((tarefa_id, random.choice(all_user_ids), random.choice(REPORT_DESCRICOES), random.choice(PROBLEMAS_INDUSTRIAIS), random.choice(['Pendente','Em Andamento','Concluído'])))
 
     cols = ("nCdTarefa", "nCdUsuario", "cDescricao", "cProblema", "cStatus") 
     bulk_insert_execute_values(conn, "Report", cols, reports_data)
