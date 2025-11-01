@@ -1,5 +1,5 @@
 -- Reset das tabelas e do esquema
-DROP SCHEMA table_log CASCADE ;
+DROP SCHEMA IF EXISTS table_log CASCADE ;
 
 -- Criação do SCHEMA table_log
 CREATE SCHEMA table_log;
