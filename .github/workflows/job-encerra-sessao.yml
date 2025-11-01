@@ -1,9 +1,14 @@
 name: Executa procedure para Encerrar Sessão de Usuarios
 
 on:
+  schedule:
+    - cron: '*/10 * * * *'
+
   push:
     branches:
       - main
+
+  workflow_dispatch:
 
 jobs:
   call-db-procedure:
