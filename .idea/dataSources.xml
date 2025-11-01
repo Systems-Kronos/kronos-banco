@@ -15,13 +15,6 @@
       <jdbc-url>jdbc:redis://redis-19041.c278.us-east-1-4.ec2.redns.redis-cloud.com:19041/</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="Kronos_SQL_DEV" uuid="fa026dcd-3be3-4a4b-be5a-26806b832ab8">
-      <driver-ref>postgresql</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://pg-37c5c0f5-kronosoficial-ce6c.d.aivencloud.com:21674/defaultdb</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
     <data-source source="LOCAL" name="Kronos_SQL_QA" uuid="ec17565c-7921-4657-9e1e-185135df8219">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
@@ -34,6 +27,13 @@
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://pg-kronosgerencia-kronosoficial-gerencia.i.aivencloud.com:22407/defaultdb</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="Kronos_SQL_DEV" uuid="a0eabdb1-985d-4a07-8b19-7380144daf40">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://ep-solitary-bread-acygfejx-pooler.sa-east-1.aws.neon.tech:5432/dbSegundoAno</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
