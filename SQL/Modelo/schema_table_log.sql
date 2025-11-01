@@ -10,11 +10,30 @@ CREATE TABLE table_log.RegistroDAU ( nCdSessao           BIGSERIAL       NOT NUL
                                    , dDataEntrada        TIMESTAMPTZ     NOT NULL
                                    , dDataSaida          TIMESTAMPTZ         NULL
                                    , dUltimoHeartbeat    TIMESTAMPTZ     NOT NULL
-                                   , cLocalUso           TIPO_LOCAL_USO  NOT NULL
+                                   , cLocalUso           VARCHAR(10)  NOT NULL
                                    , iDuracaoMinutos     INTEGER             NULL
                                    , PRIMARY KEY (nCdSessao)
                                    , FOREIGN KEY (nCdUsuario) REFERENCES public.Usuario(nCdUsuario)
                                    );
+
+CREATE TABLE table_log.rpa_mapa_ids ( nCdMapa                BIGSERIAL    NOT NULL
+                                    , cNmTabela              VARCHAR(100) NOT NULL
+                                    , nCdOrigem              BIGINT       NOT NULL
+                                    , nCdDestino             BIGINT       NOT NULL
+                                    , jLinhaPrimariaAnterior JSONB            NULL
+                                    , dDataProcessamento     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                    , PRIMARY KEY (nCdMapa)
+                                    , UNIQUE (cNmTabela, nCdOrigem)
+                                    );
+
+CREATE TABLE table_log.rpa_conflitos ( nCdConflito      BIGSERIAL    NOT NULL PRIMARY KEY
+                                     , dDataConflito    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                     , cNmTabela        VARCHAR(100) NOT NULL
+                                     , nCdDestino       BIGINT       NOT NULL
+                                     , cNmColuna        VARCHAR(100) NOT NULL
+                                     , cValorPrimario   TEXT             NULL
+                                     , cValorSecundario TEXT             NULL
+                                     );
 
 CREATE TABLE table_log.Administracao ( nCdLog     BIGSERIAL
                                      , nCdAdm     BIGINT       NOT NULL
@@ -77,7 +96,7 @@ CREATE TABLE table_log.PlanoVantagens ( nCdLog           BIGSERIAL
                                       , nCdPlano         BIGINT       NOT NULL
                                       , nCdVantagem      BIGINT       NOT NULL
                                       , cNmVantagem      VARCHAR(100) NOT NULL 
-                                      , cDescricao       VARCHAR(255) NOT NULL
+                                      , cDescricao       VARCHAR(255)     NULL
                                       , cOperacao        VARCHAR(50)
                                       , dOperacao        TIMESTAMP              
                                       , PRIMARY KEY (nCdLog)
@@ -85,7 +104,6 @@ CREATE TABLE table_log.PlanoVantagens ( nCdLog           BIGSERIAL
 									
 CREATE TABLE table_log.Habilidade ( nCdLog        BIGSERIAL
 								  , nCdHabilidade BIGINT       NOT NULL 
-                                  , nCdEmpresa    BIGINT       NOT NULL
                                   , cNmHabilidade VARCHAR(255) NOT NULL
                                   , cDescricao    VARCHAR(255) NOT NULL
                                   , cOperacao     VARCHAR(50)

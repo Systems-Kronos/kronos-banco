@@ -195,7 +195,6 @@ def telefone_formatado():
     
     return f"({ddd}) {numero[:5]}-{numero[4:]}"
 
-
 def generate_empresas(conn):
     print("\n[3/12] Gerando Empresa...")
     empresas_data = []
@@ -444,7 +443,7 @@ def generate_reports(conn):
         
     tarefas_com_report = random.sample(all_tarefa_ids, k=int(len(all_tarefa_ids) * 0.5))
     for tarefa_id in tarefas_com_report:
-        reports_data.append((tarefa_id, random.choice(all_user_ids), random.choice(REPORT_DESCRICOES), random.choice(PROBLEMAS_INDUSTRIAIS), random.choice(['Pendente','Em Andamento','Concluída'])))
+        reports_data.append((tarefa_id, random.choice(all_user_ids), random.choice(REPORT_DESCRICOES), random.choice(PROBLEMAS_INDUSTRIAIS), random.choice(['Pendente','Em Andamento','Concluído'])))
 
     cols = ("nCdTarefa", "nCdUsuario", "cDescricao", "cProblema", "cStatus") 
     bulk_insert_execute_values(conn, "Report", cols, reports_data)

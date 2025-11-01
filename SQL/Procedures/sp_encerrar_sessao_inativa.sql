@@ -4,7 +4,7 @@ CREATE OR REPLACE PROCEDURE sp_encerrar_sessao_inativa
 )
 AS $$
 BEGIN
-  UPDATE RegistroDAU
+  UPDATE table_log.RegistroDAU
      SET dDataSaida = dUltimoHeartbeat
        , iDuracaoMinutos = EXTRACT(EPOCH FROM (dUltimoHeartbeat - dDataEntrada)) / 60
    WHERE dDataSaida IS NULL
