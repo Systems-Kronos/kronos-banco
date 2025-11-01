@@ -26,13 +26,13 @@ def separate_files_by_phase(sql_files):
     
     for file_path in sql_files:
         if "JOBS" in file_path.split(os.sep):
-            job_files.append(file_path)
+            continue  # Ignora arquivos de JOBS nesta versão
         elif strikethrough_char in os.path.basename(file_path):
             deletion_files.append(file_path)
         else:
             creation_files.append(file_path)
             
-    return creation_files, deletion_files, job_files
+    return creation_files, deletion_files #, job_files
 
 def get_category(file_path):
     """Retorna a categoria do script para ordenação."""

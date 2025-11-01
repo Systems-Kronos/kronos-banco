@@ -26,7 +26,7 @@
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://pg-kronosdesenvolvimento-kronosoficial-des.i.aivencloud.com:12539/dsSegundoAno?sslmode=require</jdbc-url>
+      <jdbc-url>jdbc:postgresql://ep-flat-feather-acme4fjx-pooler.sa-east-1.aws.neon.tech:5432/dsSegundoAno</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
     <data-source source="LOCAL" name="Kronos_SQL_Primeiro" uuid="64d53741-c012-415f-8898-598af995ab92">

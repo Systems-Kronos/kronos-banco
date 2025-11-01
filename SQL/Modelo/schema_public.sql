@@ -187,9 +187,6 @@ CREATE INDEX idx_empresa_ativo           ON public.Empresa(bAtivo);
 -- Setor
 CREATE INDEX idx_setor_empresa ON public.Setor(nCdEmpresa);
 
--- Habilidade
-CREATE INDEX idx_habilidade_empresa ON public.Habilidade(nCdEmpresa);
-
 -- Usuário (FKs)
 CREATE INDEX idx_usuario_empresa ON public.Usuario(nCdEmpresa);
 CREATE INDEX idx_usuario_setor   ON public.Usuario(nCdSetor);
