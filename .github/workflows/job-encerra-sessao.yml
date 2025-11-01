@@ -1,9 +1,14 @@
 name: Executa procedure para Encerrar Sessão de Usuarios
 
 on:
+  schedule:
+    - cron: '*/10 * * * *'
+
   push:
     branches:
       - main
+
+  workflow_dispatch:
 
 jobs:
   call-db-procedure:
@@ -20,6 +25,12 @@ jobs:
 
       - name: Chamar a Procedure sp_encerrar_sessao_inativa em QA
         env:
-          PGDATABASE: ${{ secrets.DB_CONNECTION_URL }}
+          PGDATABASE: ${{ secrets.DATABASE_URL_QA }}
+        run: |
+          psql -c "CALL public.sp_encerrar_sessao_inativa(15);"
+      
+      - name: Chamar a Procedure sp_encerrar_sessao_inativa em DEV
+        env:
+          PGDATABASE: ${{ secrets.DATABASE_URL_DEV }}
         run: |
           psql -c "CALL public.sp_encerrar_sessao_inativa(15);"
