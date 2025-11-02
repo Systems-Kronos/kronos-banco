@@ -1,4 +1,4 @@
-CREATE TRIGGER tg_valida_atribuicao_tarefa
+CREATE OR REPLACE TRIGGER tg_valida_atribuicao_tarefa
     BEFORE INSERT
         OR UPDATE
         ON TarefaUsuario

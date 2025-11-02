@@ -35,4 +35,5 @@ jobs:
           HOSTREDIS: ${{ secrets.HOSTREDIS }}
           PORTREDIS: ${{ secrets.PORTREDIS }}
           PASSWORDREDIS: ${{ secrets.PASSWORDREDIS }}
+          DROPSCHEMA: ${{ secrets.DROPSCHEMA }}
         run: python executaBanco.py
