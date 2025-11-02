@@ -157,7 +157,7 @@ def execute_python_data_load(database_url, python_script_path, environment_name)
         return False
 
 
-def execute_sql_scripts(connection_url, sql_files, action_verb, environment_name):
+def execute_sql_scripts(connection_url, sql_files, action_verb, environment_name, DROPSCHEMA):
     """
     Executa scripts SQL em lote, ignorando arquivos de Data Load Python.
     Adicionado 'environment_name' para corrigir o TypeError.
@@ -174,7 +174,12 @@ def execute_sql_scripts(connection_url, sql_files, action_verb, environment_name
         for file_path in sql_files:
             # Ignora arquivos de Data Load Python/SQL
             if get_category(file_path) == "DataLoad":
-                 continue
+                continue
+            if get_category(file_path) == "Modelo" and not DROPSCHEMA:
+                success_count += 1
+
+                print(f"   [{environment_name}] ({success_count}/{total_count}) - Script '{os.path.basename(file_path)}' não executado (DROPSCHEMA=False).")
+                continue
 
             with open(file_path, 'r', encoding='utf-8') as f:
                 sql_script = f.readline() if action_verb == "removido" else f.read()
@@ -196,11 +201,33 @@ def execute_sql_scripts(connection_url, sql_files, action_verb, environment_name
             cur.close()
             conn.close()
 
+def execute_manual_sql(connection_url, sql_content, environment_name):
+    """Executa um bloco de SQL string no banco de dados."""
+    conn = None
+    try:
+        conn = psycopg2.connect(connection_url)
+        cur = conn.cursor()
+        cur.execute(sql_content)
+        conn.commit()
+        print(f"   [{environment_name}] Alterações manuais executadas com sucesso.")
+        return True
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(f"   - ERRO ao executar SQL manual em '{environment_name}': {error}")
+        if conn: conn.rollback()
+        return False
+    finally:
+        if conn:
+            cur.close()
+            conn.close()
+            
 def main():
     load_dotenv()
     
     DATABASE_URL_QA = os.getenv("DATABASE_URL_QA")
     DATABASE_URL_DEV = os.getenv("DATABASE_URL_DEV")
+    DROPSCHEMA = os.getenv("DROPSCHEMA", "False").lower() == "true"
+
+    MANUAL_ALTER_FILE = os.path.join("SQL", "alteracoes_manuais.sql")
 
     if not DATABASE_URL_QA or not DATABASE_URL_DEV:
         print("Erro: As variáveis de ambiente DATABASE_URL_QA e DATABASE_URL_DEV devem ser definidas.")
@@ -217,12 +244,12 @@ def main():
             
             print("\n[QA] INICIANDO EXCLUSÃO...")
             # Chamada corrigida: 4 argumentos
-            qa_del_success, _ = execute_sql_scripts(DATABASE_URL_QA, ordered_deletions, "removido", "QA")
+            qa_del_success, _ = execute_sql_scripts(DATABASE_URL_QA, ordered_deletions, "removido", "QA", DROPSCHEMA)
             if not qa_del_success: raise Exception("Falha na fase de exclusão em QA.")
             
             print("\n[DEV] INICIANDO EXCLUSÃO...")
             # Chamada corrigida: 4 argumentos
-            dev_del_success, _ = execute_sql_scripts(DATABASE_URL_DEV, ordered_deletions, "removido", "DEV")
+            dev_del_success, _ = execute_sql_scripts(DATABASE_URL_DEV, ordered_deletions, "removido", "DEV", DROPSCHEMA)
             if not dev_del_success: raise Exception("Falha na fase de exclusão em DEV.")
             
             print("--- FASE DE EXCLUSÃO CONCLUÍDA ---\n")
@@ -242,16 +269,16 @@ def main():
             # 1. EXECUÇÃO DOS SCRIPTS SQL (Estrutura, Funções, Triggers, Views)
             print("\n[QA] INICIANDO CRIAÇÃO/ALTERAÇÃO SQL...")
             # Chamada corrigida: 4 argumentos
-            qa_creation_success, _ = execute_sql_scripts(DATABASE_URL_QA, sql_creation_files, "executado", "QA")
+            qa_creation_success, _ = execute_sql_scripts(DATABASE_URL_QA, sql_creation_files, "executado", "QA", DROPSCHEMA)
             if not qa_creation_success: raise Exception("Falha na fase de criação/alteração SQL em QA.")
             
             print("\n[DEV] INICIANDO CRIAÇÃO/ALTERAÇÃO SQL...")
             # Chamada corrigida: 4 argumentos
-            dev_creation_success, _ = execute_sql_scripts(DATABASE_URL_DEV, sql_creation_files, "executado", "DEV")
+            dev_creation_success, _ = execute_sql_scripts(DATABASE_URL_DEV, sql_creation_files, "executado", "DEV", DROPSCHEMA)
             if not dev_creation_success: raise Exception("Falha na fase de criação/alteração SQL em DEV.")
 
             # 2. EXECUÇÃO DO DATA LOAD PYTHON
-            if data_load_file:
+            if data_load_file and DROPSCHEMA:
                 # Executa QA
                 qa_data_load_success = execute_python_data_load(DATABASE_URL_QA, data_load_file, "QA")
                 if not qa_data_load_success: raise Exception("Falha na carga de dados Python em QA.")
@@ -261,6 +288,36 @@ def main():
                 if not dev_data_load_success: raise Exception("Falha na carga de dados Python em DEV.")
             
             print("--- FASE DE CRIAÇÃO/ALTERAÇÃO CONCLUÍDA ---\n")
+
+        if not DROPSCHEMA:
+            print(f"--- FASE 2.5: VERIFICANDO ALTERAÇÕES MANUAIS (DROPSCHEMA=False) ---")
+            
+            if os.path.exists(MANUAL_ALTER_FILE):
+                with open(MANUAL_ALTER_FILE, 'r', encoding='utf-8') as f:
+                    sql_content = f.read()
+
+                sql_content_sem_comentarios = re.sub(r'--.*', '', sql_content)
+                
+                if sql_content_sem_comentarios.strip():
+                    print(f"   - Arquivo '{MANUAL_ALTER_FILE}' detectado com conteúdo.")
+                    
+                    print("\n[QA] INICIANDO EXECUÇÃO MANUAL DE SQL...")
+                    qa_manual_success = execute_manual_sql(DATABASE_URL_QA, sql_content, "QA")
+                    
+                    print("\n[DEV] INICIANDO EXECUÇÃO MANUAL DE SQL...")
+                    dev_manual_success = execute_manual_sql(DATABASE_URL_DEV, sql_content, "DEV")
+
+                    if not (qa_manual_success and dev_manual_success):
+                        print(f"\nERRO: Falha ao executar alterações manuais.")
+                        raise Exception("Falha na execução manual de SQL. Verifique os logs.")
+                    
+                    print("\n--- ALTERAÇÕES MANUAIS CONCLUÍDAS COM SUCESSO ---")
+                    print(f"   - Lembrete: O arquivo '{MANUAL_ALTER_FILE}' deve ser limpo manualmente antes do próximo PR.")
+
+                else:
+                    print(f"   - Arquivo '{MANUAL_ALTER_FILE}' está vazio ou contém apenas comentários. Pulando.")
+            else:
+                print(f"   - Arquivo '{MANUAL_ALTER_FILE}' não encontrado. Pulando.")
 
         # # --- FASE 3: JOBS --- 
         # if job_files:
@@ -274,12 +331,12 @@ def main():
 
         #     print("\n[QA] INICIANDO EXECUÇÃO DE JOBS...")
         #     # Chamada corrigida: 4 argumentos
-        #     qa_job_success, _ = execute_sql_scripts(JOB_URL_QA, ordered_jobs, "executado", "QA")
+        #     qa_job_success, _ = execute_sql_scripts(JOB_URL_QA, ordered_jobs, "executado", "QA", DROPSCHEMA)
         #     if not qa_job_success: raise Exception("Falha na fase de JOBS em QA.")
 
         #     print("\n[DEV] INICIANDO EXECUÇÃO DE JOBS...")
         #     # Chamada corrigida: 4 argumentos
-        #     dev_job_success, _ = execute_sql_scripts(JOB_URL_DEV, ordered_jobs, "executado", "DEV")
+        #     dev_job_success, _ = execute_sql_scripts(JOB_URL_DEV, ordered_jobs, "executado", "DEV", DROPSCHEMA)
         #     if not dev_job_success: raise Exception("Falha na fase de JOBS em DEV.")
         #     print("--- FASE DE JOBS CONCLUÍDA ---")
 
