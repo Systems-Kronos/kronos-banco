@@ -20,5 +20,6 @@
     <file url="file://$PROJECT_DIR$/SQL/Triggers/tg_validar_relator.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/SQL/Triggers/̶t̶g̶_̶a̶l̶t̶e̶r̶a̶_̶s̶t̶a̶t̶u̶s̶_̶t̶a̶r̶e̶f̶a̶.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/SQL/Views/vw_info_funcionario.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/SQL/alteracoes_manuais.sql" dialect="PostgreSQL" />
   </component>
 </project>

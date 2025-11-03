@@ -49,7 +49,7 @@ CREATE TABLE public.Cargo ( nCdCargo BIGINT NOT NULL DEFAULT NEXTVAL('public.sq_
 CREATE TABLE public.Administracao ( nCdAdm     BIGINT       NOT NULL DEFAULT NEXTVAL('sq_Administracao')
                                   , cNmAdm     VARCHAR(255) NOT NULL
                                   , cEmailAdm  VARCHAR(255) NOT NULL
-                                  , cSenha     VARCHAR(255) NOT NULL DEFAULT 't33'
+                                  , cSenha     VARCHAR(255) NOT NULL DEFAULT 'Senha@123'
                                   , PRIMARY KEY (nCdAdm)
                                   );
 
