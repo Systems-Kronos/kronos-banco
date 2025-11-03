@@ -20,3 +20,7 @@
 -- ALTER TABLE public.Usuario ADD COLUMN cNovaColuna VARCHAR(50) NULL;
 -- CREATE INDEX idx_usuario_email ON public.Usuario(cEmail);
 --
+
+--[BD][Usuario]
+ALTER TABLE usuario
+      ALTER COLUMN csenha SET DEFAULT 'Senha@123';
